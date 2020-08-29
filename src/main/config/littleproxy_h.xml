@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+	<littlehttp>
+		<global_option>
+			<port>8080</port>
+			<authenticateClients noauth="0" basic="1" digest="2" kerberos="3">2</authenticateClients>
+			<ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+			<ldap_username>k1svcfarmadmin</ldap_username>
+			<ldap_password>3edcVFR$</ldap_password>
+			<java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+			<java_security_auth_login_config>login.conf</java_security_auth_login_config>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_domain>vip.cbr.ru</default_domain>
+			<local_bind_server>127.0.0.1</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+
+
+			<keystoreFile>tomcat_store</keystoreFile>
+			<keystorePass>2wsxXSW@</keystorePass>
+			<keystoreType>JKS</keystoreType>
+			<keyAlias>lear</keyAlias>
+
+		</global_option>
+	</littlehttp>
+	<littlesmtp>
+		<global_option>
+			<port>2525</port>
+			<default_domain>vip.cbr.ru</default_domain>
+			<ldap_ad_username>k1svcfarmadmin</ldap_ad_username>
+			<ldap_ad_password>3edcVFR$</ldap_ad_password>
+			<java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+			<java_security_auth_login_config>login.conf</java_security_auth_login_config>
+			<ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_domain>vip.cbr.ru</default_domain>
+			<local_bind_server>*</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+		</global_option>
+
+	</littlesmtp>
+	<littleimap>
+		<global_option>
+			<default_domain>vip.cbr.ru</default_domain>
+			<port>1143</port>
+			<ldap_ad_username>k1svcfarmadmin</ldap_ad_username>
+			<ldap_ad_password>3edcVFR$</ldap_ad_password>
+			<local_bind_server>*</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+		</global_option>
+	</littleimap>
+</little>

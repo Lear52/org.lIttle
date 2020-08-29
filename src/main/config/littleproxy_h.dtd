@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!ELEMENT little (littlehttp*,littlesmtp*)>
+
+<!ATTLIST log4j:configuration
+  xmlns:little              CDATA #FIXED "http://project.little.org/little" 
+>
+<!ELEMENT littlehttp (global_option*)>
+
+
+
+<!ELEMENT littlesmtp (global_option*)>
+
+<!ELEMENT global_option (port*,(authenticateClients)?,(ldap_url)?)>
+
