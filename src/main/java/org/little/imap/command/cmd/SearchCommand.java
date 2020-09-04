@@ -31,7 +31,7 @@ public class SearchCommand  extends ImapCommand {
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
-              logger.trace("doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
+              logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               String arg1   = null;
               String arg2   = null;
               if(getParameters().size()>0)arg1   = getParameters().get(0).toString();
@@ -44,7 +44,7 @@ public class SearchCommand  extends ImapCommand {
               ImapResponse ret=null;
               ret=new EmptyResponse(NAME+" "+num_msg+" ");                                                   responase.add(ret);
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);         responase.add(ret);
-              logger.trace("response:"+ret);
+              logger.trace("IMAP:response:"+ret);
 
               return responase;
        }

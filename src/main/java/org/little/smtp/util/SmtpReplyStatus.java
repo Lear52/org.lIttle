@@ -38,6 +38,10 @@ public class SmtpReplyStatus {
 		this.status = status;
 	}
 
+	public String toString() {
+	       return "ReplyStatus:" + status;
+	}
+
 }
    /*
    235 2.7.0  Authentication Succeeded

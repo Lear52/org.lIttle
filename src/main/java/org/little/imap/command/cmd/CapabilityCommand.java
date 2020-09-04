@@ -30,19 +30,18 @@ public class CapabilityCommand  extends ImapCommand {
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
-              logger.trace("doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
+              logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
 
               ImapResponse ret=null;
               ret=new EmptyResponse(CAPABILITY_RESPONSE);                                                 responase.add(ret);
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);      responase.add(ret);
 
-              logger.trace("response:"+ret);
+              logger.trace("IMAP:response:"+ret);
               return responase;
        }
        public static String getCapabilityResponse() {
     	   
     	   return CAPABILITY_RESPONSE;
-    	   //return NAME + SP + VERSION + SP +"CHILDREN IDLE QUOTA SORT ACL NAMESPACE RIGHTS=texk[nl]";
        }
 
 }

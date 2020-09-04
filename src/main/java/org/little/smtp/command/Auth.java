@@ -21,20 +21,21 @@ public class Auth extends AbstractSmtpCommand {
                 return "AUTH";
         }
         public static String getCommandAuth() {
-        	return "AUTH PLAIN LOGIN";
+        	//return "AUTH PLAIN LOGIN";
+        	return "AUTH PLAIN";
         }
 
         @Override
         public SmtpCommandReply processCommand(SessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-               if(argument==null)logger.trace(getCommandVerb().toString());
-               else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
+               if(argument==null)logger.trace("SMTP:command:"+getCommandVerb().toString());
+               else              logger.trace("SMTP:command:"+getCommandVerb().toString()+" "+argument.toString());
 
                AuthTransaction authTx = new AuthTransaction();
-               logger.trace("begin auth transaction");
+               logger.trace("SMTP:begin auth transaction");
                authTx.setType(argument);
-               logger.trace("type auth:"+argument.toString());
-               logger.trace("isTypeLogin():"+authTx.isTypeLogin());
-               logger.trace("isTypePlain():"+authTx.isTypePlain());
+               logger.trace("SMTP:type auth:"+argument.toString());
+               logger.trace("SMTP:isTypeLogin():"+authTx.isTypeLogin());
+               logger.trace("SMTP:isTypePlain():"+authTx.isTypePlain());
 
                 /*
                  * TODO: process new optional parameter from 8bit-MIMEtransport (rfc1652):
@@ -47,7 +48,7 @@ public class Auth extends AbstractSmtpCommand {
                else
                if(authTx.isTypePlain())reply = new SmtpCommandReply(SmtpReplyStatus.R334, "");
                else                    reply = new SmtpCommandReply(SmtpReplyStatus.R500, "AUTH?");
-               logger.trace("reply:"+reply);
+               logger.trace("SMTP:reply:"+reply.toString());
                
                /*
                else{
@@ -70,16 +71,16 @@ public class Auth extends AbstractSmtpCommand {
                SmtpCommandReply reply;
                if(ctxMailSession.authTransaction!=null)
                if(ctxMailSession.authTransaction.isAuth()) {
-                   logger.error("already authenticated :"+log_str);
+                   logger.error("SMTP:already authenticated :"+log_str);
                    reply = new SmtpCommandReply(SmtpReplyStatus.R503, "already authenticated");
                    return reply;
                }
 
                AuthTransaction authTx = new AuthTransaction();
-               logger.trace("create auth transaction");
+               logger.trace("SMTP:create auth transaction");
                authTx.setType(list_cmd.get(1));
-               logger.trace("isTypeLogin():"+authTx.isTypeLogin());
-               logger.trace("isTypePlain():"+authTx.isTypePlain());
+               logger.trace("SMTP:isTypeLogin():"+authTx.isTypeLogin());
+               logger.trace("SMTP:isTypePlain():"+authTx.isTypePlain());
 
              /*
               * TODO: process new optional parameter from 8bit-MIMEtransport (rfc1652):
@@ -90,9 +91,9 @@ public class Auth extends AbstractSmtpCommand {
               if(authTx.isTypePlain()){
                  if(list_cmd.size()>2){
 
-                    logger.trace("inline Plain:"+list_cmd.get(2));
+                    logger.trace("SMTP:inline Plain:"+list_cmd.get(2));
                     authTx.setPlain(list_cmd.get(2));
-                    logger.trace("isAuth:"+authTx.isAuth());
+                    logger.trace("SMTP:isAuth:"+authTx.isAuth());
 
                     if(ctxMailSession.authTransaction.isAuth()){
                        reply = new SmtpCommandReply(SmtpReplyStatus.R235, "2.7.0 Authentication successful");
@@ -108,7 +109,7 @@ public class Auth extends AbstractSmtpCommand {
               if(authTx.isTypeLogin())reply = new SmtpCommandReply(SmtpReplyStatus.R334,"VXNlciBOYW1lAA=="); // "User Name"
               else                    reply = new SmtpCommandReply(SmtpReplyStatus.R500, "AUTH?");
 
-              logger.trace("reply:"+reply);
+              logger.trace("SMTP:reply:"+reply.toString());
             
             /*
             }

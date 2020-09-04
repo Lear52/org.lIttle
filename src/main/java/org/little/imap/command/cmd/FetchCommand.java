@@ -47,7 +47,7 @@ public class FetchCommand  extends ImapCommand {
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
-              logger.trace("doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
+              logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
               
               ImapResponse ret=null;
@@ -65,12 +65,12 @@ public class FetchCommand  extends ImapCommand {
               for(int i=0;i<getParameters().size();i++){
                   String param  = getParameters().get(i).toString();
                   // -- разделить imap parametr на fetch parametn
-                  logger.trace("imap fetch cmd param old name:"+param);
+                  logger.trace("IMAP fetch cmd param old name:"+param);
                   stringParser parser=new stringParser(param,"<>[]");
                   String new_param;
                   while((new_param=parser.get())!=null){
                          fetch_param.add(new_param);
-                         logger.trace("imap fetch cmd new param name:"+new_param);
+                         logger.trace("IMAP fetch cmd new param name:"+new_param);
                   }
               }
               //for(int i=0;i<getParameters().size();i++){
@@ -78,7 +78,7 @@ public class FetchCommand  extends ImapCommand {
                   //String name  = getParameters().get(i).toString();
                   String name  = fetch_param.get(i);
 
-                  logger.trace("imap fetch cmd param name:"+name);
+                  logger.trace("IMAP fetch cmd param name:"+name);
                   if ("FAST".equalsIgnoreCase(name)) {
                       fetch.flags = true;
                       fetch.internalDate = true;
@@ -159,7 +159,8 @@ public class FetchCommand  extends ImapCommand {
               ret=new EmptyResponse(id+" "+NAME+" ("+buf.toString()+")");   responase.add(ret);
               //ret=new EmptyResponse(id+" FLAGS ");   responase.add(ret);
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
-              logger.trace("response:"+ret);
+
+              logger.trace("IMAP:response:"+ret);
 
               return responase;
        }

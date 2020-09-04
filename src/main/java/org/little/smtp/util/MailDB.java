@@ -40,6 +40,7 @@ public class MailDB {
         }
 
 	public boolean finish(){
+               //---------------------------------------------------------
                byte [] dest=new byte [count];
                count=0;
                for(int i=0;i<buf.size();i++){
@@ -47,13 +48,23 @@ public class MailDB {
                    System.arraycopy(src,0,dest,count,src.length);
                    count+=src.length;
                }
+
+               logger.trace("SMTP msg:\r\n"+new String(dest));
+               //---------------------------------------------------------
                buf=new ArrayList<arrbyte>(10240);
                count=0;
+               //---------------------------------------------------------
                ByteArrayInputStream in_byte=new ByteArrayInputStream(dest);
                BufferedInputStream  in=new BufferedInputStream(in_byte);
 
                lMessage[] buf_message=ELM2lMessage.parse(in);
+
+               if(buf_message==null){
+                  logger.info("no SMTP msg");
+                  return true;
+               }
                for(int i=0;i<buf_message.length;i++){
+                   if(buf_message[i]==null)continue;
                    buf_message[i]=lMessageX509.parse(buf_message[i]);
                    if(buf_message[i]==null)continue;
 

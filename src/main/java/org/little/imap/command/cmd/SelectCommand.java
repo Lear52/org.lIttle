@@ -14,6 +14,7 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.imap.command.param.*;
 import org.little.store.*;
+import org.little.imap.*;
 
 
 /**
@@ -31,7 +32,7 @@ public class SelectCommand  extends ImapCommand {
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
-              logger.trace("doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
+              logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               
               String          folder_name   = null;
               ImapResponse    ret           = null;
@@ -40,23 +41,28 @@ public class SelectCommand  extends ImapCommand {
 
               if(getParameters().size()>0)folder_name   = getParameters().get(0).toString();
               if(txSession==null){
-                 logger.error("txSession is null");
+                 logger.error("IMAP transaction is null");
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
                  responase.add(ret);
-                 logger.trace("response:"+ret);
+                 logger.trace("IMAP:response:"+ret);
                  return responase;
               }
               if(txSession.getStore()==null){
-                 logger.error("txSession store is null");
+                 logger.error("IMAP transaction set current store is null");
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
                  responase.add(ret);
-                 logger.trace("response:"+ret);
+                 logger.trace("IMAP:response:"+ret);
                  return responase;
               }
-
+              //----------------------------------------------------------------------------------------------
+              if(commonIMAP.get().isCaseSensitive()==false)folder_name=folder_name.toLowerCase();
+              if(folder_name.startsWith("\"") && folder_name.endsWith("\"")){
+                 folder_name=folder_name.substring(1, folder_name.length()-1);
+              }
+              //----------------------------------------------------------------------------------------------
               folder=txSession.getStore().getFolder(folder_name);
               if(folder==null){
-                 logger.error("error open store:"+txSession.getUserName()+" folder:"+folder_name);
+                 logger.error("IMAP error open store:"+txSession.getUserName()+" folder:"+folder_name);
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
                  responase.add(ret);
                  logger.trace("response:"+ret);
@@ -64,10 +70,10 @@ public class SelectCommand  extends ImapCommand {
               }
               ArrayList<lMessage> list_msg=folder.getMsg();
               if(list_msg==null){
-                 logger.error("error read store:"+txSession.getUserName()+" folder:"+folder_name);
+                 logger.error("IMAP error read store:"+txSession.getUserName()+" folder:"+folder_name);
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
                  responase.add(ret);
-                 logger.trace("response:"+ret);
+                 logger.trace("IMAP:response:"+ret);
                  return responase;
               }
               txSession.setFolderName(folder_name);

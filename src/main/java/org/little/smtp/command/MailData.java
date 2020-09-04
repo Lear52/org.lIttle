@@ -31,7 +31,7 @@ public class MailData extends AbstractSmtpCommand {
                 // switch handlers
                 ctxChannel.pipeline().replace("smptInCommand", "smptInData", new SmtpDataHandler());
 
-        logger.trace("reply:"+reply);
+                logger.trace("reply:"+reply);
 
                 return reply;
         }

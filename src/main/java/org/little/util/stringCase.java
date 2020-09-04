@@ -2,7 +2,7 @@ package org.little.util;
 
 public final class stringCase {
 
-    public static final stringCase SENSITIVE = new stringCase("Sensitive", true);
+    public static final stringCase SENSITIVE   = new stringCase("Sensitive"  , true);
     public static final stringCase INSENSITIVE = new stringCase("Insensitive", false);
 
     /** The enumeration name. */

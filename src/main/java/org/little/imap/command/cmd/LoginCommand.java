@@ -30,7 +30,7 @@ public class LoginCommand extends ImapCommand {
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
-              logger.trace("doProcess:"+NAME+" "+ImapCommand.print(getParameters())+" size:"+getParameters().size());
+              logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters())+" size:"+getParameters().size());
               //--------------------------------------------------------------------------------------------------------
               String          userid    = getParameters().get(0).toString();
               String          password  = getParameters().get(1).toString();
@@ -38,37 +38,41 @@ public class LoginCommand extends ImapCommand {
               lStore          store     = null;
               IMAPTransaction txSession = sessionContext.imapTransaction;
               //--------------------------------------------------------------------------------------------------------
+              if(userid.startsWith("\"") && userid.endsWith("\"")){
+                 userid=userid.substring(1, userid.length()-1);
+                 password=password.substring(1, password.length()-1);
+              }
 
               if(txSession!=null){
-                 logger.error("error open txSession for user:"+userid);
+                 if(txSession.getUserName()!=null){
+                    logger.error("IMAP transaction already open for user:"+txSession.getUserName()+" userid:"+userid+" no login");
+                 }
+                 else{
+                    logger.error("IMAP transaction already open  userid:"+userid+" no login");
+                 }
                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.UNCOMPLETED);
                  responase.add(ret);
-                 logger.trace("response:"+ret);
+                 logger.trace("IMAP:response:"+ret);
                  return responase;
               }
               else{
                  sessionContext.imapTransaction=new IMAPTransaction();
                  txSession = sessionContext.imapTransaction;
 
-                 if(txSession.getUserName()!=null){
-                    logger.error("txSession already open for user:"+txSession.getUserName()+" userid:"+userid);
-                    ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.UNCOMPLETED);
-                    responase.add(ret);
-                    logger.trace("response:"+ret);
-                    return responase;
-                 }
               }
 
               //--------------------------------------------------------------------------------------------------------
 
               boolean checkUser=commonIMAP.get().getAuth().checkUser(userid, password);
-              logger.trace("Login:"+userid+" p:"+password+" check:"+checkUser);
+
+              logger.trace("IMAP Login:"+userid+" p:"+password+" check:"+checkUser);
 
               if(checkUser){
                  store=lRoot.getStore(userid);
                  if(store==null){
                     checkUser=false;
-                    logger.error("error open store for user:"+userid);
+                    sessionContext.imapTransaction=null;
+                    logger.error("IMAP error open store for user:"+userid);
                  }
                  else{
                      txSession.setUserName(userid);
@@ -79,7 +83,7 @@ public class LoginCommand extends ImapCommand {
               if(checkUser)ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);                    
               else         ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                    
               responase.add(ret);
-              logger.trace("response:"+ret);
+              logger.trace("IMAP:response:"+ret);
               return responase;
        }
 }

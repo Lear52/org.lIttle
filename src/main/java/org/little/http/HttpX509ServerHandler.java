@@ -1,5 +1,8 @@
 package org.little.http;
 
+import org.little.http.auth.HttpAuthResponse;
+import org.little.http.internal.HttpX509Request;
+import org.little.http.internal.HttpX509Response;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -33,13 +36,18 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
        public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
       
            if (msg instanceof HttpRequest) {
-               HttpRequest      request = (HttpRequest) msg;
+               HttpRequest      request  = null;
+               HttpAuthResponse ret_auth = null;
+
                logger.trace("channelRead0 msg instanceof HttpRequest");
+
+               request = (HttpRequest) msg;
+
                req.setHttpReq(request);
                //--------------------------------------------------------------
                // 
                //--------------------------------------------------------------
-               HttpAuthResponse ret_auth = req.Auth();
+               ret_auth = req.Auth();
 
                if(ret_auth==null) {
             	  HttpX509Response.sendAuthRequired(ctx,request,ret_auth);
@@ -50,54 +58,50 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
             	  return;
                }
                //--------------------------------------------------------------
+               //
+               //--------------------------------------------------------------
                req.parsePath();
-      
-               logger.trace("cmd:"+req.getCmd());
+               logger.trace("cmd:"+req.getCmd()+" user:"+ret_auth.getUser()+" store:"+req.getStore());
                //--------------------------------------------------------------------------------------
                if(HttpMethod.GET.equals(request.method())) {
-                  if(req.getCmd().equals("list")){
+                  if("list".equals(req.getCmd())){
                      res.getList(ctx,req);
                      return;
                   }
                   else
-                  if(req.getCmd().equals("get")){
+                  if("get".equals(req.getCmd())){
                      res.getMsg(ctx,req);
                      return;
                   }
-                  /*
                   else
-                  if(req.getCmd().equals("menu")){
-                     res.getMenu(ctx,req);
-                     return;
-                  }
-                  else
-                  if(req.getCmd().equals("env")){
+                  if("info".equals(req.getCmd())){
                      res.getInfo(ctx,req);
                      return;
                   }
-                  */
                   else
-                  if(req.getCmd().equals("file")){
+                  if("file".equals(req.getCmd())){
                      res.getFile(ctx,req);
                      return;
                   }
                   else
                   {
-                     logger.trace("unknow cmd:"+req.getCmd());
-                     //res.getInfo(ctx,req);
+                	 String txt="unknow cmd:"+req.getCmd(); 
+                     logger.trace(txt);
+                     res.sendError(ctx,req,txt);
                      return;
                   }
                }
                else
                if(HttpMethod.POST.equals(request.method())) {
                   if(req.createPostRequestDecoder()==false){
-                     logger.error("createPostRequestDecoder==false");
-                     res.sendTxt(ctx,req," ",true);
+                	  String txt= "createPostRequestDecoder==false";
+                     logger.error(txt);
+                     res.sendError(ctx,req,txt);
                      return;
                   }
                }
                else
-                  res.sendTxt(ctx,req," ",false);// return OK
+                  res.sendOk(ctx,req," ");
            }
       
            if (req.isDecoder()) {
@@ -106,7 +110,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
                    int ret=req.decodeChunk(chunk);
                    logger.trace("decodeChunk(chunk) ret:"+ret);
                    if(ret<=0){
-                      res.getPost(ctx,req); 
+                      res.saveMsg(ctx,req); 
                       //res.sendTxt(ctx,req," ",false);// return OK
                       //req.clearDecoder();
                       return;
@@ -114,7 +118,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
                }
            } 
            else {
-               res.sendTxt(ctx,req," ",false);// return OK
+               res.sendOk(ctx,req," ");
                logger.trace("return empty OK");
            }
        }

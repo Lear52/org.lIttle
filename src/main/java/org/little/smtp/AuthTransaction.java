@@ -15,19 +15,20 @@ public class AuthTransaction {
         private String password;
  
         public AuthTransaction() {
-               logger.info("Begin new authTransaction");
+               logger.info("Begin new SNMP auth transaction");
                type="";
                username=null;
                password=null;
         }
 
-        public String   getType(){return type;}
         
         public boolean  isLogin() {return username!=null;}
+        public boolean  isTypePlain() {return type.startsWith("PLAIN");}
+        public boolean  isTypeLogin() {return type.startsWith("LOGIN");}
         
+        public String   getType(){return type;}
         public void     setType(CharSequence _type){if(_type!=null)type=_type.toString();}
 
-        public boolean  isTypePlain() {return type.startsWith("PLAIN");}
 
         public void     setPlain(CharSequence arg_plain) {
                         byte [] b_plain=_Base64.base64ToByteArray(arg_plain.toString());
@@ -46,7 +47,6 @@ public class AuthTransaction {
                    
         }
 
-        public boolean  isTypeLogin() {return type.startsWith("LOGIN");}
 
         public void     setLogin(CharSequence arg_plain) {
                         username=_Base64.Base64ToStr(arg_plain.toString());

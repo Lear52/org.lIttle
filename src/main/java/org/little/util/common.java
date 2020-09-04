@@ -40,29 +40,20 @@ public class common {
            cfg_filename = xpath;
            return loadCFG();
     }
-    public String  getDefNodeName(){ return "little";};
-    public String  getOldNodeName(){return "<>old<>";}//for Backward compatibility
-    public String  getNodeName(){return node_name;}
-    public void    setNodeName(String n_name){node_name=n_name;}
-    public Node    getNode(){return node_cfg;}
+    public String       getDefNodeName(){ return "little";};
+    public String       getOldNodeName(){return "<>old<>";}//for Backward compatibility
+    public String       getNodeName(){return node_name;}
+    public void         setNodeName(String n_name){node_name=n_name;}
+    public Node         getNode(){return node_cfg;}
 
-    public authUser    getAuth(){return new listUser();}
+    public authUser     getAuth(){return new listUser();}
 
     
-    public void preinit(){
+    public void         preinit(){System.setProperty("java.net.preferIPv4Stack","true");System.setProperty("content.types.user.table","content-types.properties"); logger.trace("Set java property:java.net.preferIPv4Stack=true"); }
+    public void         init(){}
+    public void         reinit(){ }
+    public void         initMBean(){ }
 
-           System.setProperty("java.net.preferIPv4Stack","true");
-           logger.trace("Set java property:java.net.preferIPv4Stack=true");
-           System.setProperty("content.types.user.table","content-types.properties");
-
-           
-    }
-    public void init(){
-    }
-    public void reinit(){
-    }
-    public void initMBean(){
-    }
     public boolean loadCFG(){
           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	  try {

@@ -12,7 +12,7 @@ public class listUser implements authUser {
         }
 
         public String  getFullUserName(String username){
-               return getFullUserName(username,"cbr.ru");
+               return getFullUserName(username,"vip.cbr.ru");
         }
         public String  getFullUserName(String username,String domain){
                return username+"@"+domain;
@@ -22,14 +22,18 @@ public class listUser implements authUser {
         }
 
         public boolean isUser(String user) {
-               if("av".equals(user)) return true;
-               if("iap".equals(user)) return true;
-                
-                return false;
+               boolean ret=false;
+               if("av".equals(user)) ret=true;
+               else
+               if("iap".equals(user)) ret=true;
+               logger.trace("user:"+user+" is correct:"+ret); 
+               return ret;
         }
         public boolean checkUser(String user,String passwd) {
-               if(isUser(user) && "123".equals(passwd)) return true;
-               return false;
+               boolean ret=false;
+               if(isUser(user) && "123".equals(passwd))ret=true;
+               logger.trace("passwd for user:"+user+" is correct:"+ret); 
+               return ret;
         }
 
         private static final String DIGEST_REALM = "FESBLoginService";
@@ -41,6 +45,7 @@ public class listUser implements authUser {
         public String getDigestUser(String user,String realm) {
                if(!isUser(user)) return null;
                String password="123";
+
                String ha1 = utilTransform.getMD5Hash(user + ":" + realm + ":" + password);
                return ha1;
 

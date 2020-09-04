@@ -23,6 +23,7 @@ public class commonSMTP extends common{
        private String        ldap_ad_password               ;
        private String        local_bind_client              ;
        private String        local_bind_server              ;
+       private boolean       case_sensitive_folder  ;
       
        private String        default_domain                  ;
       
@@ -41,6 +42,7 @@ public class commonSMTP extends common{
               ldap_ad_username               ="k1svcfarmadmin";       
               ldap_ad_password               ="3edcVFR$";    
               default_domain                  ="vip.cbr.ru";
+              case_sensitive_folder          =true;
               
        }
        private void initGlobal(Node node_cfg){
@@ -60,6 +62,8 @@ public class commonSMTP extends common{
                      if("local_bind_client".equals(n.getNodeName())){local_bind_client=n.getTextContent(); logger.info("local_bind_client:"+local_bind_client);}
                      else
                      if("default_domain"     .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
+                     else
+                     if("case_sensitive_folder".equals(n.getNodeName())){String s=n.getTextContent(); try{case_sensitive_folder=Boolean.parseBoolean(s);}catch(Exception e){ case_sensitive_folder=true;logger.error("case_sensitive_folder:"+s);} logger.info("case_sensitive_folder:"+case_sensitive_folder);}
                  }
               }                               
        }
@@ -102,6 +106,7 @@ public class commonSMTP extends common{
        public String        getTlsKeyPassword()    {return "123456";}
        
        public boolean       verifyUser(String username) {return true;}
+       public boolean       isCaseSensitive           (){return case_sensitive_folder;}
       
       
       
