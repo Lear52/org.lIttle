@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <meta name="Author" content="Andrey Shadrin">
+   <link   rel="stylesheet"      type="text/css"       href="/main.css">
+   <link   rel="stylesheet"      type="text/css"       href="/clean.css">
+   <link   rel="stylesheet"      type="text/css"       href="/ui1121/jquery-ui.css"> -->
+   <!--<link   rel="stylesheet"      type="text/css"       href="/start1104/jquery-ui-1.10.4.custom.css"> -->
+   <script language="javascript" type="text/javascript" src="/jquery-3.5.1.min.js"></script>
+   <!-- <script language="javascript" type="text/javascript" src="/jquery-ui-1.10.4.custom.min.js"></script> -->
+   <script language="javascript" type="text/javascript" src="/ui1121/jquery-ui.min.js"></script>
+   <script language="javascript" type="text/javascript" src="/jquery.columns.js"></script>
+   <script language="javascript" type="text/javascript" src="/mustache.js"></script> 
+
+   <title>КПКИ</title>
+
+<script type="text/javascript">
+        var rec_data=[];
+        var oper_data= new Date();
+        var columns1;
+
+        function showState(){
+
+                if(columns1!=undefined)columns1.destroy();
+
+                columns1 = $('#list_msg').columns({
+                size:3000,
+                search: false,
+                showRows: [ 10, 25, 50],
+                size: 10,
+                data: rec_data,
+                schema: [
+                  {"header":"№"                   ,"key":"num"           , "template":"<center><center>{{num}}</center>"},
+                  {"header":"От кого"             ,"key":"from"          , "template":"{{from         }}"},
+                  {"header":"Владелец сертификата","key":"x509subject"   , "template":"{{x509subject  }}"},
+                  {"header":"УДЦ"                 ,"key":"x509issuer"    , "template":"{{x509issuer   }}"},
+                  {"header":"Серийный"            ,"key":"x509serial"    , "template":"{{x509serial   }}"},
+                  {"header":"имя файла файл"      ,"key":"filename"      , "template":"<a href=/get?folder=inbox&msg={{num}}>{{filename     }}</a>"},
+                  {"header":"Послано"             ,"key":"sentdate"      , "template":"<nobr>{{sentdate     }}</nobr>"},
+                  {"header":"Принято"             ,"key":"receivedate"   , "template":"<nobr>{{receivedate  }}</nobr>"},
+                  {"header":"Действует с"         ,"key":"x509begindate" , "template":"<nobr>{{x509begindate}}</nobr>"},
+                  {"header":"Действует до"        ,"key":"x509enddate"   , "template":"<nobr>{{x509enddate  }}</nobr>"},
+                  {"header":"Примечание"          ,"key":"subject"       , "template":"{{subject      }}</nobr>"},
+                  //{"header":"Кому"               ,"key":"to"            , "template":"{{to           }}"},
+                  //{"header":"ID"                 ,"key":"id"            , "template":"{{id           }}"},
+                  //{"header":"mime type"          ,"key":"mime"          , "template":"{{mime         }}"},
+                  //{"header":"тип"                ,"key":"x509type"      , "template":"{{x509type     }}"},
+                  //{"header":"тип файла"          ,"key":"x509typefile"  , "template":"{{x509typefile }}"},
+                ]
+            });
+            oper_data= new Date();
+
+        }
+        function getState(folder){
+            var req_url='/list?folder='+folder;
+            rec_data=[];
+            jQuery.ajax({
+                   url:  req_url, 
+                   cache: false,
+                   type: "GET",
+                   dataType: "JSON",
+                   contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            
+                   success: function(data1){
+                                          //--------------------------------------------
+                                     var data=data1;
+
+                                     for(i=0;i<data.list.length;i++){
+                                         rec_data[i]={};
+                                         var d=data.list[i].header;
+                                         rec_data[i].num             =d.Num          ;
+                                         rec_data[i].from            =d.From         ;
+                                         //rec_data[i].to              =d.To           ;
+                                         //rec_data[i].id              =d.Id           ;
+                                         rec_data[i].subject         =d.Subject      ;
+                                         rec_data[i].filename        =d.Filename     ;
+                                         rec_data[i].sentdate        =d.SentDate     ;
+                                         rec_data[i].receivedate     =d.ReceiveDate  ;
+                                         //rec_data[i].mime            =d.Mime         ;
+                                         //rec_data[i].x509type        =d.X509Type     ;
+                                         //rec_data[i].x509typefile    =d.X509TypeFile ;
+                                         rec_data[i].x509begindate   =d.X509BeginDate;
+                                         rec_data[i].x509enddate     =d.X509EndDate  ;
+                                         rec_data[i].x509serial      =d.X509Serial   ;
+                                         rec_data[i].x509subject     =d.X509Subject  ;
+                                         rec_data[i].x509issuer      =d.X509Issuer   ;
+                                     } 
+                                     
+                                     showState();
+
+                                     oper_data= new Date();
+
+                            },
+                   error: function(err){
+                           alert('Ошибка:получения данных по запросу url:'+req_url+'\n Сервер вернул статус:'+err.statusText+'('+err.status+')');          
+
+                   },
+                   timeout: 5000
+            });
+            
+            req=null;
+
+        }
+
+        $(document).ready(function() { 
+                             getState('inbox');
+                          });
+
+</script>
+
+</head>
+
+<body>
+<table BORDER=0 width="100%" cellspacing="0" cellpadding="0" height="46">
+  <tr> 
+    <td width=15> 
+      <table BORDER=0 width="15" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="head_f"><font size="-3">&nbsp;</font></td>
+        </tr>
+        <tr>
+          <td height=36 class="head_t">&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="head_f"><font size="-3">&nbsp;</font></td>
+        </tr>
+      </table>
+    </td>
+    <td width=64 class="head_f"><a href="/index.html"><img SRC="/logo.gif" BORDER=0 height=46 width=64></a></td>
+    <td width="100%"> 
+      <table BORDER=0 width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="head_f">&nbsp;</td>
+        </tr>
+        <tr>
+          <td height=32 class="head_t" nowrap> 
+            <div class="head_t" id="id_header">КДКИ</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="head_f">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+
+<hr>
+
+<table>
+<tr><td>Послать сертификат</td><td>
+
+     <table><tr><form action="/post" ENCTYPE="multipart/form-data" METHOD="POST">
+         <td>Кому:<input type=text name="to" size=50></input></td>
+         <td>Примечание:<input type=text name="subject" size=100></input></td>
+         <td>Файл:<input type=file name="myfile"></input></td>
+         <td><input TYPE="submit" NAME="Send" VALUE="Send"></input></td>
+     </form></tr></table>
+
+</td></tr><tr><td>
+
+    <table>
+    <tr><td><form id="go_inbox"  name="go_inbox"  action="javascript:getState('inbox')"><input TYPE="submit" value="  INBOX  "></form></td></tr>
+    <tr><td><form id="go_outbox" name="go_outbox" action="javascript:getState('outbox')"><input TYPE="submit" value="OUTBOX"></form></td></tr>
+    </table>
+
+</td><td>
+    <div id="id_list_right" style="background-color: #f7f7f9;width: 90%;max-width: 90%;">
+       <div id="list_msg" style="width: 90%;max-width: 90%;float:rigth;" ></div>
+    </div>
+</td></tr>
+</table>
+
+<hr>
+
+</body>
+</html>
+
+

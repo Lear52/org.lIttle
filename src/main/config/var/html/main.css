@@ -1,0 +1,74 @@
+/* CSS definition file containing sitestyle stylesheets for main header */
+
+ body { 
+		color: #000000; 
+		background-color: #FFFeF5; 
+                margin-top: 0px;
+                font-family: Verdana,Arial,sans-serif;
+         	/* font-family: Arial, Helvetica, sans-serif; */
+        	font-size: 12px ;
+ }
+ a:link	{ 
+   		color: #0000FF; 
+                text-decoration: underline;
+ }
+ a:visited {
+                color: #0011AA;
+                text-decoration: underline;
+ }
+ a:active {
+                color: #ff0000;
+                text-decoration: underline;
+ }
+
+ .head_a{  
+       color: #000000;
+       font-style: italic;
+       background-color: #BBBBBB;
+       text-align: center; 
+       vertical-align: middle; 
+       font-weight: bold;
+ }
+ .head_t{  
+       color: #ffffff;
+       font-style: italic;
+       background-color: #2222AA;
+       text-align: center; 
+       vertical-align: middle; 
+       font-weight: bold;
+ }
+ .head_m1{  
+       color: #ffffff;
+       background-color: #BBBBBB;
+       text-align: center; 
+       vertical-align: middle; 
+       font-weight: bold;
+ }
+ .head_m2{  
+       color: #000000;
+       background-color: #BBBBBB;
+       text-align: center; 
+       vertical-align: middle; 
+       font-weight: bold;
+ }
+ .head_f{  
+       background-color: #ffffff;
+ }
+ .text_lot_h{  
+       color: #000000;
+       background-color: #00FF00;
+       text-align: center; 
+       vertical-align: middle; 
+       font-weight: bold;
+ }
+ .text_lot_g{  
+       color: #000000;
+       background-color: #F5F5F5;
+       vertical-align: middle; 
+ }
+ .text_lot_p{  
+       color: #000000;
+       background-color: #FFFFFF;
+       vertical-align: middle; 
+ }
+
