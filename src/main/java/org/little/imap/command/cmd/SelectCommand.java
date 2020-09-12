@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.little.imap.IMAPTransaction;
 import org.little.imap.SessionContext;
-import org.little.imap.commonIMAP;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
@@ -13,7 +12,6 @@ import org.little.imap.response.EmptyResponse;
 import org.little.imap.response.ImapResponse;
 import org.little.store.lFolder;
 import org.little.store.lMessage;
-import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -35,12 +33,22 @@ public class SelectCommand  extends ImapCommand {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               
-              String          folder_name   = null;
               ImapResponse    ret           = null;
               lFolder         folder        = null;
               IMAPTransaction txSession     = sessionContext.imapTransaction;
 
-              if(getParameters().size()>0)folder_name   = getParameters().get(0).toString();
+              String org_folder_name   ;
+              String folder_name       ;
+              
+              if(getParameters().size()>0) {org_folder_name   = getParameters().get(0).toString();}
+              else {
+                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
+                  responase.add(ret);
+                  return responase; 
+              }
+              if(org_folder_name.toUpperCase().equals("INBOX"))folder_name=org_folder_name.toLowerCase();
+              else folder_name=org_folder_name;
+              
               if(txSession==null){
                  logger.error("IMAP transaction is null");
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
@@ -56,7 +64,6 @@ public class SelectCommand  extends ImapCommand {
                  return responase;
               }
               //----------------------------------------------------------------------------------------------
-              if(commonIMAP.get().isCaseSensitive()==false)folder_name=folder_name.toLowerCase();
               if(folder_name.startsWith("\"") && folder_name.endsWith("\"")){
                  folder_name=folder_name.substring(1, folder_name.length()-1);
               }
@@ -87,13 +94,13 @@ public class SelectCommand  extends ImapCommand {
               int recent          =0;            
               int all_msg         =0;
               int max_uid         =0;
-              int first_unread_msg=1;
+              int first_unread_msg=0;
               int valid_uid       =0;
-              int  next_uid       =0;               
+              int next_uid       =0;               
 
               if(folder!=null){
                  for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null)unread_msg++;
-                 recent    =recent; 
+                 recent    =unread_msg; 
                  
                  all_msg   =list_msg.size();
                 
@@ -108,12 +115,14 @@ public class SelectCommand  extends ImapCommand {
               //-------------------------------------------------------------------------------------------------
 
               ret=new EmptyResponse(all_msg+" EXISTS");                                                                            responase.add(ret);
-              ret=new EmptyResponse(unread_msg+" RECENT");                                                                         responase.add(ret);
-              ret=new EmptyResponse("FLAGS (\\Deleted \\Seen  \\Answered \\Flagged)");                                             responase.add(ret);
+              ret=new EmptyResponse(recent+" RECENT");                                                                         responase.add(ret);
+              ret=new EmptyResponse("FLAGS (\\Deleted \\Seen \\Answered \\Flagged)");                                             responase.add(ret);
               ret=new EmptyResponse(ImapConstants.OK+" [UIDVALIDITY "+valid_uid+"] current uidvalidity");                          responase.add(ret);
-              ret=new EmptyResponse(ImapConstants.OK+" [UNSEEN "+first_unread_msg+"] unseen messages");                            responase.add(ret);
+              if(first_unread_msg>0) {
+                 ret=new EmptyResponse(ImapConstants.OK+" [UNSEEN "+first_unread_msg+"] unseen messages");                            responase.add(ret);
+              }
               ret=new EmptyResponse(ImapConstants.OK+" [UIDNEXT "+next_uid+"] next uid");                                          responase.add(ret);
-              ret=new EmptyResponse(ImapConstants.OK+" [PERMANENTFLAGS (\\Deleted \\Seen  \\Answered \\Flagged)] limited"); responase.add(ret);
+              ret=new EmptyResponse(ImapConstants.OK+" [PERMANENTFLAGS (\\Deleted \\Seen \\Answered \\Flagged)] limited"); responase.add(ret);
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" [READ-WRITE] "+NAME+" "+ImapConstants.COMPLETED);                  responase.add(ret);
 
               return responase;

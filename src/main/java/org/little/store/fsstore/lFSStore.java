@@ -134,7 +134,12 @@ public class lFSStore  extends lFSElement implements lStore  {
               if(f.create())return f;
               return null;
        };
-      
+       @Override
+   	   public void deleteFolder(String org_folder_name) {
+   		// TODO Auto-generated method stub
+   		
+       }
+     
 
       
        public static void main(String[] args) {

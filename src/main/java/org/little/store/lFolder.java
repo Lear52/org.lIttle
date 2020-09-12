@@ -36,6 +36,12 @@ public interface  lFolder{
 	      for(int i=0;i<list.size();i++)if(list.get(i).getNum()==num)return list.get(i);
 	      return null;
     }
+    public int getUnreadMsg();
+    public int getRecentMsg();
+    public int getAllMsg();
+    public int getNextUID();
+    public int getMaxUID();
+    public int getFirstUnreadMsg();
 
   
 }

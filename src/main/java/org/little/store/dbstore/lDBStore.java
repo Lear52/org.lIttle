@@ -101,6 +101,13 @@ public class lDBStore   implements lStore  {
 		return null;
 	}
 
+
+	@Override
+	public void deleteFolder(String org_folder_name) {
+		// TODO Auto-generated method stub
+		
+	}
+
    
 
 }

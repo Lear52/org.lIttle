@@ -60,5 +60,35 @@ public class lDBFolder  implements lFolder {
        public ArrayList<String> getList() {
               return null;
        }
+	@Override
+	public int getUnreadMsg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getRecentMsg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getAllMsg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNextUID() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getMaxUID() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getFirstUnreadMsg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
   
 }

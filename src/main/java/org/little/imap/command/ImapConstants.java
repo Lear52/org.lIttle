@@ -34,12 +34,8 @@ public interface ImapConstants {
 
 
 
-
-
-
-
        //String CAPABILITIES = CAPABIL_LITERAL_PLUS + SP + CAPABIL_SORT + SP + CAPABIL_UIDPLUS;  //"CHILDREN IDLE QUOTA SORT ACL NAMESPACE RIGHTS=texk[nl]"
-       String CAPABILITIES = CAPABIL_IMAP4 ;
+       String CAPABILITIES = CAPABIL_IMAP4 + SP +CAPABIL_QUOTA;
       
        String USER_NAMESPACE           = "#mail";
       

@@ -3,12 +3,14 @@ package org.little.imap.command.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.little.imap.IMAPTransaction;
 import org.little.imap.SessionContext;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
 import org.little.imap.response.EmptyResponse;
 import org.little.imap.response.ImapResponse;
+import org.little.store.lFolder;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -30,9 +32,26 @@ public class DeleteCommand  extends ImapCommand {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
+              ImapResponse ret=null;
+              String org_folder_name   ;
+              IMAPTransaction txSession       = sessionContext.imapTransaction;
+              
+              
+              if(getParameters().size()>0) {org_folder_name   = getParameters().get(0).toString();}
+              else {
+                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
+                  responase.add(ret);
+                  return responase; 
+              }
+              if(org_folder_name.toUpperCase().equals("INBOX")) {
+                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);   
+                  responase.add(ret);
+                  return responase; 
+              }
+
+              txSession.getStore().deleteFolder(org_folder_name);
 
               //--------------------------------------------------------------------------------------------------------------------------------------
-              ImapResponse ret=null;
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               logger.trace("IMAP:response:"+ret);
 

@@ -30,9 +30,25 @@ public class UnsubscribeCommand  extends ImapCommand {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
+              ImapResponse ret=null;
+              String org_folder_name   ;
+              String folder_name       ;
+              
+              if(getParameters().size()>0) {org_folder_name   = getParameters().get(0).toString();}
+              else {
+                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
+                  responase.add(ret);
+                  return responase; 
+              }
+              if(org_folder_name.toUpperCase().equals("INBOX"))folder_name=org_folder_name.toLowerCase();
+              else folder_name=org_folder_name;
+
+              if(folder_name.startsWith("\"") && folder_name.endsWith("\"")){
+                 folder_name=folder_name.substring(1, folder_name.length()-1);
+              }
 
               //--------------------------------------------------------------------------------------------------------------------------------------
-              ImapResponse ret=null;
+              
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               logger.trace("IMAP:response:"+ret);
 

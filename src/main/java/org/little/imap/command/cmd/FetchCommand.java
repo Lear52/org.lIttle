@@ -136,17 +136,19 @@ public class FetchCommand  extends ImapCommand {
                     	 //logger.trace("BODY.PEEK find [");
                          if(vol_param.indexOf(']')<0){
                         	//logger.trace("BODY.PEEK no find ]");
-                        	vol_param+=" "; 
+                        	 vol_param+=" "; 
                             i++;
                             while(i<getParameters().size()){
                                  String _vol_param  = getParameters().get(i).toString();
-                                 //_vol_param=_vol_param.toUpperCase();
                                  //logger.trace("add parametr:"+_vol_param);
                                  vol_param+=_vol_param;
-                                 vol_param+=" ";
+                              
                                  if(_vol_param.indexOf(']')<0) {
                                 	 i++;
-                                     //logger.trace("next parametr");
+                                	 if(_vol_param.equals("(")==false && _vol_param.equals(")")==false){
+                                		 vol_param+=" ";
+                                		 //logger.trace("add sp");
+                                	 }
                                  }
                                  else{
                                     //logger.trace("find ] in parametrs:"+vol_param);
@@ -179,20 +181,22 @@ public class FetchCommand  extends ImapCommand {
                      //-------------------------------------------------------------------------------
                 	 //logger.trace("find all  BODY");
                      if(vol_param.indexOf('[')>=0){
-                    	 //logger.trace("BODY. find [");
+                    	 //logger.trace("BODY find [");
                          if(vol_param.indexOf(']')<0){
-                        	//logger.trace("BODY.PEEK no find ]");
-                        	vol_param+=" "; 
+                        	//logger.trace("BODY no find ]");
+                        	 vol_param+=" "; 
                             i++;
                             while(i<getParameters().size()){
                                  String _vol_param  = getParameters().get(i).toString();
-                                 //_vol_param=_vol_param.toUpperCase();
                                  //logger.trace("add parametr:"+_vol_param);
                                  vol_param+=_vol_param;
-                                 vol_param+=" ";
+                              
                                  if(_vol_param.indexOf(']')<0) {
                                 	 i++;
-                                     //logger.trace("next parametr");
+                                	 if(_vol_param.equals("(")==false && _vol_param.equals(")")==false){
+                                		 vol_param+=" ";
+                                		 //logger.trace("add sp");
+                                	 }
                                  }
                                  else{
                                     //logger.trace("find ] in parametrs:"+vol_param);

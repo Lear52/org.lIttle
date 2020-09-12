@@ -23,5 +23,7 @@ public interface lStore{
     public String                 getName();
 
     public void                   close();
+
+	public void                   deleteFolder(String org_folder_name);
 }
 

@@ -25,13 +25,13 @@ public class StatusCommand  extends ImapCommand {
 
        public static final String NAME = "STATUS";
        public static final String ARGS = "<mailbox> ( <status-data-item>+ )";
-
+       /*
        private static final String MESSAGES    = "MESSAGES";
        private static final String RECENT      = "RECENT";
        private static final String UIDNEXT     = "UIDNEXT";
        private static final String UIDVALIDITY = "UIDVALIDITY";
        private static final String UNSEEN      = "UNSEEN";
-
+        */
 
        public StatusCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);}
 
@@ -43,8 +43,17 @@ public class StatusCommand  extends ImapCommand {
               //--------------------------------------------------------------------------------------------------------------------------------------
               IMAPTransaction txSession     = sessionContext.imapTransaction;
 
-              String org_folder_name   = getParameters().get(0).toString();
-              String folder_name   = org_folder_name.toLowerCase();
+              String org_folder_name   ;
+              String folder_name       ;
+              
+              if(getParameters().size()>0) {org_folder_name   = getParameters().get(0).toString();}
+              else {
+                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
+                  responase.add(ret);
+                  return responase; 
+              }
+              if(org_folder_name.toUpperCase().equals("INBOX"))folder_name=org_folder_name.toLowerCase();
+              else folder_name=org_folder_name;
 
               lFolder folder=txSession.getStore().getFolder(folder_name);
               //-------------------------------------------------------------------------------------------------
@@ -55,29 +64,23 @@ public class StatusCommand  extends ImapCommand {
               int recent          =0;            
               int all_msg         =0;
               int max_uid         =0;
-              int first_unread_msg=1;
+              int first_unread_msg=0;
               int valid_uid       =0;
-              int next_uid       =0;
+              int next_uid        =0;
               if(folder!=null){
                   ArrayList<lMessage> list_msg=folder.getMsg();
-                  if(list_msg==null){
-                     logger.error("IMAP error read store:"+txSession.getUserName()+" folder:"+folder_name);
-                     ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
-                     responase.add(ret);
-                     logger.trace("IMAP:response:"+ret);
-                     return responase;
-                  }
+                  if(list_msg!=null){
 
-            	  for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null)unread_msg++;
-                  recent    =recent; 
-                  all_msg   =list_msg.size();
+            	     for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null)unread_msg++;
+                     recent    =unread_msg; 
+                     all_msg   =list_msg.size();
                 
-                 for(int i=0;i<list_msg.size();i++)max_uid=Math.max(list_msg.get(i).getUID(),max_uid);
+                     for(int i=0;i<list_msg.size();i++)max_uid=Math.max(list_msg.get(i).getUID(),max_uid);
                 
-                 next_uid=max_uid+1;
+                     next_uid=max_uid+1;
                 
-                 for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null){first_unread_msg=list_msg.get(i).getUID();break;}
-                
+                     for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null){first_unread_msg=list_msg.get(i).getUID();break;}
+                 }
                  valid_uid=folder.getUID();
               }
               //--------------------------------------------------------------------------------------------------
@@ -109,9 +112,11 @@ public class StatusCommand  extends ImapCommand {
               if(folder!=null){
                  ret=new EmptyResponse(buf.toString());                                                   responase.add(ret);
                  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+                 logger.trace("GET STATUS:"+org_folder_name);
               }
               else{
                  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);   responase.add(ret);
+                 logger.trace("BAD STATUS:"+org_folder_name);
               }
               logger.trace("IMAP:response:"+ret);
 

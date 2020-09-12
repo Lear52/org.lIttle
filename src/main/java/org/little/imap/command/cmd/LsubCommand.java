@@ -40,16 +40,16 @@ public class LsubCommand extends ListCommand {
               //--------------------------------------------------------------------------------------------------------------------------------------
               ImapResponse ret=null;
               if(arg2!=null) {
-              IMAPTransaction txSession     = sessionContext.imapTransaction;
-              ArrayList<lFolder >  list_folder=txSession.getStore().getListFolder();
-              if("".equals(arg1) || ".".equals(arg1))
-              for(int i=0;i<list_folder.size();i++) {
-            	  String name_folder=list_folder.get(i).getName().toUpperCase();
-            	  if(stringWildCard.wildcardMatch(name_folder,arg2, stringCase.INSENSITIVE)) {                   
-            	     ret=new EmptyResponse(NAME+" (\\HasNoChildren) \".\" \""+ name_folder+"\"");responase.add(ret);
-            	  }
-              }
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+                 IMAPTransaction txSession     = sessionContext.imapTransaction;
+                 ArrayList<lFolder >  list_folder=txSession.getStore().getListFolder();
+                 if("".equals(arg1) || ".".equals(arg1))
+                 for(int i=0;i<list_folder.size();i++) {
+            	     String name_folder=list_folder.get(i).getName();//.toUpperCase();
+            	     if(stringWildCard.wildcardMatch(name_folder,arg2, stringCase.INSENSITIVE)) {                   
+            	        ret=new EmptyResponse(NAME+" (\\HasNoChildren) \".\" \""+ name_folder+"\"");responase.add(ret);
+            	     }
+                 }
+                 ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               }
               else {
                  ret=new EmptyResponse(NAME+" (\\NoSelect) \".\" \"\"");responase.add(ret);

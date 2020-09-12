@@ -24,19 +24,49 @@ public class lFSFolder  extends lFSElement implements lFolder {
        //private lStore                 store;
        private ArrayList<lFSMessage> list_fs_msg;
        
+	   
+	   private int unread_msg      =0;            
+       private int recent          =0;            
+       private int all_msg         =0;
+       private int max_uid         =0;
+       private int first_unread_msg=0;
+       private int valid_uid       =0;
+       private int next_uid       =0;
+
+       
        public lFSFolder(lFSStore store,lFSElement _parent,String _name) {
                          super(_parent,_name);
                          clear();
                          //this.store = store; 
                          setFullName();
        }
+
+       @Override
+       public int getUnreadMsg() {	return unread_msg;}
+       @Override
+	   public int getRecentMsg() {return recent;}
+       @Override
+	   public int getAllMsg(){return all_msg;}
+       @Override
+	   public int getMaxUID() {return max_uid;}
+       @Override
+	   public int getFirstUnreadMsg() {return first_unread_msg;}
+       @Override
+	   public int getNextUID() {	return next_uid;}
+
+       
        @Override
        public    int     getUID     () {
     	         String name=getName().toUpperCase();
-    	         if(name.startsWith("INBOX"))return 901; 
-    	         if(name.startsWith("SENT" ))return 902; 
-    	         if(name.startsWith("TRASH"))return 903; 
-    	         return lUID.get();
+    	         if(name.startsWith("INBOX"))valid_uid=901;
+    	         else
+    	         if(name.startsWith("SENT " ))valid_uid=902;
+    	         else
+    	         if(name.startsWith("SENT" ))valid_uid=903;
+    	         else
+    	         if(name.startsWith("TRASH"))valid_uid=904;
+    	         else        	         valid_uid=lUID.get();
+    	         return valid_uid;
        }       
        
        @Override
