@@ -49,23 +49,32 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
                //--------------------------------------------------------------
                ret_auth = req.Auth();
 
+               logger.trace("channelRead0 1 HttpX509Request"+req);
+
                if(ret_auth==null) {
-            	  HttpX509Response.sendAuthRequired(ctx,request,ret_auth);
-            	  return;
+                      HttpX509Response.sendAuthRequired(ctx,request,ret_auth);
+                      return;
                }
                if(ret_auth.isAuth()==false) {
-            	  HttpX509Response.sendAuthRequired(ctx,request,ret_auth);
-            	  return;
+                      HttpX509Response.sendAuthRequired(ctx,request,ret_auth);
+                      return;
                }
                //--------------------------------------------------------------
                //
                //--------------------------------------------------------------
+               logger.trace("channelRead0 2 HttpX509Request"+req);
                req.parsePath();
+               logger.trace("channelRead0 3 HttpX509Request"+req);
                logger.trace("cmd:"+req.getCmd()+" user:"+ret_auth.getUser()+" store:"+req.getStore());
                //--------------------------------------------------------------------------------------
                if(HttpMethod.GET.equals(request.method())) {
                   if("list".equals(req.getCmd())){
                      res.getList(ctx,req);
+                     return;
+                  }
+                  else
+                  if("user".equals(req.getCmd())){
+                     res.getListUser(ctx,req);
                      return;
                   }
                   else
@@ -85,7 +94,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
                   }
                   else
                   {
-                	 String txt="unknow cmd:"+req.getCmd(); 
+                     String txt="unknow cmd:"+req.getCmd(); 
                      logger.trace(txt);
                      res.sendError(ctx,req,txt);
                      return;
@@ -94,7 +103,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
                else
                if(HttpMethod.POST.equals(request.method())) {
                   if(req.createPostRequestDecoder()==false){
-                	  String txt= "createPostRequestDecoder==false";
+                     String txt= "createPostRequestDecoder==false";
                      logger.error(txt);
                      res.sendError(ctx,req,txt);
                      return;
@@ -126,7 +135,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
     
        @Override
        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-    	   Except ex=new Except(cause);
+               Except ex=new Except(cause);
            logger.error("err:"+ ex);
            req.clearDecoder();
            ctx.channel().close();

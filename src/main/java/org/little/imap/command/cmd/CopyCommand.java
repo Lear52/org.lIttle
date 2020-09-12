@@ -22,8 +22,10 @@ public class CopyCommand  extends ImapCommand {
  
        public static final String NAME = "COPY";
        public static final String ARGS = "<message-set> <mailbox>";
+       public boolean isUID ;
 
-       public CopyCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);}
+       public CopyCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);isUID =false;}
+       public CopyCommand(String _tag, String _command, List<ImapCommandParameter> _parameters,boolean _isUID) { super(_tag,_command,_parameters);isUID =_isUID ;}
 
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {

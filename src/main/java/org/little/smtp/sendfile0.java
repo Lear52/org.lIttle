@@ -44,7 +44,7 @@ public class sendfile0 {
 	}
 
 	String to1      = "av@vip.cbr.ru";
-	String to2      = "av@vip.cbr.ru";
+	String to2      = "iap@vip.cbr.ru";
 	String from     = "av@vip.cbr.ru";
 	//String host     = "10.93.128.11";
 	String host     = "127.0.0.1";
@@ -53,8 +53,18 @@ public class sendfile0 {
         String userName = from;
         String password = "123";
 
-	String msgText1 = "text:Sending a file.\n";
-	String subject = "subject:Sending a file";
+	//String msgText1 = "text:Sending a file.\n";
+	//String subject = "subject:Sending a file";
+	String subject = "CN=92svc-CA-test, OU=PKI, OU=Tatarstan, DC=region, DC=cbr, DC=ru";
+	String msgText1 = ""
++"CERTIFICATE\n"
++"DER\n"
++"Thu Feb 07 12:56:45 MSK 2019\n"
++"Sat May 05 02:59:00 MSK 2035\n"
++"85486455983605724770238770388276084954\n"
++"CN=92svc-CA-test, OU=PKI, OU=Tatarstan, DC=region, DC=cbr, DC=ru\n"
++"CN=ROOTsvc-CA-test, OU=GUBZI, OU=PKI, DC=region, DC=cbr, DC=ru\n"
+;
 	
 	// create some properties and get the default Session
 	Properties props = System.getProperties();

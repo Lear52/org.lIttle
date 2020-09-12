@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.io.*;
+
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -25,9 +27,14 @@ import org.little.store.lMessage;
 import org.little.store.lMessage2JSON;
 import org.little.store.lRoot;
 import org.little.store.lStore;
+import org.little.store.*;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -180,31 +187,40 @@ public class HttpX509Response {
        public void saveMsg(ChannelHandlerContext ctx,HttpX509Request req) {
               req.clearDecoder();
               lMessage  msg=req.getUploadMsg();
-
-              //lStore  store =lRoot.getStore(req.getStore());
-              //lFolder folder=store.getFolder("outbox");
-              //folder.open(lFolder.WRITE);
-              //folder.save(m);
-              //folder.close();
+              if(msg==null){
+                 logger.trace("no msg");
+                 return;
+              }
+              msg=lMessageX509.parse(msg);
+              if(msg==null){
+                 logger.trace("no msg");
+                 return;
+              }
               String [] to   =msg.getTO();
               String    from =msg.getFrom();
               for(int j=0;j<to.length;j++){
                   String  store_name=to[j];
                   lStore  store     =lRoot.getStore(store_name);  if(store ==null)continue;
                   lFolder folder    =store.getInboxFolder();      if(folder==null)continue;
+                  msg.setUID(lUID.get());
                   folder.save(msg);
+                  logger.trace("msg save store:"+store.getName()+" folder:"+folder.getName()+" msg->"+msg);
                   folder.close();
               }
+
               while(true){
                 String  store_name=from;
                 lStore  store     =lRoot.getStore(store_name);  if(store ==null)break;
-                lFolder folder    =store.getOutboxFolder();      if(folder==null)break;
+                lFolder folder    =store.getOutboxFolder();     if(folder==null)break;
+                msg.setUID(lUID.get());
                 folder.save(msg);
+                logger.trace("msg save store:"+store.getName()+" folder:"+folder.getName()+" msg->"+msg);
                 folder.close();
                 break;
               }
+              getFile(ctx,req,"/redirect.html");
 
-
+              /*
               ByteBuf buf = Unpooled.copiedBuffer("OK!", CharsetUtil.UTF_8);
               FullHttpResponse response;
               response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.MOVED_PERMANENTLY, buf);
@@ -225,14 +241,10 @@ public class HttpX509Response {
               }
               ChannelFuture future = ctx.channel().writeAndFlush(response);
               if (!keepAlive) future.addListener(ChannelFutureListener.CLOSE);
+              */
 
        }
 
-       public void getList(ChannelHandlerContext ctx,HttpX509Request req) {
-              String buf_json=_getList(req);
-              if(buf_json==null)return;
-              sendJSON(ctx,req,buf_json);
-       }
        public void getMsg(ChannelHandlerContext ctx,HttpX509Request req) {
               if(req.getCmd().equals("get")==false){ 
                  sendTxt(ctx,req,_getError("cmd:"+req.getCmd()+" no op"),true);return;
@@ -249,6 +261,7 @@ public class HttpX509Response {
                  sendError(ctx,req,txt);
                  return;
               }
+
               folder.open(lFolder.READ_ONLY);
       
               lMessage msg=folder.getMsg().get(0);/**/
@@ -293,25 +306,68 @@ public class HttpX509Response {
       
               folder.close();
        }
-       private String _getList(HttpX509Request req) {
-              if(req.getCmd().equals("list")==false){ 
-                 return _getError("cmd:"+req.getCmd()+" no op");
-              }
-              lStore store=lRoot.getStore(req.getStore());
-              if(store==null){
-                 return _getError("cmd:"+req.getCmd()+" user:"+req.getStore()+" unknow");
-              }
-              lFolder folder=store.getFolder(req.getFolder());
-              if(folder==null){
-                 return _getError("cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" unknow");
-              }
-      
-              ArrayList<lMessage>  list_msg=folder.getMsg();
-              String buf=lMessage2JSON.parse(list_msg);
+       public void getList(ChannelHandlerContext ctx,HttpX509Request req) {
+              ArrayList<lMessage>  list_msg=null;
+              String buf=null;
 
-              folder.close();
+              if(req.getCmd().equals("list")==false){ 
+                 String txt="cmd:"+req.getCmd()+" no op";
+                 logger.error(txt);
+              }
+              else{
+                 lStore store=lRoot.getStore(req.getStore());
+                 if(store==null){
+                    String txt="cmd:"+req.getCmd()+" user:"+req.getStore()+" unknow";
+                    logger.error(txt);
+                 }
+                 else{
+                    lFolder folder=store.getFolder(req.getFolder());
+                    if(folder==null){
+                       String txt="cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" unknow";
+                       logger.error(txt);
+                    }
+                    else{
+                       list_msg=folder.getMsg();
+                       if(list_msg==null){
+                          logger.info("cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" count msg:null");
+                       }
+                       else{ 
+                          logger.info("cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" count msg:"+list_msg.size());
+                       }
+                       folder.close();
+                    }
+                    store.close();
+                 }
+              }
+
+              buf=lMessage2JSON.parse(list_msg);
+
+              if(buf==null)return;
+              sendJSON(ctx,req,buf);
       
-              return buf;
+       }
+       public void getListUser(ChannelHandlerContext ctx,HttpX509Request req) {
+              String buf=null;
+
+              if(req.getCmd().equals("user")==false){ 
+                 String txt="cmd:"+req.getCmd()+" no op";
+                 logger.error(txt);
+              }
+              else{
+                  JSONArray list=new JSONArray();
+                  list.put("av");
+                  list.put("iap");
+                  JSONObject root_object=new JSONObject();
+                  root_object.put("type" ,"user");
+                  root_object.put("state",true);
+                  root_object.put("list" ,list);
+                  StringWriter out = new StringWriter();
+                  root_object.write(out);
+                  buf=out.toString();
+              }
+
+              if(buf==null)return;
+              sendJSON(ctx,req,buf);
       
        }
        
@@ -324,17 +380,17 @@ public class HttpX509Response {
               }
               buf.append("\r\n");
       
-               Set<Cookie> cookies;
-               String value = req.getHeaders().get(HttpHeaderNames.COOKIE);
-               if (value == null)  cookies = Collections.emptySet();
-               else                cookies = ServerCookieDecoder.STRICT.decode(value);
-               for (Cookie cookie : cookies) buf.append("COOKIE: " + cookie + "\r\n");
-               
-               buf.append("\r\n");
+              Set<Cookie> cookies;
+              String value = req.getHeaders().get(HttpHeaderNames.COOKIE);
+              if (value == null)  cookies = Collections.emptySet();
+              else                cookies = ServerCookieDecoder.STRICT.decode(value);
+              for (Cookie cookie : cookies) buf.append("COOKIE: " + cookie + "\r\n");
+              
+              buf.append("\r\n");
       
-               if (HttpMethod.GET.equals(req.getMethod())) {
-                   buf.append("\r\n\r\nEND OF GET CONTENT\r\n");
-               }
+              if (HttpMethod.GET.equals(req.getMethod())) {
+                  buf.append("\r\n\r\nEND OF GET CONTENT\r\n");
+              }
               sendOk(ctx,req,buf.toString());
        }
        public void getFile(ChannelHandlerContext ctx,HttpX509Request req) {
@@ -343,7 +399,13 @@ public class HttpX509Response {
                    if(path0.equals(""))path0="/index.html";
                    if(path0.equals("/"))path0="/index.html";
 
+                   getFile(ctx,req,path0);
+
+       }
+       public void getFile(ChannelHandlerContext ctx,HttpX509Request req,String path0) {
+
                    String path=decodePath(path0); 
+
                    logger.trace(path0+" -> "+path);
                    File file = new File(path);
                    if(file.isHidden() || !file.exists()) {
@@ -405,9 +467,12 @@ public class HttpX509Response {
                    if (!req.isKeepAlive()) {
                        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
                    } 
-                   else 
-                   if (req.protocolVersion().equals(HttpVersion.HTTP_1_0)) {
-                       response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+                   else{ 
+                       HttpVersion ver=req.protocolVersion();	
+                       if (ver!=null)
+                       if (ver.equals(HttpVersion.HTTP_1_0)) {
+                           response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+                       }
                    }
                    logger.trace("set header response");
                    //--------------------------------------------------------------------------------------------------

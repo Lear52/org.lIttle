@@ -121,6 +121,17 @@ public class ImapClient {
                         // Get all messages
                         for (Message message : messages) {
                                 count++;
+                                try {
+                                    InputStream i = message.getInputStream();
+                                	int c;
+                                    while ((c = i.read()) > -1) {
+                                    	System.out.write(c);
+                                    }
+                                    i.close();
+                                } catch (Exception eee) {
+                                    eee.printStackTrace();
+                                }
+
                                 Flags mes_flag = message.getFlags();
                                 // Get subject of each message
                                 System.out.println("console:The " + count + "th message is: " + message.getSubject());
@@ -131,29 +142,31 @@ public class ImapClient {
                                         // How to get parts from multiple body parts of MIME message
                                         Multipart multipart = (Multipart) message.getContent();
                                         System.out.println("console:Multipart message-----------" + multipart.getCount() + "----------------\n");
+                                        System.out.println("console:multipart.getCount():" + multipart.getCount()+"\n");
 
                                         for (int x = 0; x < multipart.getCount(); x++) {
-                                                System.out.println("console:multipart:"+x+"/"+multipart.getCount()+"\n");
+                                                System.out.println("console:multipart:"+x+"/"+multipart.getCount()+"------------------------\n");
                                                 
                                                 BodyPart bodyPart = multipart.getBodyPart(x);
                                                 // If the part is a plan text message, then print it out.
                                                 System.out.println("console:"+bodyPart.getContentType());
-                                                System.out.println("console:filename:"+bodyPart.getFileName());
-                                                System.out.println("console:Content:"+bodyPart.getContent().toString());
-                                                InputStream is = bodyPart.getInputStream();
-                                                try {
-                                                    FileOutputStream out = new FileOutputStream("out.file.imap");
-                                                	int c;
-                                                    while ((c = is.read()) > -1) {
-                                                    	out.write(c);
-                                                    }
-                                                    is.close();
-                                                    out.flush();
-                                                    out.close();
-                                                } catch (Exception eee) {
-                                                    eee.printStackTrace();
+                                                if(x>=0){
+                                                   System.out.println("console:filename:"+bodyPart.getFileName());
+                                                   System.out.println("console:Content:"+bodyPart.getContent().toString());
+                                                   InputStream is = bodyPart.getInputStream();
+                                                   try {
+                                                       FileOutputStream out = new FileOutputStream("out.file.imap");
+                                                   	int c;
+                                                       while ((c = is.read()) > -1) {
+                                                       	out.write(c);
+                                                       }
+                                                       is.close();
+                                                       out.flush();
+                                                       out.close();
+                                                   } catch (Exception eee) {
+                                                       eee.printStackTrace();
+                                                   }
                                                 }
-                                                
                                                 System.out.println("\n");
                                                 
                                                 //if (bodyPart.getContentType().contains("TEXT/PLAIN")) {

@@ -33,7 +33,7 @@ public class ImapCommandHandler extends SimpleChannelInboundHandler<ImapCommand>
               
               ByteBuf buf = ctx.alloc().buffer();
               for(int i=0;i<response.size();i++) {
-                  logger.trace("ImapResponse["+i+"]:"+response.get(i));
+                  logger.debug("ImapResponse["+i+"]:"+response.get(i));/**/
                   response.get(i).write(buf);
                   buf.writeByte('\r');
                   buf.writeByte('\n');

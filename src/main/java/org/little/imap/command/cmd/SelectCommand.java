@@ -1,20 +1,21 @@
 package org.little.imap.command.cmd;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.little.imap.IMAPTransaction;
 import org.little.imap.SessionContext;
+import org.little.imap.commonIMAP;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
 import org.little.imap.response.EmptyResponse;
 import org.little.imap.response.ImapResponse;
+import org.little.store.lFolder;
+import org.little.store.lMessage;
+import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.imap.command.param.*;
-import org.little.store.*;
-import org.little.imap.*;
 
 
 /**
@@ -79,22 +80,56 @@ public class SelectCommand  extends ImapCommand {
               txSession.setFolderName(folder_name);
               txSession.setFolder(folder);
               txSession.setMsg(list_msg);
-              int all_msg   =lFolder.getAllMsg(list_msg);
-              int unread_msg=lFolder.getUnreadMsg(list_msg);
-              int first_unread_msg=lFolder.getFirstUnreadMsg(list_msg);
-              int next_uid=all_msg+1;
+              //-------------------------------------------------------------------------------------------------
+              // to lFolder
+              //-------------------------------------------------------------------------------------------------
+              int unread_msg      =0;            
+              int recent          =0;            
+              int all_msg         =0;
+              int max_uid         =0;
+              int first_unread_msg=1;
+              int valid_uid       =0;
+              int  next_uid       =0;               
+
+              if(folder!=null){
+                 for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null)unread_msg++;
+                 recent    =recent; 
+                 
+                 all_msg   =list_msg.size();
+                
+                 for(int i=0;i<list_msg.size();i++)max_uid=Math.max(list_msg.get(i).getUID(),max_uid);
+                
+                 next_uid=max_uid+1;
+                
+                 for(int i=0;i<list_msg.size();i++)if(list_msg.get(i).getReceiveDate()==null){first_unread_msg=list_msg.get(i).getUID();break;}
+                
+                 valid_uid=folder.getUID();
+              }
+              //-------------------------------------------------------------------------------------------------
 
               ret=new EmptyResponse(all_msg+" EXISTS");                                                                            responase.add(ret);
               ret=new EmptyResponse(unread_msg+" RECENT");                                                                         responase.add(ret);
-              ret=new EmptyResponse("FLAGS (\\Deleted \\Seen \\Draft \\Answered \\Flagged)");                                      responase.add(ret);
-              ret=new EmptyResponse(ImapConstants.OK+" [UIDVALIDITY 1594491108] current uidvalidity");                             responase.add(ret);
+              ret=new EmptyResponse("FLAGS (\\Deleted \\Seen  \\Answered \\Flagged)");                                             responase.add(ret);
+              ret=new EmptyResponse(ImapConstants.OK+" [UIDVALIDITY "+valid_uid+"] current uidvalidity");                          responase.add(ret);
               ret=new EmptyResponse(ImapConstants.OK+" [UNSEEN "+first_unread_msg+"] unseen messages");                            responase.add(ret);
               ret=new EmptyResponse(ImapConstants.OK+" [UIDNEXT "+next_uid+"] next uid");                                          responase.add(ret);
-              ret=new EmptyResponse(ImapConstants.OK+" [PERMANENTFLAGS (\\Deleted \\Seen \\Draft \\Answered \\Flagged)] limited"); responase.add(ret);
+              ret=new EmptyResponse(ImapConstants.OK+" [PERMANENTFLAGS (\\Deleted \\Seen  \\Answered \\Flagged)] limited"); responase.add(ret);
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" [READ-WRITE] "+NAME+" "+ImapConstants.COMPLETED);                  responase.add(ret);
 
               return responase;
 
+              /*
+khhg SELECT "INBOX"
+* 7 EXISTS
+* 0 RECENT
+* FLAGS (\Deleted \Seen \Draft \Answered \Flagged)
+* OK [UIDVALIDITY 1598370068] current uidvalidity
+* OK [UNSEEN 41] unseen messages
+* OK [UIDNEXT 48] next uid
+* OK [PERMANENTFLAGS (\Deleted \Seen \Draft \Answered \Flagged)] limited
+khhg OK [READ-WRITE] SELECT completed
+
+              */
               //mailbox.getPermanentFlags()
               //mailbox.getMessageCount()
               //mailbox.getRecentCount(resetRecent)
@@ -103,22 +138,22 @@ public class SelectCommand  extends ImapCommand {
               //"UNSEEN " + firstUnseen, "Message " + firstUnseen + " is the first unseen"
               //"No messages unseen"
 /*
-	public void respond(SelectResponse response) {
-		untagged("FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)\r\n");
-		untagged(response.getMessageCount() + " EXISTS\r\n");
-		untagged(response.getRecentMessageCount() + " RECENT\r\n");
-		if (response.getFirstUnseen() > 0) {
-			untaggedOK("[UNSEEN " + response.getFirstUnseen()
-					+ "] First unseen");
-		}
-		untaggedOK("[UIDNEXT " + response.getNextUid() + "] Next UID");
-		untaggedOK("[UIDVALIDITY " + response.getUidValidity() + "] UID Valid");
-		if (response.isReadOnly()) {
-			untaggedOK("[PERMANENTFLAGS ()] Read-only mailbox");
-		} else {
-			untaggedOK("[PERMANENTFLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft \\*)] Limited");
-		}
-	}
+        public void respond(SelectResponse response) {
+                untagged("FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)\r\n");
+                untagged(response.getMessageCount() + " EXISTS\r\n");
+                untagged(response.getRecentMessageCount() + " RECENT\r\n");
+                if (response.getFirstUnseen() > 0) {
+                        untaggedOK("[UNSEEN " + response.getFirstUnseen()
+                                        + "] First unseen");
+                }
+                untaggedOK("[UIDNEXT " + response.getNextUid() + "] Next UID");
+                untaggedOK("[UIDVALIDITY " + response.getUidValidity() + "] UID Valid");
+                if (response.isReadOnly()) {
+                        untaggedOK("[PERMANENTFLAGS ()] Read-only mailbox");
+                } else {
+                        untaggedOK("[PERMANENTFLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft \\*)] Limited");
+                }
+        }
 
 */
 

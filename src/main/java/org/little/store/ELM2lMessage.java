@@ -151,7 +151,7 @@ public class ELM2lMessage{
                         if(filename==null)return 0;
                         if("".equals(filename))return 0;
                         byte []  byte_buf=buffer.getBytes();
-                        System.out.println("file len:"+byte_buf.length);
+                        //System.out.println("file len:"+byte_buf.length);
                         lMessage _msg=new lMessage(msg);
                         _msg.setFilename(filename);
                         _msg.setBodyBin(byte_buf);

@@ -23,8 +23,10 @@ public class StoreCommand  extends ImapCommand {
 
        public static final String NAME = "STORE";
        public static final String ARGS = "<Message-set> ['+'|'-']FLAG[.SILENT] <flag-list>";
+       public boolean isUID ;
 
-       public StoreCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);}
+       public StoreCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);isUID =false ;}
+       public StoreCommand(String _tag, String _command, List<ImapCommandParameter> _parameters,boolean _isUID) { super(_tag,_command,_parameters);isUID =_isUID ;}
 
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {

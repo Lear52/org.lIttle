@@ -10,6 +10,7 @@ import org.little.store.ELM2lMessage;
 import org.little.store.lMessageX509;
 import org.little.store.lRoot;
 import org.little.store.lStore;
+import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -75,13 +76,19 @@ public class MailDB {
                        String  store_name=to[j];
                        lStore  store     =lRoot.getStore(store_name);  if(store ==null)continue;
                        lFolder folder    =store.getInboxFolder();      if(folder==null)continue;
+                       msg.setUID(lUID.get());
                        folder.save(msg);
+                       folder.close();
+                       store.close();
                    }
                    {
                      String  store_name=from;
                      lStore  store     =lRoot.getStore(store_name);  if(store ==null)continue;
                      lFolder folder    =store.getOutboxFolder();      if(folder==null)continue;
+                     msg.setUID(lUID.get());
                      folder.save(msg);
+                     folder.close();
+                     store.close();
 
                    }
 

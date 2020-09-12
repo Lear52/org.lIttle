@@ -29,11 +29,17 @@ public class AuthenticateCommand extends ImapCommand {
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
+              String auth_type=null;
               //--------------------------------------------------------------------------------------------------------------------------------------
+              auth_type = getParameters().get(0).toString();
+
+              if("KERBEROS_V4".equalsIgnoreCase(auth_type)){}
+              if("LOGIN".equalsIgnoreCase(auth_type)){}
 
               //--------------------------------------------------------------------------------------------------------------------------------------
               ImapResponse ret=null;
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+              //ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+              ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);   responase.add(ret);
               logger.trace("IMAP:response:"+ret);
 
               return responase;

@@ -31,12 +31,12 @@ import org.little.imap.command.cmd.StoreCommand;
 import org.little.imap.command.cmd.SubscribeCommand;
 import org.little.imap.command.cmd.UidCommand;
 import org.little.imap.command.cmd.UnsubscribeCommand;
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
-//import org.little.imap.command.cmd.*;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
 
 
 public class ImapCommandBuilder {
+       private static final Logger logger = LoggerFactory.getLogger(ImapCommandBuilder.class);
 
        private String tag;
        private String command;
@@ -53,63 +53,65 @@ public class ImapCommandBuilder {
        }
 
        public ImapCommand build() {
-               if(AppendCommand.NAME.equals(command)       ) return new AppendCommand      (tag, command, new ArrayList<>(params));
+               if(AppendCommand.NAME.equalsIgnoreCase(command)       ) return new AppendCommand      (tag, command, new ArrayList<>(params));
                else
-               if(AuthenticateCommand.NAME.equals(command) ) return new AuthenticateCommand(tag, command, new ArrayList<>(params));
+               if(AuthenticateCommand.NAME.equalsIgnoreCase(command) ) return new AuthenticateCommand(tag, command, new ArrayList<>(params));
                else
-               if(CapabilityCommand.NAME.equals(command)   ) return new CapabilityCommand  (tag, command, new ArrayList<>(params));
+               if(CapabilityCommand.NAME.equalsIgnoreCase(command)   ) return new CapabilityCommand  (tag, command, new ArrayList<>(params));
                else
-               if(CheckCommand.NAME.equals(command)        ) return new CheckCommand       (tag, command, new ArrayList<>(params));
+               if(CheckCommand.NAME.equalsIgnoreCase(command)        ) return new CheckCommand       (tag, command, new ArrayList<>(params));
                else
-               if(CloseCommand.NAME.equals(command)        ) return new CloseCommand       (tag, command, new ArrayList<>(params));
+               if(CloseCommand.NAME.equalsIgnoreCase(command)        ) return new CloseCommand       (tag, command, new ArrayList<>(params));
                else
-               if(CopyCommand.NAME.equals(command)         ) return new CopyCommand        (tag, command, new ArrayList<>(params));
+               if(CopyCommand.NAME.equalsIgnoreCase(command)         ) return new CopyCommand        (tag, command, new ArrayList<>(params));
                else
-               if(CreateCommand.NAME.equals(command)       ) return new CreateCommand      (tag, command, new ArrayList<>(params));
+               if(CreateCommand.NAME.equalsIgnoreCase(command)       ) return new CreateCommand      (tag, command, new ArrayList<>(params));
                else
-               if(DeleteCommand.NAME.equals(command)       ) return new DeleteCommand      (tag, command, new ArrayList<>(params));
+               if(DeleteCommand.NAME.equalsIgnoreCase(command)       ) return new DeleteCommand      (tag, command, new ArrayList<>(params));
                else
-               if(ExamineCommand.NAME.equals(command)      ) return new ExamineCommand     (tag, command, new ArrayList<>(params));
+               if(ExamineCommand.NAME.equalsIgnoreCase(command)      ) return new ExamineCommand     (tag, command, new ArrayList<>(params));
                else
-               if(ExpungeCommand.NAME.equals(command)      ) return new ExpungeCommand     (tag, command, new ArrayList<>(params));
+               if(ExpungeCommand.NAME.equalsIgnoreCase(command)      ) return new ExpungeCommand     (tag, command, new ArrayList<>(params));
                else
-               if(FetchCommand.NAME.equals(command)        ) return new FetchCommand       (tag, command, new ArrayList<>(params));
+               if(FetchCommand.NAME.equalsIgnoreCase(command)        ) return new FetchCommand       (tag, command, new ArrayList<>(params));
                else
-               if(ListCommand.NAME.equals(command)         ) return new ListCommand        (tag, command, new ArrayList<>(params));
+               if(ListCommand.NAME.equalsIgnoreCase(command)         ) return new ListCommand        (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(LoginCommand.NAME.equals(command)        ) return new LoginCommand       (tag, command, new ArrayList<>(params));
+               if(LoginCommand.NAME.equalsIgnoreCase(command)        ) return new LoginCommand       (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(LogoutCommand.NAME.equals(command)       ) return new LogoutCommand      (tag, command, new ArrayList<>(params));
+               if(LogoutCommand.NAME.equalsIgnoreCase(command)       ) return new LogoutCommand      (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(LsubCommand.NAME.equals(command)         ) return new LsubCommand        (tag, command, new ArrayList<>(params));
+               if(LsubCommand.NAME.equalsIgnoreCase(command)         ) return new LsubCommand        (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(NoopCommand.NAME.equals(command)         ) return new NoopCommand        (tag, command, new ArrayList<>(params));
+               if(NoopCommand.NAME.equalsIgnoreCase(command)         ) return new NoopCommand        (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(QuotaCommand.NAME.equals(command)        ) return new QuotaCommand       (tag, command, new ArrayList<>(params));
+               if(QuotaCommand.NAME.equalsIgnoreCase(command)        ) return new QuotaCommand       (tag, command, new ArrayList<>(params));
                else
-               if(QuotaRootCommand.NAME.equals(command)    ) return new QuotaRootCommand   (tag, command, new ArrayList<>(params));
+               if(QuotaRootCommand.NAME.equalsIgnoreCase(command)    ) return new QuotaRootCommand   (tag, command, new ArrayList<>(params));
                else
-               if(RenameCommand.NAME.equals(command)       ) return new RenameCommand      (tag, command, new ArrayList<>(params));
+               if(RenameCommand.NAME.equalsIgnoreCase(command)       ) return new RenameCommand      (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(SearchCommand.NAME.equals(command)       ) return new SearchCommand      (tag, command, new ArrayList<>(params));
+               if(SearchCommand.NAME.equalsIgnoreCase(command)       ) return new SearchCommand      (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(SelectCommand.NAME.equals(command)       ) return new SelectCommand      (tag, command, new ArrayList<>(params));
+               if(SelectCommand.NAME.equalsIgnoreCase(command)       ) return new SelectCommand      (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(SetQuotaCommand.NAME.equals(command)     ) return new SetQuotaCommand    (tag, command, new ArrayList<>(params));
+               if(SetQuotaCommand.NAME.equalsIgnoreCase(command)     ) return new SetQuotaCommand    (tag, command, new ArrayList<>(params));
                else                                                                       
-               if(SortCommand.NAME.equals(command)         ) return new SortCommand        (tag, command, new ArrayList<>(params));
+               if(SortCommand.NAME.equalsIgnoreCase(command)         ) return new SortCommand        (tag, command, new ArrayList<>(params));
                else                                       
-               if(StatusCommand.NAME.equals(command)       ) return new StatusCommand      (tag, command, new ArrayList<>(params));
+               if(StatusCommand.NAME.equalsIgnoreCase(command)       ) return new StatusCommand      (tag, command, new ArrayList<>(params));
                else                                       
-               if(StoreCommand.NAME.equals(command)        ) return new StoreCommand       (tag, command, new ArrayList<>(params));
+               if(StoreCommand.NAME.equalsIgnoreCase(command)        ) return new StoreCommand       (tag, command, new ArrayList<>(params));
                else                                       
-               if(SubscribeCommand.NAME.equals(command)    ) return new SubscribeCommand   (tag, command, new ArrayList<>(params));
+               if(SubscribeCommand.NAME.equalsIgnoreCase(command)    ) return new SubscribeCommand   (tag, command, new ArrayList<>(params));
                else                                       
-               if(UidCommand.NAME.equals(command)          ) return new UidCommand         (tag, command, new ArrayList<>(params));
+               if(UidCommand.NAME.equalsIgnoreCase(command)          ) return new UidCommand         (tag, command, new ArrayList<>(params));
                else
-               if(UnsubscribeCommand.NAME.equals(command)  ) return new UnsubscribeCommand (tag, command, new ArrayList<>(params));
-               else
-               return new ImapCommand(tag, command, new ArrayList<>(params));
+               if(UnsubscribeCommand.NAME.equalsIgnoreCase(command)  ) return new UnsubscribeCommand (tag, command, new ArrayList<>(params));
+               else {
+                   logger.error("unknown command:"+command);
+                   return new ImapCommand(tag, command, new ArrayList<>(params));
+               }
        }
 
        public void addParam(ImapCommandParameter param) {

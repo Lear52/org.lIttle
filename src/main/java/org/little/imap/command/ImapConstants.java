@@ -38,7 +38,8 @@ public interface ImapConstants {
 
 
 
-       String CAPABILITIES = CAPABIL_LITERAL_PLUS + SP + CAPABIL_SORT + SP + CAPABIL_UIDPLUS;  //"CHILDREN IDLE QUOTA SORT ACL NAMESPACE RIGHTS=texk[nl]"
+       //String CAPABILITIES = CAPABIL_LITERAL_PLUS + SP + CAPABIL_SORT + SP + CAPABIL_UIDPLUS;  //"CHILDREN IDLE QUOTA SORT ACL NAMESPACE RIGHTS=texk[nl]"
+       String CAPABILITIES = CAPABIL_IMAP4 ;
       
        String USER_NAMESPACE           = "#mail";
       
@@ -48,8 +49,25 @@ public interface ImapConstants {
        String NAMESPACE_PREFIX         = String.valueOf(NAMESPACE_PREFIX_CHAR);
       
        String INBOX_NAME               = "INBOX";
+       String OUTBOX_NAME              = "SENT";
+       String DELBOX_NAME              = "TRASH";
        String STORAGE                  = "STORAGE";
        String MESSAGES                 = "MESSAGES";
        String COMPLETED                = "completed";
        String UNCOMPLETED              = "uncompleted";
+       String BADCOMMAND             = "UNKNOWN COMMAND";
+
+
+	public final static String[] capabilities = { 
+			VERSION,
+			"CHILDREN", 	// RFC3348
+			"LITERAL+",		// RFC2088
+			"NAMESPACE",	// RFC2342
+			"QUOTA", 		// RFC2087
+			"SORT",			// RFC5256
+			"THREAD=ORDEREDSUBJECT",// RFC5256
+			"THREAD=REFERENCES", 	// RFC5256
+			"XREVOKE"		// CUSTOM 
+	};
+
 }

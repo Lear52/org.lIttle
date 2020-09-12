@@ -93,7 +93,7 @@ public class commonIMAP extends common{
        public String        getLdapUrl                (){return ldap_url;             }
        public String        getLocalServerBind        (){return local_bind_server;    }
        public String        getLocalClientBind        (){return local_bind_client;    }
-       public String        getDefaultDomain           (){return default_domain;      }
+       public String        getDefaultDomain          (){return default_domain;      }
        public boolean       isSSL                     (){return false;                }
        public boolean       isCaseSensitive           (){return case_sensitive_folder;}
       

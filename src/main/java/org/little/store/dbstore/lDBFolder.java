@@ -30,11 +30,7 @@ public class lDBFolder  implements lFolder {
     public ArrayList<lMessage>    getMsg(){
            return msg;
     }
-	@Override
-	public ArrayList<String> getList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	@Override
 	public boolean open(int _mode) {
 		// TODO Auto-generated method stub
@@ -55,6 +51,14 @@ public class lDBFolder  implements lFolder {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public int getUID() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
+       public ArrayList<String> getList() {
+              return null;
+       }
   
 }

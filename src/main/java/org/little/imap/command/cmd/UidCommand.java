@@ -28,14 +28,35 @@ public class UidCommand  extends ImapCommand {
 
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
-              ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
+              ArrayList<ImapResponse> responase ;
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
-
+              String command_name=null;
+              ImapCommand cmd=null;
+              if(getParameters().size()>0) {
+            	  command_name   = getParameters().get(0).toString();
+                  getParameters().remove(0);
+                  if(FetchCommand.NAME.equalsIgnoreCase(command_name))  cmd=new FetchCommand(getTag(), command_name, new ArrayList<>(getParameters()),true);
+                  else
+                  if(SearchCommand.NAME.equalsIgnoreCase(command_name)) cmd=new SearchCommand(getTag(), command_name, new ArrayList<>(getParameters()),true);
+                  else
+                  if(CopyCommand.NAME.equalsIgnoreCase (command_name))  cmd=new CopyCommand (getTag(), command_name, new ArrayList<>(getParameters()),true);
+                  else
+                  if(StoreCommand.NAME.equalsIgnoreCase (command_name)) cmd=new StoreCommand (getTag(), command_name, new ArrayList<>(getParameters()),true);
+              }
+              if(cmd!=null){
+                 logger.trace("IMAP:translate cmd:"+cmd);
+                 responase=cmd.doProcess(sessionContext);
+              }
+              else responase=new ArrayList<ImapResponse>();
               //--------------------------------------------------------------------------------------------------------------------------------------
+              logger.trace("1 response size:"+responase.size());
               ImapResponse ret=null;
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   
+              responase.add(ret);
               logger.trace("IMAP:response:"+ret);
+
+              logger.trace("2 response size:"+responase.size());
 
               return responase;
        }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+import org.little.imap.commonIMAP;
 import org.little.util._Base64;
 
 public class lMessage{
@@ -31,6 +32,7 @@ public class lMessage{
     private   int                msg_count_str   ;
 
     private   int                msg_num         ;
+    private   int                msg_uid         ;
     private   boolean            expunged        ;
                                                  
     private   String             x509_type       ;
@@ -79,7 +81,9 @@ public class lMessage{
               x509_serial      ="";    
               x509_subject     ="";   
               x509_issuer      ="";    
+              
               msg_num          = 0;
+              msg_uid          = 0;
               expunged         = false;
 
     }
@@ -100,8 +104,15 @@ public class lMessage{
                   for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i));}
                   return buf.toString();
     }
+    public String getTOsInet(){
+        StringBuilder buf=new StringBuilder();
+        for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(commonIMAP.get().getDefaultDomain());}
+        return buf.toString();
+}
     //public int      getMessageNumber(){return msg_num;         }
     public int      getNum          (){return msg_num;         }
+    public int      getUID          (){return msg_uid;         }
+    public String   getFromInet     (){return msg_from+"@"+commonIMAP.get().getDefaultDomain();}
     public String   getFrom         (){return msg_from;        }
     public String   getId           (){return msg_id;          }
     public String   getSubject      (){return msg_subject;     }
@@ -126,13 +137,20 @@ public class lMessage{
     public byte[]   getBodyBin      (){return body_bin;         }
     public String   getBodyBin76    (){return body_bin_txt76;   }
     public String   getBodyBin64    (){return body_bin_txt;     }
-
+    
+    public boolean  isSEEN() {return !isUNSEEN();}
+    public boolean  isUNSEEN() {return msg_receive_date==null;}
+    public boolean  isDELETE() {return msg_del_date==null;}
+    public boolean  isDRAFT() {return false;}
+    public boolean  isANSWERED() {return false;}
+    
 
     public void     setTO           (String address) {msg_to=new ArrayList<String>();addTO(address);   }
     public void     addTO           (String address) {msg_to.add(address);       }
 
     //public void     setMessageNumber(int msg_num)    {this.msg_num = msg_num;    }
     public void     setNum          (int n)          {msg_num=n;                 }
+    public void     setUID          (int n)          {msg_uid=n;                 }
     public void     setFrom         (String address) {msg_from=address;          }
     public void     setId           (String _id)     {msg_id=_id;                }
     public void     setSubject      (String subject) {msg_subject=subject;       }

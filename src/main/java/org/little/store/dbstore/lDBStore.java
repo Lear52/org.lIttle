@@ -84,6 +84,22 @@ public class lDBStore   implements lStore  {
 		return null;
 	}
 
+	@Override
+        public void close(){return ;}
+
+
+	@Override
+	public lFolder getDelboxFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public lFolder createDelboxFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
    
 

@@ -8,9 +8,11 @@ public interface lStore{
     
     public lFolder                getInboxFolder         ();
     public lFolder                getOutboxFolder        ();
+    public lFolder                getDelboxFolder        ();
 
     public lFolder                createInboxFolder      ();
     public lFolder                createOutboxFolder     ();
+    public lFolder                createDelboxFolder     ();
                                  
     public lFolder                getFolder              (String name_folder);
     public lFolder                getFolder              (lFolder parent,String name_folder);
@@ -20,5 +22,6 @@ public interface lStore{
 
     public String                 getName();
 
+    public void                   close();
 }
 

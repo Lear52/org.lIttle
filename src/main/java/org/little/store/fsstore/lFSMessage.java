@@ -139,7 +139,7 @@ public class lFSMessage  extends lFSElement {
                    NodeList list=node_cfg.getChildNodes();     
                    for(int i=0;i<list.getLength();i++){
                        Node n=list.item(i);
-                       if("header".equals(n.getNodeName())){loadHeader(n);                                        continue;}
+                       if("header".equals(n.getNodeName())){loadHeader(n);                                                   continue;}
                        else
                        if("body_t".equals(n.getNodeName())){get().setBodyTxt(n.getTextContent());                            continue;}
                        else
@@ -159,31 +159,33 @@ public class lFSMessage  extends lFSElement {
                NodeList list=node_header.getChildNodes();     
                for(int i=0;i<list.getLength();i++){
                    Node n=list.item(i);
-                   if("msg_from"        .equals(n.getNodeName())){ get().setFrom       (n.getTextContent());           continue;}
+                   if("msg_from"        .equals(n.getNodeName())){ get().setFrom       (n.getTextContent());                                                                              continue;}
                    else
-                   if("msg_id"          .equals(n.getNodeName())){ get().setId         (n.getTextContent());           continue;}
+                   if("msg_id"          .equals(n.getNodeName())){ get().setId         (new String(_Base64.base64ToByteArray(n.getTextContent())));                                       continue;}
+                   else                                                                                                                                                                  
+                   if("msg_subject"     .equals(n.getNodeName())){ get().setSubject    (new String(_Base64.base64ToByteArray(n.getTextContent())));                                       continue;}
+                   else                                                                                                                                                                  
+                   if("msg_to"          .equals(n.getNodeName())){ loadTo(n);                                                                                                             continue;}
+                   else                                                                                                                                                                  
+                   if("msg_filename"    .equals(n.getNodeName())){ get().setFilename   (n.getTextContent());                                                                              continue;}
+                   else                                                                                                                                                                  
+                   if("msg_mimetype"    .equals(n.getNodeName())){ get().setMime       (n.getTextContent());                                                                              continue;}
+                   else                                                                                                                                                                  
+                   if("msg_create_date" .equals(n.getNodeName())){ get().setCreateDate (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   else                                                                                                                                                                  
+                   if("msg_sent_date"   .equals(n.getNodeName())){ get().setSentDate   (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   else                                                                                                                                                                  
+                   if("msg_receive_date".equals(n.getNodeName())){ get().setReceiveDate(strDate.str2date(n.getTextContent()));                                                            continue;}
+                   else                                                                                                                                                                  
+                   if("msg_del_date"   .equals(n.getNodeName())){ get().setDelDate     (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   else                                                                                                                                                                  
+                   if("msg_answer_date".equals(n.getNodeName())){ get().setAnswerDate  (strDate.str2date(n.getTextContent()));                                                            continue;}
                    else
-                   if("msg_to"          .equals(n.getNodeName())){ loadTo        (n);                        continue;}
-                   else
-                   if("msg_subject"     .equals(n.getNodeName())){ get().setSubject    (n.getTextContent());           continue;}
-                   else
-                   if("msg_filename"    .equals(n.getNodeName())){ get().setFilename   (n.getTextContent());           continue;}
-                   else
-                   if("msg_mimetype"    .equals(n.getNodeName())){ get().setMime       (n.getTextContent());           continue;}
-                   else
-                   if("msg_create_date" .equals(n.getNodeName())){ get().setCreateDate   (strDate.str2date(n.getTextContent())); continue;}
-                   else
-                   if("msg_sent_date"   .equals(n.getNodeName())){ get().setSentDate   (strDate.str2date(n.getTextContent())); continue;}
-                   else
-                   if("msg_receive_date".equals(n.getNodeName())){ get().setReceiveDate(strDate.str2date(n.getTextContent())); continue;}
-                   else
-                   if("msg_del_date"   .equals(n.getNodeName())){ get().setDelDate   (strDate.str2date(n.getTextContent())); continue;}
-                   else
-                   if("msg_answer_date".equals(n.getNodeName())){ get().setAnswerDate(strDate.str2date(n.getTextContent())); continue;}
-                   else
+                   if("msg_uid"        .equals(n.getNodeName())){ String s=n.getTextContent(); int _id=0;  try{_id=Integer.parseInt(s);   }catch(Exception e){_id=0;} get().setUID(_id);    continue;}
+                   else                                                                                                                                                                  
                    if("msg_size"       .equals(n.getNodeName())){ String s=n.getTextContent(); int size=0; try{size=Integer.parseInt(s);}catch(Exception e){size=0;} get().setSize(size); continue;}
                    else
-                   if("x509"            .equals(n.getNodeName())){ loadX509(n);                              continue;}
+                   if("x509"           .equals(n.getNodeName())){ loadX509(n);                                                                                                            continue;}
                }
            
        }
@@ -219,31 +221,27 @@ public class lFSMessage  extends lFSElement {
            buf.append("<?xml version=\"1.0\" encoding=\"WINDOWS-1251\"?>\n");
            buf.append("<msgbox>\n");
            buf.append("<header>\n");
-           buf.append("<msg_from>");        buf.append(get().getFrom());                           buf.append("</msg_from>\n");
+           buf.append("<msg_uid>" ).append(get().getUID() ).append("</msg_uid>\n" );
+           buf.append("<msg_from>").append(get().getFrom()).append("</msg_from>\n");
            buf.append("<msg_to>\n");
-           String[] to=get().getTO();
-           {for(int i=0;i<to.length;i++){   buf.append("<to>");buf.append(to[i]);                  buf.append("</to>\n");}}
-           buf.append("</msg_to>\n");
-           buf.append("<msg_id>");          buf.append(get().getId());                             buf.append("</msg_id>\n");
-           if(get().getCreateDate()!=null){
-              buf.append("<msg_create_date>");   buf.append(strDate.date2str(get().getCreateDate()));     buf.append("</msg_create_date>\n");
+           {
+            String[] to=get().getTO();
+            for(int i=0;i<to.length;i++)buf.append("<to>").append(to[i]).append("</to>\n");
+            buf.append("</msg_to>\n");
            }
-           if(get().getSentDate()!=null){
-              buf.append("<msg_sent_date>");   buf.append(strDate.date2str(get().getSentDate()));     buf.append("</msg_sent_date>\n");
-           }
-           if(get().getReceiveDate()!=null){
-              buf.append("<msg_receive_date>");buf.append(strDate.date2str(get().getReceiveDate()));  buf.append("</msg_receive_date>\n");
-           }
-           if(get().getDelDate()!=null){
-              buf.append("<msg_del_date>");    buf.append(strDate.date2str(get().getReceiveDate()));  buf.append("</msg_del_date>\n");
-           }
-           if(get().getAnswerDate()!=null){
-              buf.append("<msg_answer_date>"); buf.append(strDate.date2str(get().getReceiveDate()));  buf.append("</msg_answer_date>\n");
-           }
-           buf.append("<msg_subject>");     buf.append(get().getSubject());                        buf.append("</msg_subject>\n");
-           buf.append("<msg_filename>");    buf.append(get().getFilename());                       buf.append("</msg_filename>\n");
-           buf.append("<msg_mimetype>");    buf.append(get().getMime());                           buf.append("</msg_mimetype>\n");
-           buf.append("<msg_size>");        buf.append(get().getSize());                           buf.append("</msg_size>\n");
+
+           if(get().getCreateDate() !=null){buf.append("<msg_create_date>").append(strDate.date2str(get().getCreateDate())).append("</msg_create_date>\n");             }
+           if(get().getSentDate()   !=null){buf.append("<msg_sent_date>").append(strDate.date2str(get().getSentDate())).append("</msg_sent_date>\n");                   }
+           if(get().getReceiveDate()!=null){buf.append("<msg_receive_date>");buf.append(strDate.date2str(get().getReceiveDate()));  buf.append("</msg_receive_date>\n");}
+           if(get().getDelDate()    !=null){buf.append("<msg_del_date>").append(strDate.date2str(get().getReceiveDate())).append("</msg_del_date>\n");                  }
+           if(get().getAnswerDate() !=null){buf.append("<msg_answer_date>").append(strDate.date2str(get().getReceiveDate())).append("</msg_answer_date>\n");            }
+
+           buf.append("<msg_id>")      .append(_Base64.byteArrayToBase64(get().getId().getBytes()))     .append("</msg_id>\n");
+           buf.append("<msg_subject>") .append(_Base64.byteArrayToBase64(get().getSubject().getBytes())).append("</msg_subject>\n");
+
+           buf.append("<msg_filename>").append(get().getFilename()).append("</msg_filename>\n");
+           buf.append("<msg_mimetype>").append(get().getMime())    .append("</msg_mimetype>\n");
+           buf.append("<msg_size>")    .append(get().getSize())    .append("</msg_size>\n");
                                                                                                  
            buf.append("<x509>\n");                                                               
            buf.append("<x509_type>");       buf.append(get().getX509Type     ());                  buf.append("</x509_type>\n");
@@ -254,13 +252,12 @@ public class lFSMessage  extends lFSElement {
            buf.append("<x509_subject>");    buf.append(get().getX509Subject  ());                  buf.append("</x509_subject>\n");
            buf.append("<x509_issuer>");     buf.append(get().getX509Issuer   ());                  buf.append("</x509_issuer>\n");
            buf.append("</x509>\n");
+
            buf.append("</header>\n");
-           if(get().getBodyTxt()!=null){
-              buf.append("<body_t>");      buf.append(get().getBodyTxt());                        buf.append("</body_t>\n");
-           }
-           if(get().getBodyBin()!=null){
-              buf.append("<body_b>");      buf.append(_Base64.byteArrayToBase64(get().getBodyBin()));buf.append("</body_b>\n");
-           }
+
+           if(get().getBodyTxt()!=null){ buf.append("<body_t>").append(get().getBodyTxt()).append("</body_t>\n"); }
+           if(get().getBodyBin()!=null){ buf.append("<body_b>").append(_Base64.byteArrayToBase64(get().getBodyBin())).append("</body_b>\n");}
+
            buf.append("</msgbox>");          
            return buf.toString();
        }

@@ -12,6 +12,9 @@ public class stringWildCard{
         if (filename == null || wildcardMatcher == null) {
             return false;
         }
+        if ("*".equals(wildcardMatcher)) {
+        	return true;
+        }
         if (caseSensitivity == null) {
             caseSensitivity = stringCase.SENSITIVE;
         }
@@ -41,14 +44,16 @@ public class stringWildCard{
                     }
                     anyChars = false;
                     
-                } else if (wcs[wcsIdx].equals("*")) {
+                } 
+                else if (wcs[wcsIdx].equals("*")) {
                     // set any chars status
                     anyChars = true;
                     if (wcsIdx == wcs.length - 1) {
                         textIdx = filename.length();
                     }
                     
-                } else {
+                } 
+                else {
                     // matching text token
                     if (anyChars) {
                         // any chars then try to locate text token

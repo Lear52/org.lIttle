@@ -25,38 +25,100 @@ public class SearchCommand  extends ImapCommand {
        public static final String NAME = "SEARCH";
        public static final String ARGS = "<search term>";
 
+       public boolean isUID ;
 
-       public SearchCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);}
+
+       public SearchCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);isUID = false;}
+       public SearchCommand(String _tag, String _command, List<ImapCommandParameter> _parameters,boolean _isUID ) { super(_tag,_command,_parameters); isUID=_isUID;}
 
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
-              String arg1   = null;
-              String arg2   = null;
-              if(getParameters().size()>0)arg1   = getParameters().get(0).toString();
-              if(getParameters().size()>1)arg2   = getParameters().get(1).toString();
 
+              for(int i=0;i<getParameters().size();i++) {
+                  String arg1   = getParameters().get(i).toString();
+                  if(arg1.equalsIgnoreCase("ALL"         )){}
+                  if(arg1.equalsIgnoreCase("ANSWERED"    )){}
+                  if(arg1.equalsIgnoreCase("BCC"         )){ i++;}
+                  if(arg1.equalsIgnoreCase("CC"          )){ i++;}
+                  if(arg1.equalsIgnoreCase("DELETED"     )){}
+                  if(arg1.equalsIgnoreCase("DRAFT"       )){}
+                  if(arg1.equalsIgnoreCase("FLAGGED"     )){}
+                  if(arg1.equalsIgnoreCase("FROM"        )){ i++;}
+                  if(arg1.equalsIgnoreCase("HEADER"      )){i+=2;}
+                  if(arg1.equalsIgnoreCase("KEYWORD"     )){ i++;}
+                  if(arg1.equalsIgnoreCase("NEW"         )){}
+                  if(arg1.equalsIgnoreCase("NOT"         )){}
+                  if(arg1.equalsIgnoreCase("OLD"         )){}
+                  if(arg1.equalsIgnoreCase("RECENT"      )){}
+                  if(arg1.equalsIgnoreCase("SEEN"        )){}
+                  if(arg1.equalsIgnoreCase("SUBJECT"     )){ i++;}
+                  if(arg1.equalsIgnoreCase("TO"          )){ i++;}
+                  if(arg1.equalsIgnoreCase("TEXT"        )){ i++;}
+                  if(arg1.equalsIgnoreCase("UID"         )){ i++;}
+                  if(arg1.equalsIgnoreCase("UNANSWERED"  )){}
+                  if(arg1.equalsIgnoreCase("UNDELETED"   )){}
+                  if(arg1.equalsIgnoreCase("UNDRAFT"     )){}
+                  if(arg1.equalsIgnoreCase("UNFLAGGED"   )){}
+                  if(arg1.equalsIgnoreCase("UNKEYWORD"   )){ i++;}
+                  if(arg1.equalsIgnoreCase("UNSEEN"      )){}
+                  if(arg1.equalsIgnoreCase("SEQUENCE_SET")){ i++;}
+                  if(arg1.equalsIgnoreCase("OR"          )){}
+                  if(arg1.equalsIgnoreCase("SINCE"       )){ i++;}
+                  if(arg1.equalsIgnoreCase("ON"          )){ i++;}
+                  if(arg1.equalsIgnoreCase("BEFORE"      )){ i++;}
+                  if(arg1.equalsIgnoreCase("SENTSINCE"   )){ i++;}
+                  if(arg1.equalsIgnoreCase("SENTON"      )){ i++;}
+                  if(arg1.equalsIgnoreCase("SENTBEFORE"  )){ i++;}
+                  if(arg1.equalsIgnoreCase("LARGER"      )){ i++;}
+                  if(arg1.equalsIgnoreCase("SMALLER"     )){ i++;}            	  
+            	  
+              }
+              
+              
+              
+              
               IMAPTransaction txSession     = sessionContext.imapTransaction;
 
-              String num_msg=getNumMsg(txSession,getParameters());
+              String num_msg;
+              //ArrayList<lMessage> list=txSession.getMsg();
+              ArrayList<lMessage> list=txSession.getFolder().getMsg();
+              
+              
+              
+              if(isUID)num_msg=getUIDMsg(list,getParameters());
+              else     num_msg=getNumMsg(list,getParameters());
 
               ImapResponse ret=null;
-              ret=new EmptyResponse(NAME+" "+num_msg+" ");                                                   responase.add(ret);
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);         responase.add(ret);
-              logger.trace("IMAP:response:"+ret);
+              
+              ret=new EmptyResponse(NAME+" "+num_msg+" ");                                               responase.add(ret);
+
+              if(isUID==false) {
+            	  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED); responase.add(ret);
+            	  logger.trace("IMAP:response:"+ret); 
+              }
 
               return responase;
        }
-       private String getNumMsg(IMAPTransaction txSession,List<ImapCommandParameter> _parameters){
+       private String getNumMsg(ArrayList<lMessage> list,List<ImapCommandParameter> _parameters){
                StringBuilder buf=new StringBuilder();
-               ArrayList<lMessage> list=txSession.getMsg();
+               
                for(int i=0;i<list.size();i++){
                    if(i>0)buf.append(" ");
                    buf.append(list.get(i).getNum());
                }
 
                return buf.toString();
+       }
+       private String getUIDMsg(ArrayList<lMessage> list,List<ImapCommandParameter> _parameters){
+           StringBuilder buf=new StringBuilder();
+           for(int i=0;i<list.size();i++){
+               if(i>0)buf.append(" ");
+               buf.append(list.get(i).getUID());
+           }
+
+           return buf.toString();
        }
 
 }

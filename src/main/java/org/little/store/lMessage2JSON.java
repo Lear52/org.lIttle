@@ -37,22 +37,32 @@ public class lMessage2JSON  {
 
        private static JSONObject list2obj(ArrayList<lMessage> msg){
               JSONArray list=new JSONArray();
-              for(int i=0;i<msg.size();i++){
-                  JSONObject obj=msg2obj(msg.get(i));
-                  list.put(obj);
+              boolean   state=false;
+              if(msg!=null){
+                 for(int i=0;i<msg.size();i++){
+                     lMessage   m  =msg.get(i);
+                     if(m==null)continue;
+                     JSONObject obj=msg2obj(m);
+                     list.put(obj);
+                     state=true;
+                 }
               }
+
               JSONObject root_object=new JSONObject();
               root_object.put("type" ,"list");
+              root_object.put("state",state);
               root_object.put("list" ,list);
               return root_object;
        }
 
        private static JSONObject msg2obj(lMessage msg){
+
               JSONObject root_object=new JSONObject();
 
               JSONArray to=new JSONArray();
 
               String [] _to=msg.getTO();
+
               for(int i=0;i<_to.length;i++)to.put(_to[i]);
 
               JSONObject obj=new JSONObject();

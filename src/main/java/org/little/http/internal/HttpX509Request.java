@@ -68,12 +68,16 @@ public class HttpX509Request{
                auth=HttpAuth.getInstatce();
        }
 
-       private void clear(){
-               store         =null; 
+       private void r_clear(){
                folder        =null;
                cmd           =null;   
                msg           =null;   
                is_correct    =false;
+
+       }
+       private void clear(){
+               r_clear();
+               store         =null; 
                keepAlive     =false;
                decoder       =null;
                partialContent=null;
@@ -84,48 +88,62 @@ public class HttpX509Request{
        public String      getStore       (){return store ;}
        public String      getFolder      (){return folder;}
        public String      getCmd         (){return cmd   ;}
-       public String      getPath        (){return uri.getPath();}
+       public String      getPath        (){if(uri==null)return null;else return uri.getPath();}
        public String      getMsg         (){return msg   ;}
        public boolean     isCorrect      (){return is_correct;}
-       public HttpVersion protocolVersion(){return request.protocolVersion();}
-       public String      getURI         (){return request.uri();}
+       public HttpVersion protocolVersion(){if(request==null)return null;else return request.protocolVersion();}
+       public String      getURI         (){if(request==null)return null;else return request.uri();}
        public boolean     isKeepAlive    (){return keepAlive;}
-       public HttpHeaders getHeaders     (){return request.headers();}
-       public HttpMethod  getMethod      (){return request.method();}
+       public HttpHeaders getHeaders     (){if(request==null)return null;else return request.headers();}
+       public HttpMethod  getMethod      (){if(request==null)return null;else return request.method();}
 
        public lMessage   getUploadMsg   (){return upload_msg;}
 
        public HttpAuthResponse  Auth(){
-              if(request==null)return null;
-              HttpAuthResponse ret_auth = auth.authParse(request);
-              if(ret_auth!=null){
-                 if(ret_auth.isAuth())store=ret_auth.getUser();
+              logger.trace("begin auth");
+
+              if(request==null){
+                 logger.error("request==null");
+                 return null;
               }
+
+              HttpAuthResponse ret_auth = auth.authParse(request);
+
+              if(ret_auth!=null){
+                 if(ret_auth.isAuth()){
+                    store=ret_auth.getUser();
+                    logger.trace("auth:"+ret_auth.isAuth()+" store:"+store);
+                 }
+                 else logger.trace("auth:"+ret_auth.isAuth()+" store:null");
+              }
+              else logger.trace("auth:null");
+
+              logger.trace("end auth:"+ret_auth.isAuth()+" store:"+store);
               return ret_auth;
        }
        //public HttpAuth   getAuth        (){return auth;}
 
-       public boolean     setHttpReq(HttpRequest _request){
+       public boolean setHttpReq(HttpRequest _request){
 
-                          clearDecoder();
-                          clear();
-                          request=_request;
-                          keepAlive = HttpUtil.isKeepAlive(request);
+                      clearDecoder();
+                      clear();
+                      request=_request;
+                      keepAlive = HttpUtil.isKeepAlive(request);
 
-                          String value = getHeaders().get(HttpHeaderNames.COOKIE);
-                          if (value == null)  cookies = Collections.emptySet();
-                          else                cookies = ServerCookieDecoder.STRICT.decode(value);
+                      String value = getHeaders().get(HttpHeaderNames.COOKIE);
+                      if (value == null)  cookies = Collections.emptySet();
+                      else                cookies = ServerCookieDecoder.STRICT.decode(value);
 
-                          try{uri = new URI(request.uri());
-                          }
-                          catch(Exception e){
-                                Except ex=new Except("parse URI",e);
-                                logger.error(ex);
-                                clear();
-                                return false;
-                          }
+                      try{uri = new URI(request.uri());
+                      }
+                      catch(Exception e){
+                            Except ex=new Except("parse URI",e);
+                            logger.error(ex);
+                            clear();
+                            return false;
+                      }
 
-                          return true;
+                      return true;
        }
 
        public boolean isDecoder(){return decoder!=null;}
@@ -214,7 +232,7 @@ public class HttpX509Request{
                if(data.getHttpDataType() == HttpDataType.Attribute) {
 
                   Attribute attribute = (Attribute) data;
-                  lMessage  m         = getUploadMsg();
+                  //lMessage  m         = getUploadMsg();
                   String    field=null;
                   String    arg  =null;
 
@@ -228,11 +246,9 @@ public class HttpX509Request{
                         return;
                   }
 
-                  if("to".equals(field)){m.addTO(arg);}
+                  if("to".equals(field)){upload_msg.addTO(arg);}
                   else
-                  if("from".equals(field)){m.setFrom(arg);}
-                  else
-                  if("subject".equals(field)){m.setSubject(arg);}
+                  if("subject".equals(field)){upload_msg.setSubject(arg);}
 
                }
                else {
@@ -240,11 +256,12 @@ public class HttpX509Request{
                          FileUpload fileUpload = (FileUpload) data;
                          String     f_n        = fileUpload.getFilename();
                          String     f_mime     = fileUpload.getContentType();
-                         lMessage   m          = getUploadMsg();
+                         //lMessage   m          = getUploadMsg();
 
-                         m.setFilename(f_n);
-                         m.setMime    (f_mime);
-                         m.setSentDate();
+                         upload_msg.setFilename(f_n);
+                         upload_msg.setMime    (f_mime);
+                         upload_msg.setSentDate();
+                         upload_msg.setFrom(store);
                          //logger.trace("HttpDataType.FileUpload");
                          //logger.trace("\tContent len="+fileUpload.length()+" ---------------------------------------------------");
 
@@ -252,7 +269,7 @@ public class HttpX509Request{
                             if(fileUpload.length() < 1000000) {
                                try {
                                     byte [] bin_buf=fileUpload.get();
-                                    m.setBodyBin(bin_buf);
+                                    upload_msg.setBodyBin(bin_buf);
                                     if(bin_buf.length!=fileUpload.length()) logger.error("compare false "+bin_buf.length+"!="+fileUpload.length());
 
                                     //String s =new String(bin_buf);
@@ -285,10 +302,13 @@ public class HttpX509Request{
 
 
        public boolean parsePath(){
-              clear();
+
+              r_clear();
+
               try{
+                  //logger.trace("set 0 cmd:"+cmd+" store:"+store);
                   cmd=getPath();
-                  logger.trace("set 0 cmd:"+cmd);
+                  logger.trace("set 0 cmd:"+cmd+" store:"+store);
                  
                   if(cmd.startsWith("/get" )){cmd="get"  ;is_correct=true;}                   // get http://x.x.x.x:pppp/get?folder=name&msg=num  - get file(foldername, num_msg)
                   else
@@ -322,15 +342,14 @@ public class HttpX509Request{
                            if(p.startsWith("msg="   )){msg   =p.substring("msg=".length());}
                      }
                   }
-                  logger.trace("set 2 cmd:"+cmd+ " is_correct:"+is_correct+ " folder:"+folder+" msg:"+msg);
-
+                  logger.trace("set 2 cmd:"+cmd+ " is_correct:"+is_correct+" store:"+store+ " folder:"+folder+" msg:"+msg);
               }
               catch(NoSuchElementException e){
                     Except ex=new Except("parse cmd",e);
                     logger.error(ex);
                     return false;
               }
-              logger.trace("set 3 cmd:"+cmd);
+              logger.trace("set 3 cmd:"+cmd+ " is_correct:"+is_correct+" store:"+store+ " folder:"+folder+" msg:"+msg);
 
               if(cmd.equals("get")){
                  //if(store==null){clear(); is_correct=false;return false;}
@@ -344,7 +363,7 @@ public class HttpX509Request{
 
               is_correct=true;
 
-              logger.trace("set 4 cmd:"+cmd+ " is_correct:"+is_correct+ " folder:"+folder+" msg:"+msg);
+              logger.trace("set 4 cmd:"+cmd+ " is_correct:"+is_correct+" store:"+store+ " folder:"+folder+" msg:"+msg);
 
               return true;
        }

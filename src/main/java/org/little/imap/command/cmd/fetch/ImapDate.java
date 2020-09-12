@@ -4,41 +4,44 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.sun.mail.imap.protocol.INTERNALDATE;
+import javax.mail.internet.*;
+
 
 public class ImapDate {
 
-    /**
-     * Print an IMAP Date string, that is suitable for the Date
-     * SEARCH commands.
-     *
-     * The IMAP Date string is :
-     *	date ::= date_day "-" date_month "-" date_year	
-     *
-     * Note that this format does not contain the TimeZone
-     */
-    private static String monthTable[] = { 
+        /**
+         * Print an IMAP Date string, that is suitable for the Date
+         * SEARCH commands.
+         *
+         * The IMAP Date string is :
+         *	date ::= date_day "-" date_month "-" date_year	
+         *
+         * Note that this format does not contain the TimeZone
+         */
+        private static String monthTable[] = { 
 	  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    };
-
-
-    public static String toIMAPDate(Date date) {
+        };
+    
+    
+        public static String toIMAPDate(Date date) {
 	StringBuilder s = new StringBuilder();
-        Calendar cal = new GregorianCalendar();
+            Calendar cal = new GregorianCalendar();
 	cal.setTime(date);
-
+    
 	s.append(cal.get(Calendar.DATE)).append("-");
 	s.append(monthTable[cal.get(Calendar.MONTH)]).append('-');
 	s.append(cal.get(Calendar.YEAR));
-
+    
 	return s.toString();
-    }
-    public static  String toIMAPDateTime(Date date) {
+        }
+        public static  String toIMAPDateTime(Date date) {
 	StringBuilder s = new StringBuilder();
-
-        Calendar cal = new GregorianCalendar();
+    
+            Calendar cal = new GregorianCalendar();
 	cal.setTime(date);
-
+    
 	s.append(cal.get(Calendar.DATE)).append("-");
 	s.append(monthTable[cal.get(Calendar.MONTH)]).append('-');
 	s.append(cal.get(Calendar.YEAR));
@@ -56,15 +59,26 @@ public class ImapDate {
 	s.append(' ');
 	t=cal.get(Calendar.ZONE_OFFSET);
 	t/=3600;
-
-        if(t>0)s.append('+');else s.append('-');
-        s.append(t);
+    
+            if(t>0)s.append('+');else s.append('-');
+            s.append(t);
 	
 	
 	return s.toString();
-    }
-
-
+        }
+        public static  String toInternalDate(Date date) {
+            if(null != date) {
+                return INTERNALDATE.format(date);
+            }
+            return INTERNALDATE.format(new Date());
+        }
+        public static  String toDateEnvelope(Date date) {
+            if(null != date) {
+                return new MailDateFormat().format(date);
+            }
+            return new MailDateFormat().format(new Date());
+        }
+    
 
 }
 /*
