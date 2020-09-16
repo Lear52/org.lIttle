@@ -25,15 +25,6 @@ public class lFSStore  extends lFSElement implements lStore  {
        }
        protected  String   getPrefix  (){return PREFIX;};
       
-       
-       /*
-       public boolean create(){
-              File f_store=new File(getFullName());
-              if(f_store.exists()) return false;
-              f_store.mkdirs();
-              return true;
-       }
-       */
        public boolean open(int _mode){
               boolean ret;
               File f_store;
@@ -57,57 +48,23 @@ public class lFSStore  extends lFSElement implements lStore  {
        public    ArrayList<lFolder >    getListFolder  (){
                  return getFolder  (new ArrayList<lFolder >(),null);
        }
-      
-       private   ArrayList<lFolder >    getFolder  (ArrayList<lFolder > list,lFSFolder _parent_folder){
-           //System.out.println(getFullName());
-           String   folder_name;
-           if(_parent_folder==null)folder_name=getFullName();
-           else                    folder_name=_parent_folder.getFullName();
-      
-           File     folder = new File(folder_name);
-           String[] ls     = folder.list();
-      
-           if(ls!=null){
-              logger.trace("folder:"+folder_name+" count file:"+ls.length);
-              _qSortString sorter = new _qSortString();
-              sorter.sort(ls);
-              for(int i = 0;i < ls.length; i++){
-                  String short_name  = ls[i];
-             
-                  if(short_name.startsWith(lFSFolder.PREFIX)==false)continue;
-                  String f_n=getFullName()+File.separator+short_name;
-                  File   f  =new File(f_n);
-                  if(f.isDirectory()==false)continue;
-             
-                  short_name=short_name.substring(lFSFolder.PREFIX.length());
-             
-                  lFSFolder new_folder;
-                  if(_parent_folder==null)new_folder=new lFSFolder(this,this          ,short_name);
-                  else                    new_folder=new lFSFolder(this,_parent_folder,short_name);
-                  list.add(new_folder);
-             
-                  getFolder(list,new_folder);
-              }
-           }
-           logger.trace("folder:"+folder_name+" count msg:"+list.size());
-           return list;
-       }
-      
-       
        @Override
-       public lFolder getInboxFolder   (){return getFolder("inbox");}
+       public lFolder getInboxFolder   (){return getFolder("INBOX");}
        @Override
-       public lFolder createInboxFolder(){return createFolder("inbox");}
+       public lFolder createInboxFolder(){return createFolder("INBOX");}
       
        @Override
-       public lFolder getOutboxFolder   (){return getFolder("sent");}
+       public lFolder getOutboxFolder   (){return getFolder("OUTBOX");}
        @Override
-       public lFolder createOutboxFolder(){return createFolder("sent");}
+       public lFolder createOutboxFolder(){return createFolder("OUTBOX");}
 
        @Override
-       public lFolder getDelboxFolder   (){return getFolder("trash");}
+       public lFolder getCommonFolder   (){return lRoot.getCommonStore().getInboxFolder();}
+
        @Override
-       public lFolder createDelboxFolder(){return createFolder("trash");}
+       public lFolder getDelboxFolder   (){return getFolder("TRASHBOX");}
+       @Override
+       public lFolder createDelboxFolder(){return createFolder("TRASHBOX");}
       
        @Override
        public lFolder getFolder(String name_folder){
@@ -139,8 +96,49 @@ public class lFSStore  extends lFSElement implements lStore  {
    		// TODO Auto-generated method stub
    		
        }
-     
+       
+       //-------------------------------------------------------------------------------------------------------------
 
+       private   ArrayList<lFolder >    getFolder  (ArrayList<lFolder > list,lFSFolder _parent_folder){
+           String   folder_name;
+           if(_parent_folder==null)folder_name=getFullName();
+           else                    folder_name=_parent_folder.getFullName();
+      
+           File     folder = new File(folder_name);
+           String[] ls     = folder.list();
+      
+           if(ls!=null){
+              logger.trace("folder:"+folder_name+" count file:"+ls.length);
+              _qSortString sorter = new _qSortString();
+              sorter.sort(ls);
+              for(int i = 0;i < ls.length; i++){
+                  String short_name  = ls[i];
+             
+                  if(short_name.startsWith(lFSFolder.PREFIX)==false)continue;
+                  String f_n=getFullName()+File.separator+short_name;
+                  File   f  =new File(f_n);
+                  if(f.isDirectory()==false)continue;
+             
+                  short_name=short_name.substring(lFSFolder.PREFIX.length());
+             
+                  lFSFolder new_folder;
+                  if(_parent_folder==null)new_folder=new lFSFolder(this,this          ,short_name);
+                  else                    new_folder=new lFSFolder(this,_parent_folder,short_name);
+                  list.add(new_folder);
+             
+                  getFolder(list,new_folder);
+              }
+           }
+           
+           if(_parent_folder==null)list.add(getCommonFolder());
+           
+           logger.trace("folder:"+folder_name+" count msg:"+list.size());
+           return list;
+       }
+      
+       
+     
+        /*
       
        public static void main(String[] args) {
               lStore store1 =lRoot.getStore("av");
@@ -158,6 +156,7 @@ public class lFSStore  extends lFSElement implements lStore  {
                   f4.save(l);
               }
        }
+      */
 
 }
 

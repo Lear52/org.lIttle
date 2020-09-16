@@ -12,6 +12,8 @@ import org.little.imap.response.ImapResponse;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
+import io.netty.buffer.ByteBuf;
+
 /**
  * Handles processing for the APPEND imap command.
  *
@@ -30,14 +32,32 @@ public class AppendCommand  extends ImapCommand {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
-
-              //--------------------------------------------------------------------------------------------------------------------------------------
               ImapResponse ret=null;
+              String folder_name;
+              String flag=null  ;
+              String size=null  ;
+              
+              if(getParameters().size()>0) {folder_name   = getParameters().get(0).toString();}
+              else {
+                  ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
+                  responase.add(ret);
+                  return responase; 
+              }
+              if(getParameters().size()>1) {flag   = getParameters().get(1).toString();}
+              if(getParameters().size()>2) {size   = getParameters().get(1).toString();}
+
+              //byte[] mail = consumeLiteralAsBytes(request);
+              //--------------------------------------------------------------------------------------------------------------------------------------
               ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               logger.trace("IMAP:response:"+ret);
 
               return responase;
        }
+       @Override
+       public void appendBuf(ByteBuf in){
+
+       }
+
 
 }
 

@@ -50,17 +50,6 @@ public class Auth extends AbstractSmtpCommand {
                else                    reply = new SmtpCommandReply(SmtpReplyStatus.R500, "AUTH?");
                logger.trace("SMTP:reply:"+reply.toString());
                
-               /*
-               else{
-                  logger.error("already authenticated :"+cmd);
-                  // unknown command
-                  Object reply = new SmtpCommandReply(SmtpReplyStatus.R503, "already authenticated");
-                  ctx.writeAndFlush(reply);
-                  return;
-               }
-               */
-               
-               
                return reply;
         }
         @Override
@@ -69,6 +58,7 @@ public class Auth extends AbstractSmtpCommand {
                for(int i=0;i< list_cmd.size();i++)log_str+=list_cmd.get(i)+" ";
                logger.trace(log_str);
                SmtpCommandReply reply;
+
                if(ctxMailSession.authTransaction!=null)
                if(ctxMailSession.authTransaction.isAuth()) {
                    logger.error("SMTP:already authenticated :"+log_str);

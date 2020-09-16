@@ -1,11 +1,11 @@
 package org.little.proxy.relay;
 
-import  org.little.util.strDate;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -44,7 +44,8 @@ public class TcpTunnel {
                int local_port2=sc.getLocalPort();
                System.out.println("TcpTunnel: tunnelling port " + listenport + " to port " + tunnelport + " on host " + tunnelhost);
       
-               String date=strDate.date2str(new Date());
+               String date=date2str(new Date());
+
                String filename="file_log_"+listenport+"_"+tunnelhost+"-"+tunnelport+"_"+local_port1+"_"+date+".txt";
                FileOutputStream os = new FileOutputStream(filename);
                String s;
@@ -60,4 +61,12 @@ public class TcpTunnel {
                // that's it .. they're off; now I go back to my stuff.
            }
        }
+       public static String date2str(Date d){
+              if(d==null) return null;
+              try{
+                  SimpleDateFormat sfd=new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                  return sfd.format(d);
+              } catch (Exception e) { return null; }
+       }
+
 }

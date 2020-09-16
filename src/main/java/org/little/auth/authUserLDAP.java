@@ -10,6 +10,7 @@ public class authUserLDAP implements authUser {
     
        private String   realm;
        private String   ldap_url;
+       private String   domain;
     
        public authUserLDAP(){
               realm="vip.cbr.ru";
@@ -21,7 +22,8 @@ public class authUserLDAP implements authUser {
        }
        public String    getRealm(){return realm;}
        public void      setRealm(String r){realm=r;}
-       public void      loadUsers4Realm(String r){
+
+       private void      loadUsers4Realm(String r){
               setRealm(r);
        }
     

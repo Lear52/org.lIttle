@@ -321,7 +321,17 @@ public class HttpX509Response {
                     logger.error(txt);
                  }
                  else{
-                    lFolder folder=store.getFolder(req.getFolder());
+                    lFolder folder;
+                    String folder_name=req.getFolder();
+                    if(folder_name.toUpperCase().equals("INBOX"))folder=store.getInboxFolder();
+                    else
+                    if(folder_name.toUpperCase().equals("OUTBOX"))folder=store.getOutboxFolder();
+                    else
+                    if(folder_name.toUpperCase().equals("TRASHBOX") || folder_name.toUpperCase().equals("DELBOX"))folder=store.getDelboxFolder();
+                    else
+                    if(folder_name.toUpperCase().equals("COMMONBOX"))folder=store.getCommonFolder();
+                    else  folder=store.getFolder(req.getFolder());
+
                     if(folder==null){
                        String txt="cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" unknow";
                        logger.error(txt);
@@ -355,8 +365,12 @@ public class HttpX509Response {
               }
               else{
                   JSONArray list=new JSONArray();
+
+		// TODO Auto-generated method stub
                   list.put("av");
+		// TODO Auto-generated method stub
                   list.put("iap");
+
                   JSONObject root_object=new JSONObject();
                   root_object.put("type" ,"user");
                   root_object.put("state",true);

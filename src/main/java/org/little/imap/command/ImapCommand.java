@@ -21,9 +21,9 @@ public class ImapCommand implements ImapConstants{
         private List<ImapCommandParameter> parameters;
 
         public static String print(List<ImapCommandParameter> parameters) {
-               String ret=" ";
-               for(int i=0;i<parameters.size();i++)ret+=parameters.get(i).toString()+" ";         
-               return ret;
+               StringBuilder ret=new StringBuilder();
+               for(int i=0;i<parameters.size();i++)ret.append(parameters.get(i).toString()).append(" ");         
+               return ret.toString();
         }
 
         public ImapCommand(String tag, String command) {
@@ -84,5 +84,8 @@ public class ImapCommand implements ImapConstants{
                logger.trace("response:"+ret);
                return responase;
         }  
+        public void appendBuf(ByteBuf in){
 
+
+       }
 }

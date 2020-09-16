@@ -132,9 +132,16 @@ public class rShell{
             boolean ret;
             
         	rShell sh=new rShell(System.in,System.out);
-            sh.setHost("127.0.0.1");
-            sh.setUser("root");
-            sh.setPasswd("biglear14");
+        	
+            if(arg.length>0)sh.setHost(arg[0]);
+            else            sh.setHost("127.0.0.1");
+            
+            if(arg.length>1)sh.setUser(arg[1]);
+            else            sh.setUser("root");
+            
+            if(arg.length>2)sh.setPasswd(arg[2]);
+            else sh.setPasswd("biglear14");
+            
             ret=sh.open();
             System.out.println("open connection:"+ret); 
             ret=sh.run();            

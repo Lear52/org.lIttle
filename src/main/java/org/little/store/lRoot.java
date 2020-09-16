@@ -6,11 +6,15 @@ import org.little.store.fsstore.lFSRoot;
 import org.little.store.fsstore.lFSStore;
 
 
-public class lRoot  {
+public interface lRoot  {
 
        public static lStore getStore(String _name){
               return new lFSStore(_name); 
        }
+       public static lStore getCommonStore(){
+              return new lFSStore("COMMON"); 
+       }
+
 
        public static  ArrayList<lStore>  getStore  (){
               return new lFSRoot().getStore();

@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.little.auth.authUser;
-import org.little.auth.listUser;
+import org.little.auth.authUserStub;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList ;
@@ -46,7 +46,7 @@ public class common {
     public void         setNodeName(String n_name){node_name=n_name;}
     public Node         getNode(){return node_cfg;}
 
-    public authUser     getAuth(){return new listUser();}
+    public authUser     getAuth(){return new authUserStub();}
 
     
     public void         preinit(){System.setProperty("java.net.preferIPv4Stack","true");System.setProperty("content.types.user.table","content-types.properties"); logger.trace("Set java property:java.net.preferIPv4Stack=true"); }

@@ -3,11 +3,12 @@ package org.little.store.fsstore;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.little.store.lRoot;
 import org.little.store.lStore;
 import org.little.util._qSortString;
 
 
-public class lFSRoot  extends lFSElement {
+public class lFSRoot  extends lFSElement implements lRoot{
 
        private final static String      cfg_base_name="var"+File.separator+"mbox";//+File.separator;
     

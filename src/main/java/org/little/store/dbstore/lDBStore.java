@@ -6,6 +6,7 @@ import java.util.ArrayList;
 //import org.little.util.Except;
 
 import org.little.store.lFolder;
+import org.little.store.lRoot;
 import org.little.store.lStore;
 
 
@@ -108,6 +109,8 @@ public class lDBStore   implements lStore  {
 		
 	}
 
+       @Override
+       public lFolder getCommonFolder   (){	return lRoot.getCommonStore().getInboxFolder();}
    
 
 }

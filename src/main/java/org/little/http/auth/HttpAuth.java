@@ -1,25 +1,23 @@
 package org.little.http.auth;
 
+import org.little.auth.authUser;
+import org.little.http.commonHTTP;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-import org.little.auth.listUser;
-import org.little.http.commonHTTP;
-
 
 public class HttpAuth  {
        private static final Logger  logger = LoggerFactory.getLogger(HttpAuth.class);
 
-       protected listUser   list;
+       protected authUser   list;
        private   int        type_auth;
        private   String     realm;
 
        public HttpAuth() {
-              list=new listUser();
-              list.load();
+              list=commonHTTP.get().getAuth();
        }
        
        
