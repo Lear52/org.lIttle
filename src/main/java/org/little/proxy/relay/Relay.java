@@ -15,16 +15,19 @@ import java.util.Date;
  */
 public class Relay extends Thread {
        final static int BUFSIZ = 1000;
-       InputStream in;
+       InputStream  in;
        OutputStream out;
        byte buf[] = new byte[BUFSIZ];
        OutputStream os;
        String enc = "8859_1";
-       Relay(InputStream in, OutputStream out, OutputStream os, String enc) {
+       String tag;
+
+       Relay(InputStream in, OutputStream out, OutputStream os, String enc,String tag) {
            this.in = in;
            this.out = out;
            this.os = os;
            this.enc = enc;
+           this.tag = tag;
        }
        public String getEncoding() {
            return enc;
@@ -36,6 +39,7 @@ public class Relay extends Thread {
                    out.write(buf, 0, n);
                    out.flush();
                    if (os != null) {
+                       os.write(tag.getBytes());/**/
                        os.write(buf, 0, n);
                        os.flush();
                    }

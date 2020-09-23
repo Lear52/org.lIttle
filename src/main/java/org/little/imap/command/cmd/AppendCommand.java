@@ -1,14 +1,22 @@
 package org.little.imap.command.cmd;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.little.imap.IMAPTransaction;
 import org.little.imap.SessionContext;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
 import org.little.imap.response.EmptyResponse;
 import org.little.imap.response.ImapResponse;
+import org.little.store.ELM2lMessage;
+import org.little.store.lFolder;
+import org.little.store.lMessage;
+import org.little.store.lMessageX509;
+import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -23,40 +31,122 @@ public class AppendCommand  extends ImapCommand {
 
        public static final String NAME = "APPEND";
        public static final String ARGS = "<mailbox> [<flag_list>] [<date_time>] literal";
+       private byte [] buffer;
+       private int     point;
+       private int     _size;
 
-
-       public AppendCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { super(_tag,_command,_parameters);}
+       public AppendCommand(String _tag, String _command, List<ImapCommandParameter> _parameters) { 
+    	   super(_tag,_command,_parameters);
+    	   buffer=null;
+    	   _size=0;
+    	   point=0;
+       }
 
        @Override
        public ArrayList<ImapResponse> doProcess(SessionContext  sessionContext) throws Exception {
               ArrayList<ImapResponse> responase =new ArrayList<ImapResponse>();
               logger.trace("IMAP:doProcess:"+NAME+" "+ImapCommand.print(getParameters()));
               //--------------------------------------------------------------------------------------------------------------------------------------
-              ImapResponse ret=null;
-              String folder_name;
-              String flag=null  ;
-              String size=null  ;
+              ImapResponse ret        =null;
+              String       folder_name=null;
+              String       date       =null;
+              String       flag       =null;
+              String       size       =null;
+              lFolder      folder        = null;
+              IMAPTransaction txSession     = sessionContext.imapTransaction;
               
-              if(getParameters().size()>0) {folder_name   = getParameters().get(0).toString();}
+              if(getParameters().size()>0) {
+                 String arg= getParameters().get(0).toString();
+                 if(arg.startsWith("\"") && arg.endsWith("\"")){folder_name=arg.substring(1, arg.length()-1);}
+                 else folder_name   = arg;
+              }
               else {
                   ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   
                   responase.add(ret);
                   return responase; 
               }
-              if(getParameters().size()>1) {flag   = getParameters().get(1).toString();}
-              if(getParameters().size()>2) {size   = getParameters().get(1).toString();}
+              int n=1;
+              while(getParameters().size()>n) {
+                 String arg= getParameters().get(n).toString();
+                 if(arg.startsWith("(") && arg.endsWith(")")){flag=arg.substring(1, arg.length()-1);}
+                 if(arg.startsWith("{") && arg.endsWith("}")){size=arg.substring(1, arg.length()-1);}
+                 if(arg.startsWith("\"") && arg.endsWith("\"")){date=arg.substring(1, arg.length()-1);}
+                 n++;
+              }
 
+              if(size!=null) {try{_size=Integer.parseInt(size);}catch(Exception e) {_size=0;}}
+
+              if(_size==0){
+                 logger.error("size literal data is 0");
+                 ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);                     
+                 responase.add(ret);
+                 logger.trace("response:"+ret);
+                 return responase;
+
+              }
               //byte[] mail = consumeLiteralAsBytes(request);
               //--------------------------------------------------------------------------------------------------------------------------------------
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+              if(buffer==null) {
+            	  ret=new EmptyResponse("+","Ready for literal data");   responase.add(ret);
+            	  buffer=new byte[_size];
+                  logger.trace("alloc buffer for liter data :"+_size);
+              }
+              else {
+                  ByteArrayInputStream in_byte=new ByteArrayInputStream(buffer);
+                  BufferedInputStream  in_stream=new BufferedInputStream(in_byte);
+
+                  lMessage[] buf_message=ELM2lMessage.parse(in_stream);
+                  folder=txSession.getStore().getFolder(folder_name);
+                  if(folder==null){
+                     logger.error("IMAP error open store:"+txSession.getUserName()+" folder:"+folder_name);
+                     ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
+                     responase.add(ret);
+                     logger.trace("response:"+ret);
+                     return responase;
+                  }
+
+                  if(buf_message==null){
+                      ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);                     
+                      responase.add(ret);
+                      logger.trace("response:"+ret);
+                      return responase;
+                   }
+                   for(int i=0;i<buf_message.length;i++){
+                       if(buf_message[i]==null)continue;
+                       buf_message[i]=lMessageX509.parse(buf_message[i]);
+                       if(buf_message[i]==null)continue;
+
+                       lMessage  msg  =buf_message[i];
+                       msg.setUID(lUID.get());
+                       folder.save(msg);
+                   }
+                   folder.close();
+            	  ret=new EmptyResponse(3+" EXISTS");   responase.add(ret);
+            	  ret=new EmptyResponse(1+" RECENT");   responase.add(ret);
+            	  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
+              }
               logger.trace("IMAP:response:"+ret);
 
               return responase;
        }
        @Override
-       public void appendBuf(ByteBuf in){
+       public boolean appendBuf(ByteBuf in){
+    	   if(buffer==null)return false;
 
+    	   int _sz=Math.min((_size-point),in.readableBytes());
+    	   
+    	   in.readBytes(buffer, point, _sz);
+    	   point+=_sz;
+    	   
+    	   if(point==_size){
+              in.skipBytes(2);  /**/
+              return true;
+    	   }
+    	   
+    	   return false;
        }
+       @Override
+       public boolean isAppend() {return true;}
 
 
 }

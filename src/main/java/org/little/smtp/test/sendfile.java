@@ -1,4 +1,4 @@
-package org.little.smtp;
+package org.little.smtp.test;
 
 import java.io.IOException;
 import java.util.Date;

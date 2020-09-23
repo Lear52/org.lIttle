@@ -56,8 +56,8 @@ public class TcpTunnel {
                s="*---------------------------------------------------------------------------------------------------------\r\n";
                os.write(s.getBytes());
                // relay the stuff thru
-               new Relay(sc.getInputStream(), st.getOutputStream(), os, enc).start();
-               new Relay(st.getInputStream(), sc.getOutputStream(), os, enc).start();
+               new Relay(sc.getInputStream(), st.getOutputStream(), os, enc,"1>").start();
+               new Relay(st.getInputStream(), sc.getOutputStream(), os, enc,"2>").start();
                // that's it .. they're off; now I go back to my stuff.
            }
        }

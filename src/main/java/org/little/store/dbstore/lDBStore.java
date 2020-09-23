@@ -1,116 +1,71 @@
 package org.little.store.dbstore;
 
 import java.util.ArrayList;
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
-//import org.little.util.Except;
 
 import org.little.store.lFolder;
 import org.little.store.lRoot;
 import org.little.store.lStore;
+/*
+CREATE TABLE L_STORE(
+ID   NUMBER,
+NAME VARCHAR(128)
+);
 
 
 
-public class lDBStore   implements lStore  {
+*/
+
+
+public class lDBStore   implements lStore, lDBElement  {
     //private static final Logger logger = LoggerFactory.getLogger(lStore.class);
+       private String name_store;
 
-
-    public lDBStore(String _name) {
-    }
-
-    
-    @Override
-    public    ArrayList<lFolder >    getListFolder  (){return null;}
-
-
-	@Override
-	public lFolder getInboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder createInboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder getOutboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder createOutboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder getFolder(String name_folder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder createFolder(String name_folder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder getFolder(lFolder parent, String name_folder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder createFolder(lFolder parent, String name_folder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-        public void close(){return ;}
-
-
-	@Override
-	public lFolder getDelboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public lFolder createDelboxFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public void deleteFolder(String org_folder_name) {
-		// TODO Auto-generated method stub
-		
-	}
+       public lDBStore(String _name) {
+              name_store=_name;
+       }
 
        @Override
-       public lFolder getCommonFolder   (){	return lRoot.getCommonStore().getInboxFolder();}
+       public  boolean init (){
+               String sql="CREATE TABLE L_STORE("
+                         +"ID   NUMBER,"
+                         +"NAME VARCHAR(128)"
+                         +")";
+
+
+               return false;
+       }// TODO Auto-generated method stub
+    
+       @Override
+       public  ArrayList<lFolder >    getListFolder  (){return null;}                    // TODO Auto-generated method stub
+       @Override
+       public lFolder getInboxFolder() {return null; }                                   // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder createInboxFolder() { return null; }                               // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder getOutboxFolder() { return null; }                                 // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder createOutboxFolder() { return null; }                              // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder getFolder(String name_folder) { return null; }                     // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder createFolder(String name_folder){return null;}                     // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder getFolder(lFolder parent, String name_folder) {return null; }      // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder createFolder(lFolder parent, String name_folder) {return null;}    // TODO Auto-generated method stub
+       @Override                                                                        
+       public String getName() { return name_store;}                                     // TODO Auto-generated method stub
+       @Override                                                                        
+       public void close(){return ;}                                                     // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder getDelboxFolder() { return null;}                                  // TODO Auto-generated method stub
+       @Override                                                                        
+       public lFolder createDelboxFolder() { return null;}                               // TODO Auto-generated method stub
+       @Override                                                                        
+       public void deleteFolder(String org_folder_name) {}                               // TODO Auto-generated method stub
+
+       @Override
+       public lFolder getCommonFolder(){return lRoot.getCommonStore().getInboxFolder();} // TODO Auto-generated method stub
    
 
 }

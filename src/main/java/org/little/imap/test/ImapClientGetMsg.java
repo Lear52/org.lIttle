@@ -1,4 +1,4 @@
-package org.little.imap;
+package org.little.imap.test;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -14,7 +14,6 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Except;
 
-
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -24,23 +23,25 @@ import javax.mail.Store;
 
 import com.sun.mail.imap.IMAPFolder;
 
-public class ImapClient0 {
+public class ImapClientGetMsg {
 
-        private static final Logger logger = LoggerFactory.getLogger(ImapClient0.class);
+        private static final Logger logger = LoggerFactory.getLogger(ImapClientGetMsg.class);
 
-        Properties props;
-        Store store;
-        IMAPFolder  folder;
-        boolean     debug    = true;
-        String      userName = "av@vip.cbr.ru";
-        String      password = "123";
-        String      host     = "127.0.0.1";
-        int         port     = 143;
+            Properties props;
+            Store      store;
+            IMAPFolder folder;
+            boolean    debug   = true;
+            String     userName = "av";
+            String     password = "123";
+            String     host     = "127.0.0.1";
+            int        port    = 1143;
             
             
-        public ImapClient0() {
+        public ImapClientGetMsg() {
+
                 store = null;
                 folder = null;
+
         }
 
         /**
@@ -81,34 +82,37 @@ public class ImapClient0 {
                           }
                 };
         
-                System.out.println("console:pre Session.getInstance");
+                System.out.println("pre Session.getInstance");
                 Session session = Session.getInstance(props, auth);//null
-                System.out.println("console:post Session.getInstance");
+                System.out.println("post Session.getInstance");
 
                 session.setDebug(debug);
 
 
                 try {
                         // Try to initialise session with given credentials
-                        System.out.println("console:BEGIN");
                         store = session.getStore("imap");
-                        System.out.println("console:getStore(imap)");
+                        System.out.println("client:getStore(imap)");
                         // store = session.getStore("imaps");
 
-                        logger.trace("connect to:"+host+"("+port+") "+userName+":"+password);
                         store.connect(host, port, userName, password);// 1143
-                        logger.trace("connect "+host+","+port+","+userName+","+password);
-                        System.out.println("console:connect Ok "+host+","+port+","+userName+","+password);
+                        logger.trace("client:connect "+host+","+port+","+userName+","+password);
+                        System.out.println("client:connect Ok"+host+","+port+","+userName+","+password);
 
 
                         folder = (IMAPFolder) store.getFolder("inbox"); // Get the inbox
-                        logger.trace("getFolder inbox");
-                        System.out.println("console:getFolder inbox");
+                        logger.trace("client:getFolder inbox");
+                        System.out.println("client:getFolder inbox");
 
+                        System.out.println("client:begin openFolder inbox");
                         if (!folder.isOpen())folder.open(Folder.READ_WRITE);
-                        System.out.println("console:openFolder inbox");
-                        System.out.println("console:No of Messages : "        + folder.getMessageCount());
-                        System.out.println("console:No of Unread Messages : " + folder.getUnreadMessageCount());
+                        System.out.println("client:end   openFolder inbox:"+folder.toString());
+
+                        
+                        
+                        System.out.println("client:count of Messages        : " + folder.getMessageCount());
+
+                        System.out.println("client:count of Unread Messages : " + folder.getUnreadMessageCount());
 
                         if(folder.getMessageCount()>0) {
                         int count = 0;
@@ -117,6 +121,17 @@ public class ImapClient0 {
                         // Get all messages
                         for (Message message : messages) {
                                 count++;
+                                try {
+                                    InputStream i = message.getInputStream();
+                                	int c;
+                                    while ((c = i.read()) > -1) {
+                                    	System.out.write(c);
+                                    }
+                                    i.close();
+                                } catch (Exception eee) {
+                                    eee.printStackTrace();
+                                }
+
                                 Flags mes_flag = message.getFlags();
                                 // Get subject of each message
                                 System.out.println("console:The " + count + "th message is: " + message.getSubject());
@@ -127,29 +142,31 @@ public class ImapClient0 {
                                         // How to get parts from multiple body parts of MIME message
                                         Multipart multipart = (Multipart) message.getContent();
                                         System.out.println("console:Multipart message-----------" + multipart.getCount() + "----------------\n");
+                                        System.out.println("console:multipart.getCount():" + multipart.getCount()+"\n");
 
                                         for (int x = 0; x < multipart.getCount(); x++) {
-                                                System.out.println("console:multipart:"+x+"/"+multipart.getCount()+"\n");
+                                                System.out.println("console:multipart:"+x+"/"+multipart.getCount()+"------------------------\n");
                                                 
                                                 BodyPart bodyPart = multipart.getBodyPart(x);
                                                 // If the part is a plan text message, then print it out.
                                                 System.out.println("console:"+bodyPart.getContentType());
-                                                System.out.println("console:filename:"+bodyPart.getFileName());
-                                                System.out.println("console:Content:"+bodyPart.getContent().toString());
-                                                InputStream is = bodyPart.getInputStream();
-                                                try {
-                                                    FileOutputStream out = new FileOutputStream("out.file.imap");
-                                                	int c;
-                                                    while ((c = is.read()) > -1) {
-                                                    	out.write(c);
-                                                    }
-                                                    is.close();
-                                                    out.flush();
-                                                    out.close();
-                                                } catch (Exception eee) {
-                                                    eee.printStackTrace();
+                                                if(x>=0){
+                                                   System.out.println("console:filename:"+bodyPart.getFileName());
+                                                   System.out.println("console:Content:"+bodyPart.getContent().toString());
+                                                   InputStream is = bodyPart.getInputStream();
+                                                   try {
+                                                       FileOutputStream out = new FileOutputStream("out.file.imap");
+                                                   	int c;
+                                                       while ((c = is.read()) > -1) {
+                                                       	out.write(c);
+                                                       }
+                                                       is.close();
+                                                       out.flush();
+                                                       out.close();
+                                                   } catch (Exception eee) {
+                                                       eee.printStackTrace();
+                                                   }
                                                 }
-                                                
                                                 System.out.println("\n");
                                                 
                                                 //if (bodyPart.getContentType().contains("TEXT/PLAIN")) {
@@ -161,14 +178,15 @@ public class ImapClient0 {
                                 System.out.println("console:"+" Has this message been read?  flag:" + mes_flag.contains(Flag.SEEN));
                         }
                         }
+
                 } catch (Exception e) {
                         Except ex=new Except(e);
                         logger.error("ex:" + ex);
                         e.printStackTrace();
-                        // System.exit(0);
                 } finally {
                         try {
                                 if (folder != null && folder.isOpen()) {
+                                	System.out.println("client:close folder");
                                         folder.close(true);
                                 }
                                 if (store != null) {
@@ -182,8 +200,8 @@ public class ImapClient0 {
         public static void main(String[] args) {
 
                 System.setProperty("java.net.preferIPv4Stack", "true");
-                logger.trace("Set java property:java.net.preferIPv4Stack=true");
-                ImapClient0 cln = new ImapClient0();
+                logger.trace("client:Set java property:java.net.preferIPv4Stack=true");
+                ImapClientGetMsg cln = new ImapClientGetMsg();
 
                 cln.run();
 

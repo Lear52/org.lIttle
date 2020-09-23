@@ -171,7 +171,7 @@ public class FetchCommand  extends ImapCommand {
                      fetch.body_section=body_section;
                      fetch.size_section=size_section;
                      fetch.body_peek=true;
-                     logger.trace("IMAP fetch cmd param name:"+"BODY.PEEK[" + body_section + "]  ");
+                     logger.trace("IMAP fetch cmd param name:"+"BODY.PEEK[" + body_section + "]");
                   }
                   else 
                   if(vol_param.startsWith("BODY")){
@@ -437,9 +437,9 @@ public class FetchCommand  extends ImapCommand {
                          if(fetch.body_peek)buf.append("BODY");//buf.append("BODY.PEEK");
                          if(fetch.body)buf.append("BODY");
                          if(msg.getBodyTxt()!=null)len_txt=msg.getBodyTxt().length();
-                         buf.append("[1]<0> {"+len_txt+"} \r\n");
+                         buf.append("[1]<0> {"+len_txt+"}\r\n");
                          buf.append(msg.getBodyTxt());
-                         buf.append(SP);
+                         //buf.append(SP);
                       }
                       else
                       if(part==2){

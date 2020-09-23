@@ -16,6 +16,9 @@ import org.little.util.LoggerFactory;
 import org.little.util.stringCase;
 import org.little.util.stringWildCard;
 
+import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
+import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
+
 
 /**
  * Handles processeing for the LIST imap command.
@@ -24,6 +27,7 @@ import org.little.util.stringWildCard;
 public class ListCommand  extends ImapCommand {
        private static final Logger logger = LoggerFactory.getLogger(ListCommand.class);
 
+       public static final String DELIMITER = "/";
        public static final String NAME = "LIST";
        public static final String ARGS = "<reference-name> <mailbox-name-with-wildcards>";
 
@@ -46,26 +50,35 @@ public class ListCommand  extends ImapCommand {
               logger.trace("find folder for region:"+arg1+" mask:"+arg2);
               //--------------------------------------------------------------------------------------------------------------------------------------
               ImapResponse ret=null;
+
               if(arg1.length()==0 && arg2.length()==0) {
-             	  ret=new EmptyResponse(NAME+" (\\Noselect) \".\" \"\"");responase.add(ret);
+             	  ret=new EmptyResponse(NAME+" (\\Noselect) \""+DELIMITER+"\" \"\"");responase.add(ret);
+                  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               }
               else
               if(arg2!=null) {
-              IMAPTransaction txSession     = sessionContext.imapTransaction;
-              ArrayList<lFolder >  list_folder=txSession.getStore().getListFolder();
-              if("".equals(arg1) || ".".equals(arg1))
-              for(int i=0;i<list_folder.size();i++) {
-            	  String name_folder=list_folder.get(i).getName().toUpperCase();
-                  logger.trace("name_folder:"+name_folder+" mask:"+arg2+ " region:"+arg1);
+                 IMAPTransaction txSession     = sessionContext.imapTransaction;
+                 ArrayList<lFolder >  list_folder=txSession.getStore().getListFolder();
+                 if("".equals(arg1) || DELIMITER.equals(arg1)){
+                    for(int i=0;i<list_folder.size();i++) {
+                        String name_folder=list_folder.get(i).getName();
+                        String __name_folder=name_folder.toUpperCase();
+                        String __mask=BASE64MailboxDecoder.decode(arg2);
 
-            	  if(stringWildCard.wildcardMatch(name_folder,arg2, stringCase.INSENSITIVE)) {                   
-                 	  ret=new EmptyResponse(NAME+" (\\HasNoChildren) \".\" \""+ name_folder+"\"");responase.add(ret);
-            	  }
+                        logger.trace("name_folder:"+__name_folder+" mask:"+__mask+ " region:"+arg1);
+
+            	        if(stringWildCard.wildcardMatch(__name_folder,__mask, stringCase.INSENSITIVE)) {                   
+            	           String _name_folder=BASE64MailboxEncoder.encode(name_folder);
+                           //String _name_folder=BASE64MailboxDecoder.decode(name_folder);
+                           logger.trace("name_folder:"+name_folder+" -> new name_folder:"+_name_folder);
+                 	   ret=new EmptyResponse(NAME+" (\\HasNoChildren) \""+DELIMITER+"\" \""+ _name_folder+"\"");responase.add(ret);
+                        }
+                    }
+                 }
+                 ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               }
-              ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
-              }
-              else {
-            	  ret=new EmptyResponse(NAME+" (\\NoSelect) \".\" \"\"");responase.add(ret);
+              else{
+                  ret=new EmptyResponse(NAME+" (\\NoSelect) \".\" \"\"");responase.add(ret);
                   ret=new EmptyResponse(getTag(),ImapConstants.BAD+" "+NAME+" "+ImapConstants.BADCOMMAND);   responase.add(ret);
               } 
 

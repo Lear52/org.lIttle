@@ -31,8 +31,6 @@ public  class ImapServerlInitializer extends ChannelInitializer<SocketChannel> {
                      pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
                      pipeline.addLast(new SessionInitiationHandler());
                      pipeline.addLast(new ImapCommandDecoder());
-                     
-                     //pipeline.addLast(new ImapResponseEncoder());
                      pipeline.addLast(new ImapCommandHandler());
 
                      logger.trace("initChannel OK");

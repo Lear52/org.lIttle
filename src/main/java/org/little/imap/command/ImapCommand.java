@@ -84,8 +84,9 @@ public class ImapCommand implements ImapConstants{
                logger.trace("response:"+ret);
                return responase;
         }  
-        public void appendBuf(ByteBuf in){
-
+        public boolean appendBuf(ByteBuf in){
+               return true;
 
        }
+       public boolean isAppend() {return false;}
 }

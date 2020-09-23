@@ -16,6 +16,8 @@ import org.little.util.LoggerFactory;
 import org.little.util.stringCase;
 import org.little.util.stringWildCard;
 
+import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
+import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
 
 public class LsubCommand extends ListCommand {
        private static final Logger logger = LoggerFactory.getLogger(LsubCommand.class);
@@ -45,9 +47,12 @@ public class LsubCommand extends ListCommand {
                  if("".equals(arg1) || ".".equals(arg1))
                  for(int i=0;i<list_folder.size();i++) {
             	     String name_folder=list_folder.get(i).getName();//.toUpperCase();
+
             	     if(stringWildCard.wildcardMatch(name_folder,arg2, stringCase.INSENSITIVE)) {                   
-            	        ret=new EmptyResponse(NAME+" (\\HasNoChildren) \".\" \""+ name_folder+"\"");responase.add(ret);
+            	        String _name_folder=BASE64MailboxEncoder.encode(name_folder);
+            	        ret=new EmptyResponse(NAME+" (\\HasNoChildren) \".\" \""+ _name_folder+"\"");responase.add(ret);
             	     }
+
                  }
                  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               }

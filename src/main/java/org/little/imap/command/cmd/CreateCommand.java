@@ -16,6 +16,10 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 
+import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
+import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
+
+
 /**
  * Handles processeing for the CREATE imap command.
  *
@@ -46,8 +50,13 @@ public class CreateCommand  extends ImapCommand {
                   responase.add(ret);
                   return responase; 
               }
+              if(org_folder_name.startsWith("\"") && org_folder_name.endsWith("\"")){
+            	  org_folder_name=org_folder_name.substring(1, org_folder_name.length()-1);
+              }
+
               if(org_folder_name.toUpperCase().equals("INBOX"))folder_name=org_folder_name.toLowerCase();
-              else folder_name=org_folder_name;
+              else                                             folder_name=BASE64MailboxDecoder.decode(org_folder_name);
+              //else folder_name=org_folder_name;
 
               if(txSession==null){
                  logger.error("IMAP transaction is null");
@@ -64,22 +73,14 @@ public class CreateCommand  extends ImapCommand {
                  return responase;
               }
               //----------------------------------------------------------------------------------------------
-              
-              if(folder_name.startsWith("\"") && folder_name.endsWith("\"")){
-                 folder_name=folder_name.substring(1, folder_name.length()-1);
-              }
-              if(org_folder_name.startsWith("\"") && org_folder_name.endsWith("\"")){
-            	  org_folder_name=org_folder_name.substring(1, org_folder_name.length()-1);
-              }
-              //----------------------------------------------------------------------------------------------
               folder=txSession.getStore().getFolder(folder_name);
-              if(folder==null)folder=txSession.getStore().createFolder(org_folder_name);
+              if(folder==null)folder=txSession.getStore().createFolder(folder_name);
               //--------------------------------------------------------------------------------------------------------------------------------------
               if(folder!=null) {
             	  ret=new EmptyResponse(getTag(),ImapConstants.OK+" "+NAME+" "+ImapConstants.COMPLETED);   responase.add(ret);
               }
               else {
-            	  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED);   responase.add(ret);
+            	  ret=new EmptyResponse(getTag(),ImapConstants.NO+" "+NAME+" "+ImapConstants.UNCOMPLETED); responase.add(ret);
               }
               logger.trace("IMAP:response:"+ret);
 
