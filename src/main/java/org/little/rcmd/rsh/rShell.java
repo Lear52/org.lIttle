@@ -2,72 +2,113 @@ package org.little.rcmd.rsh;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
-import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-public class rShell  extends r_ssh{
+public class rShell{
        private static Logger logger = LoggerFactory.getLogger(rShell.class);
+       protected JSch         jsch;
+       protected Session      session;
+       protected Channel      channel;
+                          
+       private String         host;
+       private String         user;
+       private String         passwd;
+
+       protected InputStream  in;
+       protected OutputStream out;
        
-       public rShell() {}
-
-       protected boolean openChannel() throws JSchException {
-               channel=session.openChannel("shell");
-               return true;
+       public rShell() {
+              clear();
        }
+       private void clear() {
+               jsch=new JSch();
+               session=null;
+               host=null;
+               user=null;
+               passwd=null;
+       }
+       public String       getHost  () {return host;}
+       public String       getUser  () {return user;}
+       public String       getPasswd() {        return passwd;        }
+       public void         setHost  (String host) {this.host = host;}
+       public void         setUser  (String user) {this.user = user;        }
+       public void         setPasswd(String passwd) {this.passwd = passwd;        }
+
+       public InputStream  getIN    (){return in;  }
+       public OutputStream getOUT   (){return out;}
+
+       protected  boolean _open_session() {
+                  try{
+                      session=jsch.getSession(user, host, 22);
+                      session.setPassword(passwd);
+                     
+                      UserInfo ui = new UserInfo(){
+                                    public void showMessage(String message){
+                                    }
+                                    public boolean promptYesNo(String message){
+                                    return true;
+                                    }
+                                    @Override
+                                    public String getPassphrase() {
+                                           return null;
+                                    }
+                                    @Override
+                                    public String getPassword() {
+                                           return null;
+                                    }
+                                    @Override
+                                    public boolean promptPassphrase(String arg0) {
+                                           return false;
+                                    }
+                                    @Override
+                                    public boolean promptPassword(String arg0) {
+                                           return false;
+                                    }
+                      };
+                      session.setUserInfo(ui);
+                      session.connect(30000);  
+                  }
+                  catch(Exception e){
+                              logger.error("error ex:"+e);
+                        return false;
+                  }
+                   
+                  return true;
+       }
+       protected  boolean _open_channel() {
+                  try{
+                      channel=session.openChannel("shell");
+                      out=channel.getOutputStream();
+                      in =channel.getInputStream();
+                      channel.connect(3*1000);
+                  }
+                  catch(Exception e){
+                        logger.error("error open channel ex:"+e);
+                        return false;
+                  }
+                  return true;
+       }
+       protected void _close(){
+                 channel.disconnect();
+                 session.disconnect();
+       }
+
        public  boolean open() {
-               try{
-                   session=jsch.getSession(getUser(), getHost(), 22);
-                   session.setPassword(getPasswd());
-                  
-                   UserInfo ui = new UserInfo(){
-                                 public void showMessage(String message){
-                                 }
-                                 public boolean promptYesNo(String message){
-                                 return true;
-                                 }
-                                 @Override
-                                 public String getPassphrase() {
-                                        return null;
-                                 }
-                                 @Override
-                                 public String getPassword() {
-                                        return null;
-                                 }
-                                 @Override
-                                 public boolean promptPassphrase(String arg0) {
-                                        return false;
-                                 }
-                                 @Override
-                                 public boolean promptPassword(String arg0) {
-                                        return false;
-                                 }
-                   };
-                   session.setUserInfo(ui);
-                   session.connect(30000);  
-                  
-                   openChannel();
-                  
-                   out=channel.getOutputStream();
-                   in =channel.getInputStream();
-                  
-                   channel.connect(3*1000);
-               }
-               catch(Exception e){
-          	  logger.error("error ex:"+e);
-                     return false;
-               }
-                
+               if(!_open_session())return false; 
+               if(!_open_channel())return false; 
                return true;
        }
-       public void close() {
-              channel.disconnect();
-              session.disconnect();
-       }
-
+       public void close(){ _close();}
+       
        public boolean run()  {
               BufferedInputStream bufin = new BufferedInputStream(in);
               int c;
@@ -89,7 +130,7 @@ public class rShell  extends r_ssh{
                    }
                               
               } catch (IOException e) {
-            	  logger.error("error ex:"+e);
+                      logger.error("error ex:"+e);
               }
            
               return true;

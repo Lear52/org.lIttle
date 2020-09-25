@@ -15,14 +15,18 @@ public class rCP_R2L extends rCP{
        public rCP_R2L(String rfile,String lfile) {
               super(rfile,lfile);
        }
-
-       @Override
-       protected String r_command(){
-                return "scp -f "+rfile;
+       public rCP_R2L(rShell sh,String name,int index,String _rfile,String _lfile) {
+              super(sh,name,index,_rfile,_lfile);
        }
 
        @Override
-       public boolean run() {
+       protected String r_command(){return "scp -f "+rfile; }
+
+       @Override
+       protected boolean _run() {
+                 boolean ret=false;
+                 logger.debug("begin command:"+name+" index:"+index +" R2L");
+
               try {
 
                    byte[] buf=new byte[1024];
@@ -86,20 +90,32 @@ public class rCP_R2L extends rCP{
                          fos=null;
                       
                          if(checkAck(getIN())!=0){
-                            return true;
+                            ret=true;
+                            break;
                          }
-                      
-                         // send '\0'
-                         buf[0]=0; out.write(buf, 0, 1); out.flush();
+                         else {
+                             // send '\0'
+                             buf[0]=0; 
+                             out.write(buf, 0, 1); 
+                             out.flush();
+                             ret=true;
+                         }
                    }
               } 
               catch (IOException e) {
                     logger.error("error ex:"+e);
-                    return false;
+                    ret=false;
               } 
 
-              return true;
+              logger.debug("end command:"+name+" index:"+index +" R2L return:"+ret);
+
+              return ret;
         }
+       @Override
+       public String toString(){
+               return "rCP(R2L):"+name+" index:"+index+" local:"+lfile+" "+"remote:"+rfile;
+       }  
+
           
         public static void main(String[] arg){
                boolean ret;

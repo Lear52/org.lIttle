@@ -3,6 +3,10 @@ package org.little.rcmd;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
 
+import org.little.rcmd.rsh.rCMD;
+import org.little.rcmd.rsh.rCP;
+import org.little.rcmd.rsh.rCP_L2R;
+import org.little.rcmd.rsh.rCP_R2L;
 import org.little.rcmd.rsh.rCommand;
 import org.little.rcmd.rsh.rShell;
 import org.little.util.Logger;
@@ -15,10 +19,11 @@ public class rDionisCommand{
 
        private String              name;
        private rShell              sh;
-       private ArrayList<rCommand> list;
+       private ArrayList<rCMD> list_rcommand;
+
 
        public rDionisCommand(rShell sh,String name) {
-              list=new ArrayList<rCommand>();
+              list_rcommand=new ArrayList<rCMD>();
               this.sh=sh;
               this.name=name;
        }
@@ -26,11 +31,13 @@ public class rDionisCommand{
        public boolean run(BufferedInputStream bufin)  {
               logger.debug("begin run cmd:"+name);
 
-              for(int i=0;i<list.size();i++){
-                  rCommand cmd=list.get(i);
+              for(int i=0;i<list_rcommand.size();i++){
+                  rCMD cmd=list_rcommand.get(i);
                   if(cmd==null)continue;
                   boolean ret;
+
                   ret=cmd.run(bufin);
+
                   if(ret==false) {
                      logger.trace("cmd:"+cmd.toString()+" ret:"+ret);
                      logger.error("cmd:"+cmd.toString()+" ret:"+ret);
@@ -45,7 +52,7 @@ public class rDionisCommand{
         public boolean loadCFG(Node node_cfg) {
                //logger.debug("begin cfg cmd:"+name);
 
-               list=new ArrayList<rCommand>();
+               list_rcommand=new ArrayList<rCMD>();
                NodeList glist=node_cfg.getChildNodes();     
                int count=0;
                for(int i=0;i<glist.getLength();i++){
@@ -53,7 +60,17 @@ public class rDionisCommand{
                    if("cmd".equals(n.getNodeName())){
                       rCommand cmd=makeCmd(n,count++);
                       if(cmd==null)continue;
-                      list.add(cmd);
+                      list_rcommand.add(cmd);
+                   }            
+                   if("get".equals(n.getNodeName())){
+                      rCP cmd=makeR2L(n,count++);
+                      if(cmd==null)continue;
+                      list_rcommand.add(cmd);
+                   }            
+                   if("put".equals(n.getNodeName())){
+                      rCP cmd=makeL2R(n,count++);
+                      if(cmd==null)continue;
+                      list_rcommand.add(cmd);
                    }            
                }
 
@@ -61,7 +78,7 @@ public class rDionisCommand{
                return true;
         }
 
-        public rCommand makeCmd(Node node_cfg,int index) {
+        private rCommand makeCmd(Node node_cfg,int index) {
                rCommand  cmd=null;
                if(node_cfg==null)return null;
 
@@ -88,4 +105,54 @@ public class rDionisCommand{
                return cmd;
         }
         
+
+        private rCP makeR2L(Node node_cfg,int index) {
+               rCP  cmd=null;
+               if(node_cfg==null)return null;
+
+               String remote=null;
+               String local=null;
+               NodeList glist=node_cfg.getChildNodes();     
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
+
+                   if("remote".equals(n.getNodeName())){
+                      remote=n.getTextContent();
+                   }            
+                   else
+                   if("local".equals(n.getNodeName())){
+                       local=n.getTextContent();
+                   }            
+
+               }
+               if(local==null && local==null)return null;
+
+               cmd=new rCP_R2L(sh,name,index,remote,local); 
+               return cmd;
+        }
+        private rCP makeL2R(Node node_cfg,int index) {
+               rCP  cmd=null;
+               if(node_cfg==null)return null;
+
+               String remote=null;
+               String local=null;
+               NodeList glist=node_cfg.getChildNodes();     
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
+
+                   if("remote".equals(n.getNodeName())){
+                      remote=n.getTextContent();
+                   }            
+                   else
+                   if("local".equals(n.getNodeName())){
+                       local=n.getTextContent();
+                   }            
+
+               }
+               if(local==null && local==null)return null;
+
+               cmd=new rCP_L2R(sh,name,index,remote,local); 
+               return cmd;
+        }
+
 }

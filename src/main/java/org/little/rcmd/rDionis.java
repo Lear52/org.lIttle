@@ -6,9 +6,6 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.little.rcmd.rsh.rCP;
-import org.little.rcmd.rsh.rCP_L2R;
-import org.little.rcmd.rsh.rCP_R2L;
 import org.little.rcmd.rsh.rShell;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -20,40 +17,28 @@ import org.w3c.dom.NodeList;
 public class rDionis{
 
        private static Logger                  logger = LoggerFactory.getLogger(rDionis.class);
-       private String                         host;
+       //private String                         host;
        private rShell                         sh;
-       private rCP                            cp_l2r;
-       private rCP                            cp_r2l;
 
        private BufferedInputStream            bufin;
        private HashMap<String,rDionisCommand> command; 
 
        public rDionis() {
                   sh     =new rShell();
-                  cp_l2r =new rCP_L2R();
-                  cp_r2l =new rCP_R2L();
-                  
                   bufin  =null;
-                  host   ="127.0.0.1";
+                  String host   ="127.0.0.1";
+                  sh.setHost(host);
                   command=new HashMap<String,rDionisCommand>();
        }
        public void  setUser  (String user  ) {
     	            sh.setUser(user);
-    	            cp_l2r.setUser(user);
-    	            cp_r2l.setUser(user);
        }
        public void  setPasswd(String passwd) {
     	            sh.setPasswd(passwd);
-    	            cp_l2r.setPasswd(passwd);
-    	            cp_r2l.setPasswd(passwd);
        }
        
        public boolean open() {
                   boolean ret;
-                  sh.setHost(host);
-                  cp_l2r.setHost(host);
-                  cp_r2l.setHost(host);
-
                   ret=sh.open();
                   if(ret)bufin = new BufferedInputStream(sh.getIN()); 
                   return ret;
@@ -107,7 +92,7 @@ public class rDionis{
               NodeList glist=node_cfg.getChildNodes();     
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("host".equals(n.getNodeName())){host=n.getTextContent();  logger.info("host:"+host);}
+                  if("host".equals(n.getNodeName())){String host=n.getTextContent();  logger.info("host:"+host);sh.setHost(host);}
               }
            }    
            
@@ -129,14 +114,13 @@ public class rDionis{
               
               if(node_cfg==null) {
             	 logger.error("no find topic:"+getNodeName());
-            	  return false;
+            	 return false;
               }
               
               NodeList glist=node_cfg.getChildNodes();     
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  logger.trace("topic["+i+"] name:"+n.getNodeName());
-
+                  //logger.trace("topic["+i+"] name:"+n.getNodeName());
                   if("global_option".equals(n.getNodeName()))loadGlobal(n);
                   if("commanddi".equals(n.getNodeName()))loadCMD(n);
 
@@ -151,7 +135,7 @@ public class rDionis{
     	      logger.trace("run cmd:"+name);
               return cmd.run(bufin);
        }
-          
+       //-------------------------------------------------------------------------------   
        public static void main(String[] arg){
               boolean ret;
               rDionis apk = new rDionis();
@@ -161,7 +145,7 @@ public class rDionis{
               else            apk.setUser("adm");
               
               if(arg.length>2)apk.setPasswd(arg[2]);
-              else apk.setPasswd("2wsxXSW@");
+              else            apk.setPasswd("2wsxXSW@");
              
               String f_name;
               if(arg.length>3)f_name=arg[3];
@@ -178,17 +162,16 @@ public class rDionis{
                  System.out.println("apk.open return:"+ret);     
                  return;     
               }
-              if(ret){
-                 ret=apk.runCMD("getgkey");
-                 System.out.println("apk.genGKey return:"+ret);     
-              }
-              if(ret){
-                 ret=apk.runCMD("loadkey");
-                 System.out.println("apk.loadKey return:"+ret);     
-              }
-              if(ret){
-                 ret=apk.runCMD("write");
-                 System.out.println("apk.write return:"+ret);     
+
+              int count=1;
+              while(ret){
+                    if(arg.length<=(3+count))break;
+                   
+                    String cmd=arg[3+count];
+                    System.out.println("apk."+cmd);     
+                    ret=apk.runCMD(cmd);
+                    count++;
+                    System.out.println("apk."+cmd+" return:"+ret);     
               }
               apk.close();
               System.out.println("close connection"); 

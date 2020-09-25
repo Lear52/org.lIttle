@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
-public class rCommand{
+public class rCommand implements rCMD {
        private static Logger logger = LoggerFactory.getLogger(rCommand.class);
 
        private sequences seq;
@@ -31,7 +31,7 @@ public class rCommand{
               seq.add("info"        ,"Info:");
               seq.add("warn"        ,"Warning:");
        }
-       public boolean sendRequest()  {
+       protected boolean sendRequest()  {
               if(request==null){
                  logger.trace("request is null");
                  return true;
@@ -51,7 +51,7 @@ public class rCommand{
             
               return true;
        }
-       public String getString(BufferedInputStream bufin){
+       protected String getString(BufferedInputStream bufin){
               StringBuilder buf=new StringBuilder();
               int c;
               try {
@@ -128,11 +128,7 @@ public class rCommand{
         
         public String toString(){
                return "rcmd:"+name+" index:"+index+" request:"+request+" "+"response:"+response;
-
         }  
-
-
-
 
 
         public static void main(String[] arg){
