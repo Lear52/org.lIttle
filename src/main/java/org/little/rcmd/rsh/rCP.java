@@ -7,7 +7,7 @@ import java.io.InputStream;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
-import com.jcraft.jsch.Channel;
+//import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
         
         

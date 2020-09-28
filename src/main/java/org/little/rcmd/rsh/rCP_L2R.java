@@ -13,7 +13,10 @@ public class rCP_L2R extends rCP{
 
        private static Logger logger = LoggerFactory.getLogger(rCP_L2R.class);
 
+       private boolean ptimestamp = false;
+
        public rCP_L2R() {}
+
        public rCP_L2R(String rfile,String lfile) {
               super(rfile,lfile);
        }
@@ -22,7 +25,10 @@ public class rCP_L2R extends rCP{
        }
 
        @Override
-       protected String r_command(){return "scp -p "+rfile;}
+       protected String r_command(){
+                 if(ptimestamp)return "scp -p -t "+rfile;
+                 else          return "scp -t "+rfile;
+     }
 
 
        @Override
@@ -43,7 +49,7 @@ public class rCP_L2R extends rCP{
                      
                       File _lfile = new File(lfile);
                      
-                      {
+                      if(ptimestamp){
                         command="T "+(_lfile.lastModified()/1000)+" 0";
                         // The access time should be sent here,
                         // but it is not accessible with JavaAPI ;-<
