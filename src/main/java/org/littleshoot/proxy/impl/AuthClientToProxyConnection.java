@@ -34,7 +34,7 @@ import org.little.util._Base64;
 import org.little.util.LoggerFactory;
 import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.SslEngineSource;
-
+//import org.little.util.HexDump;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultHttpResponse;
@@ -447,6 +447,8 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                {
                //-----------------------------------------------------------------------------------------
                LOG.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" client sent to server negotiate token:"+sub_auth);
+
+               //LOG.trace("Authentication:"+sub_auth);
        
                byte[] _gss = Base64.decode(sub_auth);
                if(0 == _gss.length) {
@@ -456,6 +458,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                }
 
                //try{ HexDump.dump(_gss); }catch(Exception ex111){}
+
                {
                   String hdr="NTLMSSP";
                   byte [] _ntlmspp={(byte)0x4E,(byte)0x54,(byte)0x4C,(byte)0x4D,(byte)0x53,(byte)0x53,(byte)0x50,(byte)0x0};

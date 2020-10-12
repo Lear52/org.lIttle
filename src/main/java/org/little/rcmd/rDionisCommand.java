@@ -7,6 +7,8 @@ import org.little.rcmd.rsh.rCMD;
 import org.little.rcmd.rsh.rCP;
 import org.little.rcmd.rsh.rCP_L2R;
 import org.little.rcmd.rsh.rCP_R2L;
+import org.little.rcmd.rsh.rCP_R2S;
+import org.little.rcmd.rsh.rCP_R2H;
 import org.little.rcmd.rsh.rCommand;
 import org.little.rcmd.rsh.rShell;
 import org.little.util.Logger;
@@ -112,6 +114,8 @@ public class rDionisCommand{
 
                String remote=null;
                String local=null;
+               String smtp=null;
+               String http=null;
                NodeList glist=node_cfg.getChildNodes();     
                for(int i=0;i<glist.getLength();i++){
                    Node n=glist.item(i);
@@ -123,11 +127,22 @@ public class rDionisCommand{
                    if("local".equals(n.getNodeName())){
                        local=n.getTextContent();
                    }            
+                   else
+                   if("smtp".equals(n.getNodeName())){
+                       smtp=n.getTextContent();
+                   }            
+                   else
+                   if("http".equals(n.getNodeName())){
+                       http=n.getTextContent();
+                   }            
 
                }
-               if(local==null && local==null)return null;
+               if(remote==null)return null;
+               cmd=null;
 
-               cmd=new rCP_R2L(sh,name,index,remote,local); 
+               if(local!=null)cmd=new rCP_R2L(sh,name,index,remote,local); 
+               if(smtp!=null)cmd=new rCP_R2S(sh,name,index,remote,smtp); 
+               if(http!=null)cmd=new rCP_R2H(sh,name,index,remote,http); 
                return cmd;
         }
         private rCP makeL2R(Node node_cfg,int index) {
@@ -149,7 +164,7 @@ public class rDionisCommand{
                    }            
 
                }
-               if(local==null && local==null)return null;
+               if(remote==null && local==null)return null;
 
                cmd=new rCP_L2R(sh,name,index,remote,local); 
                return cmd;

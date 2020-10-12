@@ -16,6 +16,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.little.smtp.SmtpCLN;
+
 /**
  * sendfile will create a multipart message with the second
  * block of the message being the given file.<p>
@@ -36,21 +38,19 @@ public class sendfile {
 
     public static void main(String[] args) {
 
-        System.setProperty("java.net.preferIPv4Stack","true");
-
-	if (args.length < 1) {
-	    System.out.println("usage: java sendfile ");
-	    System.exit(1);
-	}
-
-	String to1      = "av";
-	String to2      = "iap";
-	String from     = "av";
-	String host     = "127.0.0.1";
-	String filename = args[0];
-	boolean debug   = true;
-        String userName = from;
-        String password = "123";
+           System.setProperty("java.net.preferIPv4Stack","true");
+	       if (args.length < 1) {
+	            System.out.println("usage: java sendfile ");
+	            System.exit(1);
+	       }
+	       String to1      = "av";
+	       //String to2      = "iap";
+	       String from     = "av";
+	       String host     = "127.0.0.1";
+	       String filename = args[0];
+	       boolean debug   = true;
+           String userName = from;
+           String password = "123";
 
 	//String msgText1 = "text:Sending a file.\n";
 	//String subject = "subject:Sending a file";
@@ -65,6 +65,18 @@ public class sendfile {
 +"CN=ROOTsvc-CA-test, OU=GUBZI, OU=PKI, DC=region, DC=cbr, DC=ru\n"
 ;
 	
+
+     SmtpCLN cln=new SmtpCLN();
+     cln.setTo(to1);
+     cln.setFrom(from);
+     cln.setHost(host);
+     cln.setSubject(subject);
+     cln.setMsgText(msgText1);
+     cln.setUserName(userName);
+     cln.setPassword(password);
+     cln.setDebug(debug);
+     cln.sent(filename);
+     /*
 	// create some properties and get the default Session
 	Properties props = System.getProperties();
         props.put("mail.smtp.user", from);
@@ -107,19 +119,19 @@ public class sendfile {
 	    // attach the file to the message
 	    mbp2.attachFile(filename);
 
-	    /*
-	     * Use the following approach instead of the above line if
-	     * you want to control the MIME type of the attached file.
-	     * Normally you should never need to do this.
-	     *
-	    FileDataSource fds = new FileDataSource(filename) {
-		public String getContentType() {
-		    return "application/octet-stream";
-		}
-	    };
-	    mbp2.setDataHandler(new DataHandler(fds));
-	    mbp2.setFileName(fds.getName());
-	     */
+	    //
+	    // * Use the following approach instead of the above line if
+	    //  * you want to control the MIME type of the attached file.
+	    // * Normally you should never need to do this.
+	    // *
+	    //FileDataSource fds = new FileDataSource(filename) {
+	    //public String getContentType() {
+	    //    return "application/octet-stream";
+	    //}
+	    //};
+	    //mbp2.setDataHandler(new DataHandler(fds));
+	    //mbp2.setFileName(fds.getName());
+	     
 
 	    // create the Multipart and add its parts to it
 	    Multipart mp = new MimeMultipart();
@@ -132,14 +144,14 @@ public class sendfile {
 	    // set the Date: header
 	    msg.setSentDate(new Date());
 
-	    /*
-	     * If you want to control the Content-Transfer-Encoding
-	     * of the attached file, do the following.  Normally you
-	     * should never need to do this.
-	     *
-	    msg.saveChanges();
-	    mbp2.setHeader("Content-Transfer-Encoding", "base64");
-	     */
+	    //
+	    // * If you want to control the Content-Transfer-Encoding
+	    // * of the attached file, do the following.  Normally you
+	    // * should never need to do this.
+	    // *
+	    //msg.saveChanges();
+	    //mbp2.setHeader("Content-Transfer-Encoding", "base64");
+	    
 
             System.out.println("pre send msg");
 	    // send the message
@@ -156,6 +168,7 @@ public class sendfile {
 	} catch (IOException ioex) {
 	    ioex.printStackTrace();
 	}
+	*/
         System.out.println("ok!");
 
     }

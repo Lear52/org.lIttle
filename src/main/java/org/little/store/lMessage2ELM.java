@@ -53,7 +53,7 @@ public class lMessage2ELM{
                String[] to=msg.getTO();
                for(int i=0;i<to.length;i++){
 	           eml.addRecipients(Message.RecipientType.TO, to[i]+default_domen);
-	           }
+               }
 
                String buffer1=msg.getBodyTxt();
                MimeBodyPart mbp1;

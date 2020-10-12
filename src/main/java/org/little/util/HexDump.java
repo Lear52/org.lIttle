@@ -6,6 +6,20 @@ public class HexDump {
 
     private static final Logger LOG = LoggerFactory.getLogger(HexDump.class);
 
+    public static void toString(byte[] data)throws IOException, ArrayIndexOutOfBoundsException,IllegalArgumentException {
+        StringBuilder buffer = new StringBuilder();
+        for (int i = 0; i < data.length; i++) {
+        	byte value=data[i];
+        	buffer.append("(byte)0x");
+        	buffer.append(_hexcodes[value >> data[i] & 15]);
+        	buffer.append(_hexcodes[value  & 15]);
+        	if(i < (data.length-1))buffer.append(',');
+        }
+        String str=buffer.toString();
+        LOG.info(str);
+        buffer.setLength(0);
+    	
+    }
     public static void dump(byte[] data)throws IOException, ArrayIndexOutOfBoundsException,IllegalArgumentException {
         long offset=0; 
         int index=0;

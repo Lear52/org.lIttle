@@ -30,15 +30,15 @@ public class HttpAuthDigest extends HttpAuth {
     
        @Override
        public HttpAuthResponse authParse(String str_auth,String request_method){
-              HttpAuthResponse ret=new HttpAuthResponse();
               String authMethod="auth";
               String username  =null;
+              response=new HttpAuthResponse();
 
               if(utilTransform.isEmpty(str_auth)) {
                  String nonce = calculateNonce();
-                 ret.setStatus(HttpResponseStatus.UNAUTHORIZED);
-                 ret.setUser(null);
-                 ret.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
+                 response.setStatus(HttpResponseStatus.UNAUTHORIZED);
+                 response.setUser(null);
+                 response.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
 
                  String header = "Digest realm=" + getRealm() + ", ";
                  if(!utilTransform.isEmpty(authMethod)) {
@@ -47,8 +47,8 @@ public class HttpAuthDigest extends HttpAuth {
                  header += "nonce=" + nonce + ", "+ "opaque=" + getOpaque(getRealm(), nonce) + ", algoritm=\"MD5\", state=\"FALSE\"";
                  logger.trace("header is null required authorization:"+header);
 
-                 ret.setAuthicationData(header);        
-                 ret.setAuthicationHeader("WWW-Authenticate");        
+                 response.setAuthicationData(header);        
+                 response.setAuthicationHeader("WWW-Authenticate");        
               }
               else {
                       logger.trace("get authorization string:"+str_auth);
@@ -95,37 +95,37 @@ public class HttpAuthDigest extends HttpAuth {
                       logger.trace("server realm:"+getRealm());/**/
                       logger.trace("server h2:"+ha2);
                       logger.trace("client Response:"+clientResponse);
-                      logger.trace("ret:"+ret);
+                      logger.trace("ret:"+response);
 
 
                       if(!is_auth){
 
                           logger.debug("no authorization! for realm:"+getRealm()+" user:"+username);
-                          ret.setStatus(HttpResponseStatus.UNAUTHORIZED);
-                          ret.setUser(null);
-                          ret.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
+                          response.setStatus(HttpResponseStatus.UNAUTHORIZED);
+                          response.setUser(null);
+                          response.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
                           String header = "Digest realm=" + getRealm() + ", ";
                           if(!utilTransform.isEmpty(authMethod)) {
                               header += "qop=" + authMethod + ", ";
                           }
                           header += "nonce=" + nonce + ", ";
                           header += "opaque=" + getOpaque(getRealm(), nonce) + ", algoritm=\"MD5\", state=\"FALSE\"";
-                          ret.setAuthicationData(header);        
-                          ret.setAuthicationHeader("WWW-Authenticate");        
+                          response.setAuthicationData(header);        
+                          response.setAuthicationHeader("WWW-Authenticate");        
                       }
                       else{
-                          ret.setStatus(HttpResponseStatus.OK);
-                          ret.setUser(username);
-                          ret.setBodyMsg("");
-                          ret.setAuthicationData("");        
-                          ret.setAuthicationHeader(null);        
+                          response.setStatus(HttpResponseStatus.OK);
+                          response.setUser(username);
+                          response.setBodyMsg("");
+                          response.setAuthicationData("");        
+                          response.setAuthicationHeader(null);        
                       }
                       
                       
               }
            
-              logger.trace("auth ret:"+ret.getStatus());
-              return ret;
+              logger.trace("auth ret:"+response.getStatus());
+              return response;
        }
        private String calculateNonce() {
                Date             d         = new Date();
