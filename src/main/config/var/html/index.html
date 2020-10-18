@@ -6,9 +6,7 @@
    <meta name="Author" content="Andrey Shadrin">
    <link   rel="stylesheet"      type="text/css"       href="/main.css">
    <link   rel="stylesheet"      type="text/css"       href="/clean.css">
-   <link   rel="stylesheet"      type="text/css"       href="/ui1121/jquery-ui.css"> -->
-   <!--<link   rel="stylesheet"      type="text/css"       href="/start1104/jquery-ui-1.10.4.custom.css"> -->
-   <!-- <script language="javascript" type="text/javascript" src="/jquery-ui-1.10.4.custom.min.js"></script> -->
+   <link   rel="stylesheet"      type="text/css"       href="/ui1121/jquery-ui.css"> 
    <script language="javascript" type="text/javascript" src="/jquery-3.5.1.min.js"></script>
    <script language="javascript" type="text/javascript" src="/ui1121/jquery-ui.min.js"></script>
    <script language="javascript" type="text/javascript" src="/jquery.columns.js"></script>
@@ -104,7 +102,6 @@
 
         }
         function getUser(){
-            //var req_url='/user?date='+new Date();
             var req_url='/user';
             rec_user=[];
             jQuery.ajax({
@@ -183,22 +180,29 @@
 <hr>
 
 <table>
-<tr><td>Послать сертификат</td><td>
+<tr><td><nobr>Послать сертификат</nobr></td><td>
 
-     <table><tr><form action="/post" ENCTYPE="multipart/form-data" METHOD="POST">
+     <form action="/post" ENCTYPE="multipart/form-data" METHOD="POST">
+     <table><tr>
          <td>Кому:<input type=text name="to" size=50></input></td>
          <td>Примечание:<input type=text name="subject" size=100></input></td>
          <td>Файл:<input type=file name="myfile"></input></td>
          <td><input TYPE="submit" NAME="Send" VALUE="Send"></input></td>
-     </form></tr></table>
+     </tr></table>
+     </form>
 
-</td></tr><tr><td>
-
-    <table>
-    <tr><td><form id="go_inbox"  name="go_inbox"  action="javascript:getState('inbox')"><input TYPE="submit" value="  INBOX  "></form></td></tr>
-    <tr><td><form id="go_outbox" name="go_outbox" action="javascript:getState('outbox')"><input TYPE="submit" value="OUTBOX"></form></td></tr>
+</td></tr><tr><td valign="top">
+    <br>
+    <table border=0  style="background-color: #FFFFFF;background:transparent" >
+    <tr><td></td></tr>
+    <tr><td class="boxkey" id="INBOX" align="left"><a href="#" onclick="getState('INBOX');">INBOX</a></td></tr>
+    <tr><td></td></tr>
+    <tr><td class="boxkey" id="SENT" align="left" ><a href="#" onclick="getState('OUTBOX');">SENT</a></td></tr>
+    <tr><td></td></tr>
+    <tr><td class="boxkey" id="TRASH"align="left" ><a href="#" onclick="getState('TRASHBOX');">TRASH</a></td></tr>
+    <tr><td></td></tr>
+    <tr><td class="boxkey" id="COMMON"align="left"><a href="#" onclick="getState('COMMONBOX');">COMMON</a></td></tr>
     </table>
-
 </td><td>
     <div id="id_list_right" style="background-color: #f7f7f9;width: 90%;max-width: 90%;">
        <div id="list_msg" style="width: 90%;max-width: 90%;float:rigth;" ></div>

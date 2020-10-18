@@ -4,6 +4,7 @@ import org.little.smtp.handler.ExceptionLogger;
 import org.little.smtp.handler.SessionInitiationHandler;
 import org.little.smtp.handler.SmtpCommandHandler;
 import org.little.smtp.handler.SmtpReplyEncoder;
+import org.little.smtp.handler.SmtpServerInitializer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -64,14 +65,13 @@ public class SmtpServer implements Runnable {
         public void run() {
                 workerGroup        = new NioEventLoopGroup(1);
                 bossGroup          = new NioEventLoopGroup();
-                LoggingHandler log = new LoggingHandler(LogLevel.INFO);
+                //LoggingHandler log = new LoggingHandler(LogLevel.INFO);
                 try {
                      ServerBootstrap server_boot_strap = new ServerBootstrap();
                      server_boot_strap.group(bossGroup,workerGroup);
 
                      server_boot_strap.channel(NioServerSocketChannel.class);
-
-                            //.localAddress(new InetSocketAddress(port))
+                     /*
                      server_boot_strap.childHandler(new ChannelInitializer<SocketChannel>() {
                                      @Override
                                      protected void initChannel(SocketChannel ch) throws Exception {
@@ -83,6 +83,8 @@ public class SmtpServer implements Runnable {
                                              ch.pipeline().addLast("exceptionLogger", new ExceptionLogger());
                                      }
                              });
+                     */
+                     server_boot_strap.childHandler(new SmtpServerInitializer());
                      server_boot_strap.childOption(ChannelOption.AUTO_READ, true);
                      ChannelFuture ch_ret = server_boot_strap.bind(port);
                      logger.trace("run SmtpServer");

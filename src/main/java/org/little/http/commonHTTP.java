@@ -26,7 +26,8 @@ public class commonHTTP extends common{
        private String        realm;
        private String        local_bind_client              ;
        private String        local_bind_server              ;
-       private String        default_domain                  ;
+       private String        default_domain                 ;
+       private String        root_document                  ;
 
        public  static commonHTTP  get(){ if(cfg==null)cfg=new commonHTTP();return cfg;};
       
@@ -49,7 +50,8 @@ public class commonHTTP extends common{
               local_bind_server              ="*";
               ldap_ad_username               ="k1svcfarmadmin";       
               ldap_ad_password               ="3edcVFR$";             
-              default_domain                  ="vip.cbr.ru";
+              default_domain                 ="vip.cbr.ru";
+              root_document                  ="";
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){
@@ -105,13 +107,14 @@ public class commonHTTP extends common{
        public String        getLdapUrl                (){return ldap_url;                       }
        public boolean       isSSL                     (){return false;                          }
        public String        getRealm                  (){return realm;                          }
-       public String        getLdapUsername(){ return ldap_ad_username;   }
-       public String        getLdapPassword() {return ldap_ad_password;}
-       public String        getJavaKrb5_conf() {return java_security_krb5_conf;}
-       public String        getJavaLogin_config() {return java_security_auth_login_config; }
+       public String        getLdapUsername           (){ return ldap_ad_username;              }
+       public String        getLdapPassword           (){return ldap_ad_password;               }
+       public String        getJavaKrb5_conf          (){return java_security_krb5_conf;        }
+       public String        getJavaLogin_config       (){return java_security_auth_login_config;}
        public String        getLocalServerBind        (){return local_bind_server;              }
        public String        getLocalClientBind        (){return local_bind_client;              }
-       public String        getDefaultDomain           (){return default_domain;                  }
+       public String        getDefaultDomain          (){return default_domain;                 }
+       public String        getRootDocument           (){return root_document;                  }
 
 
 }

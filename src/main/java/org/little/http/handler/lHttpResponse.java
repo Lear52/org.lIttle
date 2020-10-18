@@ -1,4 +1,4 @@
-package org.little.http;
+package org.little.http.handler;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.little.http.commonHTTP;
 import org.little.http.auth.HttpAuthResponse;
 import org.little.util.Except;
 import org.little.util.Logger;
@@ -254,7 +255,7 @@ public class lHttpResponse {
                    //-----------------------------------------------------------------------------------------------
                    String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
                    String HTTP_DATE_GMT_TIMEZONE = "GMT";
-                   int HTTP_CACHE_SECONDS = 60;
+                   //int HTTP_CACHE_SECONDS = 600;
 
                    SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
                    dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
@@ -262,10 +263,12 @@ public class lHttpResponse {
                    Calendar time = new GregorianCalendar();
                    response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
                    // Add cache headers
-                   time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
-                   response.headers().set(HttpHeaderNames.EXPIRES      , dateFormatter.format(time.getTime()));
-                   response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
+                   //time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
+
+                   //response.headers().set(HttpHeaderNames.EXPIRES      , dateFormatter.format(time.getTime()));
+                   //response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
                    response.headers().set(HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(file.lastModified())));
+
                    if (!req.isKeepAlive()) {
                        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
                    } 
@@ -357,7 +360,9 @@ public class lHttpResponse {
                return null;
            }
            // Convert to absolute path.
-           uri="var"+File.separatorChar+"html"  + uri;
+           ;
+           uri=commonHTTP.get().getRootDocument() + uri;
+           //uri="var"+File.separatorChar+"html"  + uri;
            //logger.trace(uri0+" ->"+uri);
            return  uri;
        }

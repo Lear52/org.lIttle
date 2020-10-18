@@ -1,4 +1,4 @@
-package org.little.http;
+package org.little.http.handler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,11 +36,14 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDec
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import io.netty.util.AttributeKey;
 
 
 public class lHttpRequest{
        private static final Logger          logger  = LoggerFactory.getLogger(lHttpRequest.class);
        private static final HttpDataFactory factory = new DefaultHttpDataFactory(false); 
+
+       public static final AttributeKey<lHttpRequest> ATTRIBUTE_KEY = AttributeKey.valueOf("lHttpRequest");
 
        protected HttpRequest            request;
        protected HttpData               partialContent;
@@ -56,25 +59,25 @@ public class lHttpRequest{
        protected String                 path;
        protected String                 app;
        protected HashMap<String,String> app_arg;
-	   protected ArrayList<lHttpBuf>    bin_buffer;
+       protected ArrayList<lHttpBuf>    bin_buffer;
        
 
        public lHttpRequest(){
-               clear();
-               request       =null;
-               cookies       =null;
-               auth          =HttpAuth.getInstatce();
-               response      =new lHttpResponse();
+              clear();
+              request       =null;
+              cookies       =null;
+              auth          =HttpAuth.getInstatce();
+              response      =new lHttpResponse();
 
-               path          =null;
-               app           =null;
-               app_arg       =new HashMap<String,String>();
-               bin_buffer    =new ArrayList<lHttpBuf>();
+              path          =null;
+              app           =null;
+              app_arg       =new HashMap<String,String>();
+              bin_buffer    =new ArrayList<lHttpBuf>();
        }
        public void clear(){
-               keepAlive     =false;
-               decoder       =null;
-               partialContent=null;
+              keepAlive     =false;
+              decoder       =null;
+              partialContent=null;
        }
 
        public String      getPath        (){return path;}
@@ -86,10 +89,10 @@ public class lHttpRequest{
        public HttpMethod  getMethod      (){if(request==null)return null;else return request.method();}
        
        public HashMap<String, String> getQuery() {return app_arg;}
-	   public ArrayList<lHttpBuf>     getBinBuffer() {return bin_buffer;}
+       public ArrayList<lHttpBuf>     getBinBuffer() {return bin_buffer;}
        public lHttpResponse           getResponse() {return response;}
-	   public void                    setResponse(lHttpResponse response) {this.response = response;}
-	   public String                  getUser() {return auth.getResponse().getUser();}
+           public void                    setResponse(lHttpResponse response) {this.response = response;}
+           public String                  getUser() {return auth.getResponse().getUser();}
 
 
 
@@ -200,7 +203,7 @@ public class lHttpRequest{
                  if(HttpMethod.PUT.equals(request.method()))ret=HttpPut(ctx);
                  if(HttpMethod.POST.equals(request.method()))ret=HttpPost(ctx);
                  if(ret==false) {
-                	 response.sendOk(ctx,this," "); 
+                         response.sendOk(ctx,this," "); 
                  }
                  //
                  clearDecoder();
@@ -232,6 +235,7 @@ public class lHttpRequest{
                      if(partialContent == null) {
                         partialContent = (HttpData) data1;
                         if(partialContent instanceof FileUpload) {
+                        	
                            FileUpload f=(FileUpload)partialContent;
                            
                         }
@@ -290,7 +294,7 @@ public class lHttpRequest{
                                }
                             } 
                             else {
-                            	logger.error("\tFile too long to be printed out:" + fileUpload.length() + "\r\n");
+                                    logger.error("\tFile too long to be printed out:" + fileUpload.length() + "\r\n");
                             }
                          } 
                          else {
@@ -324,21 +328,21 @@ public class lHttpRequest{
                    logger.trace("channelRead0 1 HttpX509Request"+this);
                   
                    if(ret_auth==null) {
-                          response.sendAuthRequired(ctx,request,ret_auth);
-                          return;
+                      response.sendAuthRequired(ctx,request,ret_auth);
+                      return;
                    }
                    if(ret_auth.isAuth()==false) {
-                	   response.sendAuthRequired(ctx,request,ret_auth);
-                          return;
+                      response.sendAuthRequired(ctx,request,ret_auth);
+                      return;
                    }
                    //--------------------------------------------------------------
                    //
                    //--------------------------------------------------------------
                    //--------------------------------------------------------------------------------------
                    if(HttpMethod.GET.equals(request.method())) {
-                	  boolean ret=HttpGet(ctx);
-                	  if(ret==false)response.sendOk(ctx,this," ");
-                	  return;                	  
+                      boolean ret=HttpGet(ctx);
+                      if(ret==false)response.sendOk(ctx,this," ");
+                      return;                          
                    }
                    else
                    if(HttpMethod.POST.equals(request.method()) || HttpMethod.PUT.equals(request.method())) {

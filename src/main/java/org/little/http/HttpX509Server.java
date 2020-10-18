@@ -1,5 +1,6 @@
 package org.little.http;
               
+import org.little.http.handler.HttpX509ServerInitializer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -18,6 +19,7 @@ public class HttpX509Server implements Runnable {
        private int            port;
        private EventLoopGroup workerGroup;
        private EventLoopGroup bossGroup;
+       //private lHttpRequest   req;
 
        public HttpX509Server(int _port){
                port = _port; 
@@ -33,8 +35,8 @@ public class HttpX509Server implements Runnable {
        
        public void stop() {
               try {
-                      if(workerGroup!=null)workerGroup.shutdownGracefully().sync();
-                      if(bossGroup  !=null)bossGroup  .shutdownGracefully().sync();
+                   if(workerGroup!=null)workerGroup.shutdownGracefully().sync();
+                   if(bossGroup  !=null)bossGroup  .shutdownGracefully().sync();
               } catch (InterruptedException e) {
                       logger.error("close httpServer", e);
               }
@@ -51,11 +53,13 @@ public class HttpX509Server implements Runnable {
 
              bossGroup   = new NioEventLoopGroup(1);
              workerGroup = new NioEventLoopGroup();
+
              try {
                  ServerBootstrap b = new ServerBootstrap();
                  b.group(bossGroup, workerGroup);
                  b.channel(NioServerSocketChannel.class);
                  b.handler(new LoggingHandler(LogLevel.INFO));
+
                  b.childHandler(new HttpX509ServerInitializer());
              
                  Channel ch = b.bind(port).sync().channel();
