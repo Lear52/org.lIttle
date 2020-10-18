@@ -115,6 +115,7 @@ public class commonHTTP extends common{
        public String        getLocalClientBind        (){return local_bind_client;              }
        public String        getDefaultDomain          (){return default_domain;                 }
        public String        getRootDocument           (){return root_document;                  }
+       public String        getAppName                (){return "appkeystore";                  }
 
 
 }

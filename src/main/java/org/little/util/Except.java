@@ -5,10 +5,10 @@ package org.little.util;
  *
  * 
  * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002 - 2020
- * @version 1.5
+ * @version 1.6
  */
 public class Except extends Exception{
-       final private static String CLASS_NAME="org.littleshoot.proxy.impl.util.Except";
+       final private static String CLASS_NAME="org.little.util.Except";
        final private static int    CLASS_ID  =104;
        final private static long   serialVersionUID = 19690401L+CLASS_ID;
              public  static String getClassName(){return CLASS_NAME;}

@@ -30,6 +30,17 @@ public class rCommand implements rCMD {
               seq.add("syntax_error","Syntax error:");
               seq.add("info"        ,"Info:");
               seq.add("warn"        ,"Warning:");
+/*
+adm@DionisNX# show crypto disec conn
+[#!]NAME         ID    SRC             DST             SN         LOC   REM   A B
+adm@DionisNX#
+
+adm@DionisNX# show crypto ike conns
+
+adm@DionisNX#
+*/
+
+
        }
        protected boolean sendRequest()  {
               if(request==null){
