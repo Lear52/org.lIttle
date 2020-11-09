@@ -14,14 +14,14 @@ public class wrapperCSKI implements WrapperListener{
     private static final Logger      logger = LoggerFactory.getLogger(wrapperCSKI.class);
 
     private org.little.http.runWrapper   serverHTTP;
-    private org.little.smtpsrv.runWrapper   serverSMTP;
+    private org.little.smtp.runWrapper   serverSMTP;
     private org.little.imap.runWrapper   serverIMAP;
 
 
     protected      wrapperCSKI(String args[]){
                    serverHTTP=new org.little.http.runWrapper();
                    logger.trace("create org.little.http");
-                   serverSMTP=new org.little.smtpsrv.runWrapper();
+                   serverSMTP=new org.little.smtp.runWrapper();
                    logger.trace("create org.little.smtp");
                    serverIMAP=new org.little.imap.runWrapper();
                    logger.trace("create org.little.imap");
@@ -66,7 +66,7 @@ public class wrapperCSKI implements WrapperListener{
            logger.trace("start CSKI");
 
            org.little.http.commonHTTP.get().preinit();
-           org.little.smtpsrv.commonSMTP.get().preinit();
+           org.little.smtp.commonSMTP.get().preinit();
            org.little.imap.commonIMAP.get().preinit();
 
            logger.trace("preinit CSKI");
@@ -78,7 +78,7 @@ public class wrapperCSKI implements WrapperListener{
               logger.error("error read http config file:"+xpath);
               return;
            }
-           if(org.little.smtpsrv.commonSMTP.get().loadCFG(xpath)==false){
+           if(org.little.smtp.commonSMTP.get().loadCFG(xpath)==false){
               logger.error("error read smtp config file:"+xpath);
               return;
            }

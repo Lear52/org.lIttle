@@ -10,16 +10,16 @@ import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
 public class NullProxyInitializer extends ChannelInitializer<SocketChannel> {
        private static final Logger      LOG = LoggerFactory.getLogger(NullProxyInitializer.class);
-       private GlobalChannelTrafficShapingHandler countHandler;
+       //private GlobalChannelTrafficShapingHandler countHandler;
 
        public NullProxyInitializer() {
-              countHandler=null;
+              //countHandler=null;
               LOG.trace("constructor NullProxyInitializer");
        }
-       public NullProxyInitializer(GlobalChannelTrafficShapingHandler _countHandler) {
-              countHandler=_countHandler;
-              LOG.trace("constructor NullProxyInitializer + GlobalChannelTrafficShapingHandler");
-       }
+       //public NullProxyInitializer(GlobalChannelTrafficShapingHandler _countHandler) {
+              //countHandler=_countHandler;
+       //       LOG.trace("constructor NullProxyInitializer + GlobalChannelTrafficShapingHandler");
+       //}
       
        @Override
        public void initChannel(SocketChannel channel) {
@@ -28,7 +28,7 @@ public class NullProxyInitializer extends ChannelInitializer<SocketChannel> {
            ChannelPipeline             new_pipeline = channel.pipeline();
 
 
-           if(countHandler!=null)new_pipeline.addLast(countHandler);
+           //if(countHandler!=null)new_pipeline.addLast(countHandler);
            new_pipeline.addLast(front_handel);
 
            LOG.trace("initChannel create pipeline");

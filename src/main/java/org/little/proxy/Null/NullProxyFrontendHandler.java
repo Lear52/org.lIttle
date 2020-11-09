@@ -47,8 +47,9 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               Bootstrap               boot_strap;
               ChannelFuture           ch_state;
             
-              boot_strap      = new Bootstrap();
               in_channel      = ctx.channel();
+
+              boot_strap      = new Bootstrap();
               back_handler    = new NullProxyBackendHandler(this,in_channel);
               EventLoop in_el = in_channel.eventLoop();
             
@@ -61,14 +62,15 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               stat_channel.setChannel(in_channel);      
               stat_channel.isFront(true);               
             
-              //if("*".equals(commonProxy.get().getLocalClientBind()))ch_state = boot_strap.connect(remoteHost, remotePort);
+              //-------------------------------------------------------------------------------------------------------------------
               if("*".equals(commonProxy.get().getLocalClientBind()))ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
               else                                                  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getLocalClientBind(), 0));
+              //-------------------------------------------------------------------------------------------------------------------
               
               out_channel = ch_state.channel();
             
               back_handler.setOutChannel(out_channel);
-            
+              //-------------------------------------------------------------------------------------------------------------------
               ch_state.addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture future) {
@@ -83,6 +85,7 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
                                 }
                             }
               );
+              //-------------------------------------------------------------------------------------------------------------------
 
        }
       
@@ -103,7 +106,7 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
            LOG.trace("NullProxyFrontendHandler.channelRead "+s);
 
            if(out_channel.isActive()){
-
+              //------------------------------------------------------------------------------------------------------------------
               out_channel.writeAndFlush(msg).addListener(new ChannelFutureListener() {
                    @Override
                    public void operationComplete(ChannelFuture future) {
@@ -118,6 +121,7 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
                        }
                    }
                });
+              //------------------------------------------------------------------------------------------------------------------
            }
        }
       

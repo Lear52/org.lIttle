@@ -43,8 +43,8 @@ public class stringParser{
               return null;
        }
 
-       public ArrayList<String> getList(){
-              ArrayList<String> list=new ArrayList<String>();
+       public ArrayList<CharSequence> getList(){
+              ArrayList<CharSequence> list=new ArrayList<CharSequence>();
               String s;
               while((s=get())!=null)list.add(s);
               return list;

@@ -78,8 +78,9 @@ public class NullProxyBackendHandler extends ChannelInboundHandlerAdapter {
                                                              public void operationComplete(ChannelFuture future) {
                                                                  //LOG.trace("NullProxyBackendHandler write id:"+id_channel);
                                                                  if (future.isSuccess()) {
-                                                                     LOG.trace("NullProxyBackendHandler write  id:"+getId());
+                                                                     //LOG.trace("NullProxyBackendHandler write 2 id:"+getId());
                                                                      ctx.channel().read();
+                                                                     //LOG.trace("NullProxyBackendHandler write 3 id:"+getId());
                                                                  } else {
                                                                      LOG.trace("NullProxyBackendHandler disconnect  id:"+getId());
                                                                      future.channel().close();
@@ -100,7 +101,7 @@ public class NullProxyBackendHandler extends ChannelInboundHandlerAdapter {
      
        @Override
        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-                   Except _e=new Except("NullProxyBackendHandler.exception",cause);
+              Except _e=new Except("NullProxyBackendHandler.exception",cause);
               LOG.error("NullProxyBackendHandler.exception id:"+getId()+" ex:"+_e);
               //cause.printStackTrace();
               NullProxyFrontendHandler.closeOnFlush(ctx.channel());
