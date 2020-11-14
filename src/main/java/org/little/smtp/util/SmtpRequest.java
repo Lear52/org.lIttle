@@ -11,39 +11,43 @@ import io.netty.util.internal.ObjectUtil;
 
 public class SmtpRequest  {
 
-       protected SmtpCommand        command;
-       private List<CharSequence> parameters;
-       private ArrayList<SmtpResponse>  response;
+       protected SmtpCommand              command;
+       protected List<CharSequence>       parameters;
+       private   ArrayList<SmtpResponse>  response;
       
        public SmtpRequest() {
-           this.command    = null;
-           this.parameters = Collections.emptyList();
-           this.response   = new ArrayList<SmtpResponse>(); 
+              this.command    = null;
+              this.parameters = Collections.emptyList();
+              this.response   = new ArrayList<SmtpResponse>(); 
        }
        /**
         * Creates a new instance with the given command and no parameters.
         */
        public SmtpRequest(SmtpCommand command) {
-           this.command    = ObjectUtil.checkNotNull(command, "command");
-           this.parameters = Collections.emptyList();
-           this.response   = new ArrayList<SmtpResponse>(); 
+              this.command    = ObjectUtil.checkNotNull(command, "command");
+              this.parameters = new ArrayList<CharSequence>();//Collections.emptyList();
+              this.response   = new ArrayList<SmtpResponse>(); 
        }
       
        /**
         * Creates a new instance with the given command and parameters.
         */
        public SmtpRequest(SmtpCommand command, CharSequence... parameters) {
-           this.command    = ObjectUtil.checkNotNull(command, "command");
-           this.parameters = SequenceUtils.toUnmodifiableList(parameters);
-           this.response   = new ArrayList<SmtpResponse>(); 
+              this.command    = ObjectUtil.checkNotNull(command, "command");
+              this.parameters = SequenceUtils.toUnmodifiableList(parameters);
+              this.response   = new ArrayList<SmtpResponse>(); 
        }
       
       
        public SmtpRequest(SmtpCommand command, List<CharSequence> parameters) {
-           this.command    = ObjectUtil.checkNotNull(command, "command");
-           this.parameters = parameters != null ?  Collections.unmodifiableList(parameters) : Collections.<CharSequence>emptyList();
-           this.response   = new ArrayList<SmtpResponse>(); 
+              this.command    = ObjectUtil.checkNotNull(command, "command");
+              this.parameters = parameters != null ?  Collections.unmodifiableList(parameters) : new ArrayList<CharSequence>();
+              this.response   = new ArrayList<SmtpResponse>(); 
        }
+
+       public  void add(CharSequence p){
+               parameters.add(p);
+       };
 
        public  void add(SmtpResponse res){response.add(res);};
       
@@ -82,9 +86,14 @@ public class SmtpRequest  {
               this.parameters = _parameters != null ?  Collections.unmodifiableList(_parameters) : Collections.<CharSequence>emptyList();
        };
 
-       public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel, ArrayList<CharSequence> list_cmd){
+       public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel){
               return null;
        }
+
+       public SmtpResponse   filterCommand(){
+              return null;
+       }
+
       
        @Override
        public String toString() {

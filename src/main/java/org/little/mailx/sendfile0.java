@@ -73,13 +73,11 @@ public class sendfile0 {
         props.put("mail.smtp.auth.mechanisms", "LOGIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
         //props.put("mail.smtp.auth.mechanisms", "PLAIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
 	props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", "1125");
+        props.put("mail.smtp.port", "2525");
         Authenticator auth=new Authenticator() {
               @Override
               protected PasswordAuthentication getPasswordAuthentication() {
-
                         System.out.println("Call Authenticator l:p    "+userName+":"+password);
-
                         return new PasswordAuthentication(userName,password);
               }
         };

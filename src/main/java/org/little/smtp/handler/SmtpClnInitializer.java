@@ -23,6 +23,7 @@ public class SmtpClnInitializer extends ChannelInitializer<SocketChannel> {
               ch.pipeline().addLast("smtpResponse" , new SmtpClnResponseDecoder(1024));
               ch.pipeline().addLast("ChunkedWrite" , new ChunkedWriteHandler());
               ch.pipeline().addLast("smtpCommand"  , command);
+
               logger.trace("client pipeline init");
        }
 

@@ -1,7 +1,7 @@
 package org.little.smtp;
 
 
-import org.little.smtp.store.MailStore;
+//import org.little.smtp.store.MailStore;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.common;
@@ -23,9 +23,10 @@ public class commonSMTP extends common{
        private String        ldap_ad_password               ;
        private String        local_bind_client              ;
        private String        local_bind_server              ;
-       private boolean       case_sensitive_folder  ;
+       private boolean       case_sensitive_folder          ;
+       private boolean       is_proxy                       ;
       
-       private String        default_domain                  ;
+       private String        default_domain                 ;
       
        public  static commonSMTP  get(){ if(cfg==null)cfg=new commonSMTP();return cfg;};
       
@@ -43,6 +44,7 @@ public class commonSMTP extends common{
               ldap_ad_password               ="3edcVFR$";    
               default_domain                  ="vip.cbr.ru";
               case_sensitive_folder          =true;
+              is_proxy                       =false;
               
        }
        private void initGlobal(Node node_cfg){
@@ -64,6 +66,8 @@ public class commonSMTP extends common{
                      if("default_domain"     .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
                      else
                      if("case_sensitive_folder".equals(n.getNodeName())){String s=n.getTextContent(); try{case_sensitive_folder=Boolean.parseBoolean(s);}catch(Exception e){ case_sensitive_folder=true;logger.error("case_sensitive_folder:"+s);} logger.info("case_sensitive_folder:"+case_sensitive_folder);}
+                     else
+                     if("smtp_proxy".equals(n.getNodeName())){String s=n.getTextContent(); try{is_proxy=Boolean.parseBoolean(s);}catch(Exception e){ is_proxy=false;logger.error("smtp_proxy:"+s);} logger.info("smtp_proxy:"+is_proxy);}
                  }
               }                               
        }
@@ -99,7 +103,7 @@ public class commonSMTP extends common{
       
        //public String        getDomain()            {return "localhost";}
        //public File   getMailDir()           {return new File(System.getProperty("user.home"), "nsmtp");}
-       public MailStore        getMailDB()            {return new MailStore();	}
+       //public MailStore        getMailDB()            {return new MailStore();	}
       
        public String        getTlsKeyFile()        {return "certificates.jks";}
        public String        getTlsTrustStoreFile() {return null;	}
@@ -107,6 +111,7 @@ public class commonSMTP extends common{
        
        public boolean       verifyUser(String username) {return true;}
        public boolean       isCaseSensitive           (){return case_sensitive_folder;}
+       public boolean       isProxy                   (){return is_proxy;}
       
       
       

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.little.smtp.util.command.Auth;
+import org.little.smtp.util.command.Content;
 import org.little.smtp.util.command.ExpandMailingList;
 import org.little.smtp.util.command.ExtendedHello;
 import org.little.smtp.util.command.Help;
@@ -38,71 +39,66 @@ public class SmtpRequestBuilder {
         * Creates a {@code HELO} request.
         */
        public static SmtpRequest helo(CharSequence hostname) {
-           return new SmtpRequest(SmtpCommand.HELO, hostname);
+              return new SmtpRequest(SmtpCommand.HELO, hostname);
        }
        
        /**
         * Creates a {@code EHLO} request.
         */
        public static SmtpRequest ehlo(CharSequence hostname) {
-           return new SmtpRequest(SmtpCommand.EHLO, hostname);
+              return new SmtpRequest(SmtpCommand.EHLO, hostname);
        }
        
        /**
         * Creates a {@code EMPTY} request.
         */
        public static SmtpRequest empty(CharSequence... parameter) {
+              return new SmtpRequest(SmtpCommand.EMPTY, parameter);
+       }
+       public static SmtpRequest empty(ArrayList<CharSequence> parameter) {
            return new SmtpRequest(SmtpCommand.EMPTY, parameter);
        }
 
        public static SmtpRequest content(CharSequence parameter) {
-           return new SmtpRequest(SmtpCommand.CONTENT, parameter);
+              return new Content(SmtpCommand.CONTENT, parameter);
        }
        public static SmtpRequest lastcontent(CharSequence parameter) {
-           return new SmtpRequest(SmtpCommand.LASTCONTENT, parameter+".\r\n");
+              return new Content(SmtpCommand.LASTCONTENT, parameter+".\r\n");
        }
        
        /**
         * Creates a {@code AUTH} request.
         */
        public static SmtpRequest auth(CharSequence... parameter) {
-           return new SmtpRequest(SmtpCommand.AUTH, parameter);
+              return new SmtpRequest(SmtpCommand.AUTH, parameter);
        }
        
        /**
         * Creates a {@code NOOP} request.
         */
-       public static SmtpRequest noop() {
-           return NOOP;
-       }
+       public static SmtpRequest noop() {return NOOP;}
        
        /**
         * Creates a {@code DATA} request.
         */
-       public static SmtpRequest data() {
-           return DATA;
-       }
+       public static SmtpRequest data() {return DATA;}
        
        /**
         * Creates a {@code RSET} request.
         */
-       public static SmtpRequest rset() {
-           return RSET;
-       }
+       public static SmtpRequest rset() { return RSET;}
        
        /**
         * Creates a {@code HELP} request.
         */
        public static SmtpRequest help(String cmd) {
-           return cmd == null ? HELP_NO_ARG : new SmtpRequest(SmtpCommand.HELP, cmd);
+              return cmd == null ? HELP_NO_ARG : new SmtpRequest(SmtpCommand.HELP, cmd);
        }
        
        /**
         * Creates a {@code QUIT} request.
         */
-       public static SmtpRequest quit() {
-           return QUIT;
-       }
+       public static SmtpRequest quit() {return QUIT;}
        
        /**
         * Creates a {@code MAIL} request.
@@ -151,10 +147,9 @@ public class SmtpRequestBuilder {
        
        private SmtpRequestBuilder() { }
 
+
        protected static SmtpRequestBuilder   inst=null;
-
        protected Map<String, SmtpRequest>     commands;
-
         
        protected void setCommand(SmtpRequest cmd) { 
                 if(cmd==null)return;
@@ -182,7 +177,7 @@ public class SmtpRequestBuilder {
                return inst;
         }
 
-        public SmtpRequest getCommand(String command) { return commands.get(command);}
+        public SmtpRequest getCommand(String command) { return commands.get(command.toUpperCase());}
 
         public List<SmtpRequest> getCommands() { return new ArrayList<>(commands.values()); }
         protected void  init() {

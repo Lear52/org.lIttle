@@ -25,8 +25,8 @@ public class SmtpCommand {
        public static final SmtpCommand STLS  = new SmtpCommand(AsciiString.cached("STARTTLS"));
        public static final SmtpCommand EMPTY = new SmtpCommand(AsciiString.cached(""));
 
-       public static final SmtpCommand CONTENT     = new SmtpCommand(AsciiString.cached(""));
-       public static final SmtpCommand LASTCONTENT = new SmtpCommand(AsciiString.cached(""));
+       public static final SmtpCommand CONTENT     = new SmtpCommand(AsciiString.cached("CONTENT"));
+       public static final SmtpCommand LASTCONTENT = new SmtpCommand(AsciiString.cached("LASTCONTENT"));
       
        private static final Map<String, SmtpCommand> COMMANDS = new HashMap<String, SmtpCommand>();
 
@@ -74,7 +74,7 @@ public class SmtpCommand {
        }
       
        public void encode(ByteBuf buffer) {
-              if(name.equals("")==false)ByteBufUtil.writeAscii(buffer, name);
+              if(name.equals("")==false && name.equals("LASTCONTENT")==false && name.equals("CONTENT")==false)ByteBufUtil.writeAscii(buffer, name);
        }
       
        public boolean isContentExpected() {

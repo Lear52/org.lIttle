@@ -105,7 +105,7 @@ public class SmtpCLN {
               Properties props = System.getProperties();
               props.put("mail.smtp.user", from);
               props.put("mail.smtp.auth", true);
-              props.put("mail.smtp.auth.mechanisms", "PLAIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
+              props.put("mail.smtp.auth.mechanisms", "LOGIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
               props.put("mail.smtp.host", host);
               props.put("mail.smtp.port", "2525");
               Authenticator auth=new Authenticator() {

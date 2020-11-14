@@ -11,6 +11,7 @@ import org.little.util.LoggerFactory;
 import org.little.util._Base64;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -21,26 +22,43 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class SmtpClient{
 
         private static final Logger logger = LoggerFactory.getLogger(SmtpClient.class);
-        private int             remote_port;
-        private String          remote_host;
-        private EventLoopGroup  localGroup;
-        private SmtpClnInitializer start_handler;
+        private int                   remote_port;
+        private String                remote_host;
+        private EventLoopGroup        localGroup;
+        private SmtpClnInitializer    start_handler;
+        private SmtpClnCommandHandler commnad;
+        private Channel               in_channel;
+        private ChannelFuture         f_in_channel;
+        private Channel               out_channel; 
 
         public SmtpClient() {
                localGroup   = null; 
                remote_port=25;         
                remote_host="127.0.0.1";
+               out_channel=null;
         }
-        public SmtpClient(EventLoopGroup  _localGroup) {
-               localGroup   = _localGroup; 
+        public SmtpClient(Channel  channel) {
+               localGroup   = channel.eventLoop(); 
+               //localGroup   = null; 
                remote_port=25;         
                remote_host="127.0.0.1";
+               out_channel=channel;
         }
 
+        public Channel getChannel() {return in_channel;}
+        public ChannelFuture getChannelFuture() {return f_in_channel;}
+                
         public int start() {
                start_handler=new SmtpClnInitializer();
+               commnad=start_handler.getCommandHandler(); 
+               commnad.setChannel(out_channel);
 
-               init(start_handler.getCommandHandler());
+               //if(localGroup==null) init(commnad);/**/
+               logger.trace("preconnect client session");
+
+               connect();
+
+               logger.trace("connect client session");
 
                return 0;
         }
@@ -56,28 +74,36 @@ public class SmtpClient{
                }
 
         }
-        public void run() {
-
+        private void connect() {
                 if(localGroup==null)localGroup          = new NioEventLoopGroup();
-
 
                 try {
                      Bootstrap boot_strap = new Bootstrap();
                      boot_strap.group(localGroup);
-
+              
                      boot_strap.channel(NioSocketChannel.class);
                      boot_strap.handler(start_handler);
                      boot_strap.option (ChannelOption.TCP_NODELAY, true);
                      boot_strap.option (ChannelOption.AUTO_READ, true);
                      boot_strap.option (ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000);
-
-                     ChannelFuture f = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
-                     logger.trace("channel id:"+f.channel().id().asShortText());
-                     f=f.sync();
+              
+                     f_in_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
+                     in_channel=f_in_channel.channel();
+                     logger.trace("channel id:"+in_channel.id().asShortText());
+                } 
+                catch (Exception e) {
+                        logger.error("run SmtpClient", e);
+                } 
+        	
+        	
+        	
+        }
+        public void run() {
+                try {
+                     f_in_channel=f_in_channel.sync();
                      // Wait until the connection is closed.
-                     f=f.channel().closeFuture();
-                     f.sync();
-
+                     f_in_channel=f_in_channel.channel().closeFuture();
+                     f_in_channel.sync();
                 } 
                 catch (Exception e) {
                         logger.error("run SmtpClient", e);

@@ -7,6 +7,5 @@ public class SmtpCLN {
               cln.start();
               cln.run();
               cln.stop();
-
        }
 }

@@ -19,43 +19,36 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
        private static final Logger      logger = LoggerFactory.getLogger(SmtpClnCommandHandler.class);
        private ArrayDeque<SmtpRequest>  queue;
        private SmtpRequest              request;
-       //private int                      index;
        private Channel                  in_channel;
        private Channel                  out_channel;
 
        public SmtpClnCommandHandler() {
               logger.trace("constructor SmtpCommandHandler");
+
               queue=new ArrayDeque<SmtpRequest>();
-              //index=1;
               request=null;
               in_channel=null;
               out_channel=null;
        }
 
        public void addQueue(SmtpRequest request) {
-              //request.setID(index); 
-              //index++;
               queue.addLast(request);
        }
-       //public Channel getChannel(){return in_channel;}
+       public void setChannel(Channel ch){out_channel=ch;}
      
        @Override
        public void channelActive(ChannelHandlerContext ctx) {
 
-
               in_channel = ctx.channel();
 
-              logger.trace("channelActive SmtpCommandHandler ");
+              logger.trace("start channel client");
               if(!queue.isEmpty()) {
                  request=queue.pollFirst();
-              
-                 logger.trace("request:"+request);
-
                  //---------------------------------------------------------------------------------------------------
                  writeRequest(request);
+                 logger.trace("write request:"+request);
                  //---------------------------------------------------------------------------------------------------
              }
-             
 
        }
        
@@ -68,28 +61,32 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
           
               if(msg instanceof SmtpResponse) {
             	 SmtpResponse res=(SmtpResponse)msg; 
+
                  if(request!=null)request.add(res);
+
                  if(out_channel!=null){
+                    logger.trace("prewrite response to server channel");
                     out_channel.writeAndFlush(res).addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) {
-                           if (future.isSuccess()) {
-                               logger.trace("write response");
-                               out_channel.read();
-                           } else {
-                               logger.trace("SmtpCommandHandler  disconnect");
-                               future.channel().close();
-                           }
-                     }
-                 }
-                 );
-
-
+                                @Override
+                                public void operationComplete(ChannelFuture future) {
+                                       if (future.isSuccess()) {
+                                           logger.trace("write response");
+                                           out_channel.read();
+                                       } else {
+                                           logger.trace("SmtpCommandHandler  disconnect");
+                                           future.channel().close();
+                                           clouse_in_channel();
+                                       }
+                                       }
+                                }
+                    );
+                    logger.trace("write response to server channel");
+                   
                  }
                  logger.trace("read Response:"+res);
               }
               
-
+                   
        }
        @Override
        public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -99,21 +96,22 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
               //in_channel = ctx.channel();
               //------------------------------------------------------------
               request=null;
-             
+              if(out_channel==null){
               //------------------------------------------------------------
-              if(!queue.isEmpty()) {
-                 request=queue.poll();
-             
-                 logger.trace("request:"+request);
-                 //---------------------------------------------------------------------------------------------------
-                 writeRequest(request);
-                 //---------------------------------------------------------------------------------------------------
-              }
-              else{
-                  logger.trace("queue is clear chanel disconnect");
-                  if(in_channel.isActive()) {
-                     in_channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-                  }
+                 if(!queue.isEmpty()) {
+                    request=queue.poll();
+                
+                    logger.trace("request:"+request);
+                    //---------------------------------------------------------------------------------------------------
+                    writeRequest(request);
+                    //---------------------------------------------------------------------------------------------------
+                 }
+                 else{
+                     logger.trace("queue is clear chanel disconnect");
+                     if(in_channel.isActive()) {
+                        in_channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+                     }
+                 }
               }
            
        }
@@ -128,6 +126,7 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
                       } else {
                           logger.trace("SmtpCommandHandler  disconnect");
                           future.channel().close();
+                          clouse_out_channel();
                       }
                   }
               }
@@ -135,11 +134,26 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
               //logger.trace("writeRequest:"+_request+" Ok");
 
        }
+       private void clouse_in_channel() {
+              if(in_channel!=null) {
+                 if(in_channel.isActive()) {
+                    in_channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+                 }
+              }
+       }
+       private void clouse_out_channel() {
+              if(out_channel!=null) {
+                 if(out_channel.isActive()) {
+                    out_channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+                 }
+              }
+       }
        
        @Override
        public void channelInactive(ChannelHandlerContext ctx) {
               
-           logger.trace("channelInactive");
+              logger.trace("channelInactive");
+              clouse_out_channel();
        }
      
        @Override

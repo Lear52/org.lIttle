@@ -23,19 +23,28 @@ public class SmtpSrvDataHandler extends ChannelInboundHandlerAdapter {
 
        @Override
        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-              ByteBuf            bbLine         = (ByteBuf) msg;
+              ByteBuf buffer = (ByteBuf) msg;
+
               SmtpSessionContext sessionContext = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY).get();
 
-              transformLine(bbLine);
+              //transformLine(buffer);
+              if(buffer.readableBytes() >= 1 && buffer.getByte(buffer.readerIndex()) == '.') {
+                  if(buffer.readableBytes() > 1) {
+                     buffer.readByte(); // consume '.' if there are other characters on the line
+                  }
+               }
 
               // is the line a single dot i.e. end of DATA?
-              if(bbLine.readableBytes() == 1 && bbLine.getByte(bbLine.readerIndex()) == '.') {
+              if(buffer.readableBytes() == 1 && buffer.getByte(buffer.readerIndex()) == '.') {
                  //if so, switch back to command handler
                  ctx.pipeline().replace(this, "smptInCommand", new SmtpSrvCommandHandler());
 
                  logger.trace("replace smptInCommand new SmtpCommandHandler()");
 
-                 boolean rc = sessionContext.mailTransaction.mailFinished();
+                 boolean rc = true;
+
+                 //rc = sessionContext.mailTransaction.mailFinished();
+
                  //FIXME: reset mailtransaction?!
                  sessionContext.mailTransaction = null;
 
@@ -49,16 +58,17 @@ public class SmtpSrvDataHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(reply);
                  }
               } else {
-                 sessionContext.mailTransaction.addDataLine(bbLine.copy()); //TODO: copy or retain?!
+                 //sessionContext.mailTransaction.addDataLine(buffer.copy()); //TODO: copy or retain?!
               }
        }
-
-       private void transformLine(ByteBuf line) {
-               if(line.readableBytes() >= 1 && line.getByte(line.readerIndex()) == '.') {
-                       if(line.readableBytes() > 1) {
-                          line.readByte(); // consume '.' if there are other characters on the line
-                       }
+/*
+       private void transformLine(ByteBuf buffer) {
+               if(buffer.readableBytes() >= 1 && buffer.getByte(buffer.readerIndex()) == '.') {
+                  if(buffer.readableBytes() > 1) {
+                     buffer.readByte(); // consume '.' if there are other characters on the line
+                  }
                }
        }
+*/       
 }
 

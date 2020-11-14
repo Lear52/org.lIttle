@@ -29,13 +29,20 @@ public class SmtpSrvInitSession extends ChannelInboundHandlerAdapter {
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
                 SmtpSessionContext            sc             = new SmtpSessionContext();
+
                 Attribute<SmtpSessionContext> sessionStarted = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY);
                 sessionStarted.set(sc);
+                if(commonSMTP.get().isProxy()){
+                   
+                   sc.createClient(ctx);
 
-                SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R220, commonSMTP.get().getDefaultDomain());
-                ctx.writeAndFlush(reply);
+                }
+                else{
+                    SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R220, commonSMTP.get().getDefaultDomain());
+                    ctx.writeAndFlush(reply);
+                }
 
-                logger.trace("channelActive Start new session");
+                logger.trace("Start new smtp session");
 
         }
 

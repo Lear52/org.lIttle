@@ -47,39 +47,56 @@ public class SmtpClnRequestEncoder extends MessageToMessageEncoder<Object> {
                     SmtpRequest req = (SmtpRequest) msg;
                     logger.trace("begin encode msg is SmtpRequest");
 
-
+                   /*
                     if(contentExpected) {
                        if(req.command().equals(SmtpCommand.RSET)) {
+                             logger.trace("contentExpected = false");
                              contentExpected = false;
                        } 
                        else {
+                             logger.error("SmtpContent expected");
                              throw new IllegalStateException("SmtpContent expected");
                        }
                     }
-                
+                   */
                     boolean release = true;
                     ByteBuf buffer  = ctx.alloc().buffer();
+
+                    logger.trace("alloc buffer");
                 
                     try{
                         req.command().encode(buffer);
                 
                         boolean notEmpty = req.command() != SmtpCommand.EMPTY;
+
                         boolean isContent = (req.command() == SmtpCommand.CONTENT)||(req.command() == SmtpCommand.LASTCONTENT);
+                        logger.trace("write SmtpRequest (SmtpCommand.CONTENT)||SmtpCommand.LASTCONTENT) :"+isContent);
                 
                         if(isContent){
                            writeParameters(req.parameters(), buffer);
+                           logger.trace("write SmtpRequest (SmtpCommand.CONTENT)||SmtpCommand.LASTCONTENT)");
+                           if(req.command() == SmtpCommand.LASTCONTENT){
+                              logger.trace("write SmtpRequest SmtpCommand.LASTCONTENT)");
+                              buffer.writeByte('.').writeByte('\r').writeByte('\n');
+                           }
+
                         }
                         else{
+                           logger.trace("write SmtpRequest SmtpCommand:"+req.command().name());
                            writeParameters(req.parameters(), buffer, notEmpty);
                            ByteBufUtil.writeShortBE(buffer, CRLF_SHORT);
                         }
+
                         out.add(buffer);
+                        logger.trace("out.add(buffer)");
                 
                         release = false;
-                        if(req.command().isContentExpected()){
+
+                        //if(req.command().isContentExpected()){
                            //for DATA and for AUTH
-                           contentExpected = true;
-                        }
+                        //   contentExpected = true;
+                        //}
+
                         logger.trace("SmtpRequest write req:"+req);
                     } 
                     finally {
