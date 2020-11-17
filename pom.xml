@@ -5,13 +5,13 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>20201117-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
                 <maven.compiler.source>8</maven.compiler.source>
                 <maven.compiler.target>8</maven.compiler.target>
-                <netty.version>4.1.52.Final</netty.version>
+                <netty.version>4.1.54.Final</netty.version>
         </properties>
 
         <build>
