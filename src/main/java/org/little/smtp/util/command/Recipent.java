@@ -19,45 +19,26 @@ public class Recipent extends SmtpRequest {
         public Recipent(){
                this.command    = SmtpCommand.RCPT;
         }
-	@Override
-	public CharSequence getCommandVerb() {
-		return "RCPT";
-	}
-	/*
 	//@Override
-	public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-                //Path.parse(argument);
-                MailTransaction mailTx = ctxMailSession.mailTransaction;
-                mailTx.addTo(argument);
-
-                SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R250, "OK");
-
-                logger.trace("reply:"+reply);
-                return reply;
-        }
-        */
+	//public CharSequence getCommandVerb() {
+	//	return "RCPT";
+	//}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-                String log_str="";
-                for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-                logger.trace(log_str);
+               // String log_str="";
+               // for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               // logger.trace(log_str);
+               logger.trace(toString());
                 
-                //Path.parse(argument);
-                
-                SmtpMailTransaction mailTx = ctxMailSession.mailTransaction;
-                String to="";
-                for(int i=0;i< parameters.size();i++)to+=parameters.get(i)+" ";
-                
-                mailTx.addTo(to);
-                
-                SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, "OK");
+               SmtpMailTransaction mailTx = ctxMailSession.mailTransaction;
+               String to="";
+               for(int i=0;i< parameters.size();i++)to+=parameters.get(i)+" ";
+               mailTx.addTo(to);
+               
+               SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, "OK");
 
-                logger.trace("reply:"+reply);
-                return reply;
+               logger.trace("reply:"+reply);
+               return reply;
         }
 
 }

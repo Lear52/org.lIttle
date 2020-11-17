@@ -26,35 +26,42 @@ public class SmtpClient{
         private String                remote_host;
         private EventLoopGroup        localGroup;
         private SmtpClnInitializer    start_handler;
-        private SmtpClnCommandHandler commnad;
-        private Channel               in_channel;
-        private ChannelFuture         f_in_channel;
-        private Channel               out_channel; 
+        private SmtpClnCommandHandler commnad_handler;
+        private Channel               client_channel;
+        private ChannelFuture         f_client_channel;
+        private Channel               server_channel; 
 
         public SmtpClient() {
                localGroup   = null; 
-               remote_port=25;         
-               remote_host="127.0.0.1";
-               out_channel=null;
+               remote_port=commonSMTP.get().getClientPort();         
+               remote_host=commonSMTP.get().getClientHost();
+               server_channel=null;
         }
-        public SmtpClient(Channel  channel) {
-               localGroup   = channel.eventLoop(); 
-               //localGroup   = null; 
-               remote_port=25;         
-               remote_host="127.0.0.1";
-               out_channel=channel;
+        public SmtpClient(Channel  _server_channel) {
+               localGroup   = server_channel.eventLoop(); 
+               remote_port=commonSMTP.get().getClientPort();         
+               remote_host=commonSMTP.get().getClientHost();
+               server_channel=_server_channel;
         }
 
-        public Channel getChannel() {return in_channel;}
-        public ChannelFuture getChannelFuture() {return f_in_channel;}
+        public Channel getChannel() {return client_channel;}
+        public ChannelFuture getChannelFuture() {return f_client_channel;}
                 
+        private int start_test() {
+            start_handler  =new SmtpClnInitializer();
+            commnad_handler=start_handler.getCommandHandler(); 
+            commnad_handler.setChannel(server_channel);
+            init(commnad_handler);
+            connect();
+
+            logger.trace("connect client session");
+
+            return 0;
+     }
         public int start() {
                start_handler=new SmtpClnInitializer();
-               commnad=start_handler.getCommandHandler(); 
-               commnad.setChannel(out_channel);
-
-               //if(localGroup==null) init(commnad);/**/
-               logger.trace("preconnect client session");
+               commnad_handler=start_handler.getCommandHandler(); 
+               commnad_handler.setChannel(server_channel);
 
                connect();
 
@@ -87,9 +94,9 @@ public class SmtpClient{
                      boot_strap.option (ChannelOption.AUTO_READ, true);
                      boot_strap.option (ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000);
               
-                     f_in_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
-                     in_channel=f_in_channel.channel();
-                     logger.trace("channel id:"+in_channel.id().asShortText());
+                     f_client_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
+                     client_channel=f_client_channel.channel();
+                     logger.trace("channel id:"+client_channel.id().asShortText());
                 } 
                 catch (Exception e) {
                         logger.error("run SmtpClient", e);
@@ -100,10 +107,10 @@ public class SmtpClient{
         }
         public void run() {
                 try {
-                     f_in_channel=f_in_channel.sync();
+                     f_client_channel=f_client_channel.sync();
                      // Wait until the connection is closed.
-                     f_in_channel=f_in_channel.channel().closeFuture();
-                     f_in_channel.sync();
+                     f_client_channel=f_client_channel.channel().closeFuture();
+                     f_client_channel.sync();
                 } 
                 catch (Exception e) {
                         logger.error("run SmtpClient", e);
@@ -112,7 +119,8 @@ public class SmtpClient{
                        stop();
                 }
         }
-        private void init(SmtpClnCommandHandler command) {
+        
+        private void init(final SmtpClnCommandHandler command) {
                logger.trace("begin queue");
 
                SmtpRequest request;
@@ -214,4 +222,11 @@ public class SmtpClient{
         		;
 
         
+        
+        public static void main(String[] args) {
+            SmtpClient cln=new SmtpClient();
+            cln.start_test();
+            cln.run();
+            cln.stop();
+        }
 }

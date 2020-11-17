@@ -1,5 +1,8 @@
 package org.little.util;
 
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MessageFormatter;
+
 public class Logger{
 
        final private static String CLASS_NAME="org.little.util.Logger";
@@ -36,6 +39,13 @@ public class Logger{
        public void debug(Object message){
            mainLogger.debug((new StringBuilder()).append(classNamePrefix).append(message).toString());
        }
+       synchronized
+       public void debug(String message, Object... args){
+              if (mainLogger.isDebugEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.debug((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
+       }
     
        synchronized
        public void debug(Object message, Throwable t){
@@ -53,6 +63,14 @@ public class Logger{
            mainLogger.error((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
            errorLogger.error((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
        }
+       synchronized
+       public void error(String message, Object... args){
+              if (mainLogger.isErrorEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.error((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+                  errorLogger.error((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
+       }
     
        synchronized
        public void fatal(Object message){
@@ -65,10 +83,25 @@ public class Logger{
            mainLogger.error((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
            errorLogger.error((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
        }
+       synchronized
+       public void fatal(String message, Object... args){
+              if (mainLogger.isErrorEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.error((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+                  errorLogger.error((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
+       }
     
        synchronized
        public void trace(Object message) {
            mainLogger.trace((new StringBuilder()).append(classNamePrefix).append(message).toString());
+       }
+       synchronized
+       public void trace(String message, Object... args){
+              if (mainLogger.isTraceEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.trace((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
        }
     
        synchronized
@@ -81,8 +114,16 @@ public class Logger{
            mainLogger.info((new StringBuilder()).append(classNamePrefix).append(message).toString());
        }
     
+       synchronized
        public void info(Object message, Throwable t){
            mainLogger.info((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
+       }
+       synchronized
+       public void info(String message, Object... args){
+              if (mainLogger.isInfoEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.info((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
        }
     
        synchronized
@@ -93,6 +134,13 @@ public class Logger{
        synchronized
        public void warn(Object message, Throwable t){
            mainLogger.warn((new StringBuilder()).append(classNamePrefix).append(message).toString(), t);
+       }
+       synchronized
+       public void warn(String message, Object... args){
+              if (mainLogger.isWarnEnabled()) {
+                  FormattingTuple ft = MessageFormatter.arrayFormat(message, args);
+                  mainLogger.warn((new StringBuilder()).append(classNamePrefix).append(ft.getMessage()).append(" ").append(ft.getThrowable()).toString());
+              }
        }
 
        public boolean isTrace() {

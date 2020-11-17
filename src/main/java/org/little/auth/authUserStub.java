@@ -8,9 +8,9 @@ import org.little.util.utilTransform;
 public class authUserStub implements authUser {
        private static final Logger  logger = LoggerFactory.getLogger(authUserStub.class);
 
-        private void load() {
-                logger.trace("load ok");            
-        }
+        //private void load() {
+        //        logger.trace("load ok");            
+        //}
 
         public String  getFullUserName(String username){
                return getFullUserName(username,"vip.cbr.ru");

@@ -1,14 +1,17 @@
 package org.little.mailx;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.mail.Message;
 import javax.activation.DataHandler;
 import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -16,14 +19,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.little.http.HttpX509Server;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class SmtpCLN {
     private static final Logger  logger = LoggerFactory.getLogger(SmtpCLN.class);
@@ -32,6 +29,7 @@ public class SmtpCLN {
        private String to       ;
        private String from     ;
        private String host     ;
+       private int    port     ;
        private String userName ;
        private String password ;
        private String subject  ;
@@ -42,7 +40,8 @@ public class SmtpCLN {
               debug   = true;
               to       ="";
               from     ="";
-              host     ="";
+              host     ="127.0.0.1";
+              port     =25;
               userName ="";
               password ="";
               subject  ="";
@@ -57,6 +56,9 @@ public class SmtpCLN {
        public void setHost(String host) {
               this.host = host;
        }
+       public void setPort(int _port) {
+           this.port = _port;
+    }
        public void setUserName(String userName) {
               this.userName = userName;
        }
@@ -72,12 +74,15 @@ public class SmtpCLN {
        public void setDebug(boolean debug) {
 		     this.debug = debug;
        }
+       @SuppressWarnings("resource")
        public void sent(String filename){
     	   ByteArrayOutputStream out=new ByteArrayOutputStream();
-           FileInputStream in;
+           FileInputStream       in =null;
            try {
 			   in = new FileInputStream(filename);
-		   } catch (FileNotFoundException e) {
+		   } catch (Exception e) {
+			   try {in.close();}catch(Exception e1){;}
+			   try {out.close();}catch(Exception e2){}
 			   logger.error("ex:"+e);
 			   return;
 		   }
@@ -107,7 +112,7 @@ public class SmtpCLN {
               props.put("mail.smtp.auth", true);
               props.put("mail.smtp.auth.mechanisms", "LOGIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
               props.put("mail.smtp.host", host);
-              props.put("mail.smtp.port", "2525");
+              props.put("mail.smtp.port", ""+port);
               Authenticator auth=new Authenticator() {
                  @Override
                  protected PasswordAuthentication getPasswordAuthentication() {

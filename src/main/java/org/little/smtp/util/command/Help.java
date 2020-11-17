@@ -18,10 +18,11 @@ public class Help extends SmtpRequest {
         public Help(){
                this.command    = SmtpCommand.HELP;
         }
-        @Override
-        public CharSequence getCommandVerb() {
-                return "HELP";
-        }
+        //@Override
+        //public CharSequence getCommandVerb() {
+        //        return "HELP";
+        //}
+
         /*
         //@Override
         public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
@@ -34,9 +35,10 @@ public class Help extends SmtpRequest {
         */
     	@Override
     	public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-               String log_str="";
-               for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-               logger.trace(log_str);
+               //String log_str="";
+               //for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               //logger.trace(log_str);
+               logger.trace(toString());
 
                SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, "OK");
                logger.trace("reply:"+reply);

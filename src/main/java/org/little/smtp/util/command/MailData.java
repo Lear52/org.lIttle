@@ -1,6 +1,5 @@
 package org.little.smtp.util.command;
 
-import org.little.smtp.handler.SmtpSrvDataHandler;
 import org.little.smtp.util.SmtpCommand;
 import org.little.smtp.util.SmtpRequest;
 import org.little.smtp.util.SmtpResponse;
@@ -20,44 +19,19 @@ public class MailData extends SmtpRequest {
                this.command    = SmtpCommand.DATA;
         }
 
-        @Override
-        public CharSequence getCommandVerb() {
-                return "DATA";
-        }
-        /*
         //@Override
-        public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,        CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-                SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R354, "Start mail input; end with <CRLF>.<CRLF>");
-                // switch handlers
-                ctxChannel.pipeline().replace("smptInCommand", "smptInData", new SmtpSrvDataHandler());
-
-                logger.trace("reply:"+reply);
-
-                return reply;
-        }
-        */
+        //public CharSequence getCommandVerb() {
+        //        return "DATA";
+        //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-                String log_str="";
-                for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-                logger.trace(log_str);
+                //String log_str="";
+                //for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+                //logger.trace(log_str);
+                logger.trace(toString());
 
                 SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R354, "Start mail input; end with <CRLF>.<CRLF>");
-                // switch handlers
-                /*
-                if(false){
-                   ctxChannel.pipeline().replace("smptInCommand", "smptInData", new SmtpSrvDataHandler());
-                }
-                else{
-                   if(ctxMailSession.mailTransaction!=null)ctxMailSession.mailTransaction.mail_content= new Content();
-
-                }
-                */
-                logger.trace("reply:"+reply);
+                //logger.trace("reply:"+reply);
 
                 return reply;
         }

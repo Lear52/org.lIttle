@@ -24,10 +24,12 @@ public class SmtpClnRequestEncoder extends MessageToMessageEncoder<Object> {
        private static final byte          SP = ' ';
        //private static final ByteBuf       DOT_CRLF_BUFFER = Unpooled.unreleasableBuffer(Unpooled.directBuffer(3).writeByte('.').writeByte('\r').writeByte('\n'));
       
-       private boolean contentExpected;
+       //private boolean contentExpected;
       
 
-       public SmtpClnRequestEncoder(){contentExpected=false;}
+       public SmtpClnRequestEncoder(){
+    	   //contentExpected=false;
+    	   }
 
        @Override
        public boolean acceptOutboundMessage(Object msg) throws Exception {

@@ -26,10 +26,7 @@ public class lDBStore   implements lStore, lDBElement  {
 
        @Override
        public  boolean init (){
-               String sql="CREATE TABLE L_STORE("
-                         +"ID   NUMBER,"
-                         +"NAME VARCHAR(128)"
-                         +")";
+               //String sql="CREATE TABLE L_STORE("+"ID   NUMBER,"+"NAME VARCHAR(128)"+")";
 
 
                return false;

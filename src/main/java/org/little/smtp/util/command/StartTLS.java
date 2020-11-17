@@ -37,65 +37,17 @@ public class StartTLS extends SmtpRequest {
                 return null;
         }
 
-        @Override
-        public CharSequence getCommandVerb() {
-                return "STARTTLS";
-        }
-        /*
         //@Override
-        public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel, CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-                if(argument != null){
-                   SmtpSrvResponse reply=new SmtpSrvResponse(SmtpSrvResponseStatus.R501, "Syntax error (no parameters allowed)");
-                   logger.trace("reply:"+reply);
-                   return reply;
-                }
-
-                SslContext        sslCtx         =null;
-                SslContextBuilder context_builder=null;
-                try {
-                     File _certificate=new File("certificate3.pem");
-                     File _privatekey=new File("privateKey.key");
-                     //File _trastcert=new File("rootCA.pem");
-                       
-                     context_builder = SslContextBuilder.forServer(_certificate, _privatekey);
-                     context_builder.trustManager(InsecureTrustManagerFactory.INSTANCE);
-                     context_builder.sslProvider(SslProvider.JDK);
-                     sslCtx = context_builder.build();
-
-                     
-                     //   File   key         = new File(SmtpConfig.getTlsKeyFile());
-                     //   String keyPassword = SmtpConfig.getTlsKeyPassword();
-                     //   File trustStore    = new File(SmtpConfig.getTlsTrustStoreFile());
-
-                     //   SslContext sslCtx = SslContextBuilder.forServer(key, trustStore, keyPassword).build();
-                     
-                     ctxChannel.pipeline().addFirst(new SslHandler(sslCtx.newEngine(ctxChannel.alloc()), true));
-
-                     
-                     ctxMailSession.resetMailTransaction();
-                     ctxMailSession.tlsActive = true; // TODO: wait for handshake to finish, otherwise abort connection
-
-                     SmtpSrvResponse reply=new SmtpSrvResponse(SmtpSrvResponseStatus.R220, "Ready to start TLS");
-
-                     logger.trace("reply:"+reply);
-                     return reply;
-                } catch(Exception e) {
-                        logger.error("Failed to establish TLS!", e);
-                        SmtpSrvResponse reply=new SmtpSrvResponse(SmtpSrvResponseStatus.R454, "TLS not available due to temporary reason");
-                        logger.trace("reply:"+reply);
-                        return reply;
-                }
-        } 
-        */
+        //public CharSequence getCommandVerb() {
+        //        return "STARTTLS";
+        //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-               String log_str="";
-               for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-               logger.trace(log_str);
+               //String log_str="";
+               //for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               //logger.trace(log_str);
+               logger.trace(toString());
+
                if(parameters.size() > 1){
                    SmtpResponse reply=new SmtpResponse(SmtpResponseStatus.R501, "Syntax error (no parameters allowed)");
                    logger.trace("reply:"+reply);

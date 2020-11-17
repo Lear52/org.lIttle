@@ -4,7 +4,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.little.auth.authUser;
-import org.little.auth.authUserStub;
 import org.little.auth.authUserXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -45,11 +44,8 @@ public class common {
     public Node         getNode(){return node_cfg;}
 
     public authUser     getAuth(){
-                        if(false)return new authUserStub();
-                        else{ 
-                           //authUserXML.load();
-                           return new authUserXML();
-                        }
+                        //return new authUserStub();	
+                        return new authUserXML();
     }
 
     

@@ -1,21 +1,5 @@
 package org.little.mailx;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.mail.Message;
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 /**
  * sendfile will create a multipart message with the second
  * block of the message being the given file.<p>
@@ -45,7 +29,7 @@ public class sendfile {
 	   //String to2      = "iap";
 	   String from     = "av";
 	   String host     = "127.0.0.1";
-	   String port     = "2525";
+	   int    port     = 2525;
 	   String filename = args[0];
 	   boolean debug   = true;
            String userName = "av";
@@ -69,6 +53,7 @@ public class sendfile {
      cln.setTo(to1);
      cln.setFrom(from);
      cln.setHost(host);
+     cln.setPort(port);
      cln.setSubject(subject);
      cln.setMsgText(msgText1);
      cln.setUserName(userName);

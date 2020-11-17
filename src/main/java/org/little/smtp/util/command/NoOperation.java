@@ -24,20 +24,10 @@ public class NoOperation extends SmtpRequest {
                this.command    = SmtpCommand.NOOP;
         }
 
-        @Override
-        public CharSequence getCommandVerb() {
-                return "NOOP";
-        }
-        /*
         //@Override
-        public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-               SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R250, "OK");
-               logger.trace("reply:"+reply);
-               return reply;
-        }
-        */
+        //public CharSequence getCommandVerb() {
+        //        return "NOOP";
+        //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
                String log_str="";

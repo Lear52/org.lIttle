@@ -29,7 +29,7 @@ public class lMessage{
     private   String             body_bin_txt    ;
     private   String             body_bin_txt76  ;
     private   int                msg_size        ;
-    private   int                msg_count_str   ;
+    //private   int                msg_count_str   ;
 
     private   int                msg_num         ;
     private   int                msg_uid         ;
@@ -72,7 +72,7 @@ public class lMessage{
               body_bin_txt    ="";
               body_bin_txt76  ="";
               msg_size         = 0;
-              msg_count_str    = 0;
+              //msg_count_str    = 0;
 
               x509_type        ="";      
               x509_type_file   ="PEM"; //"PEM"-чисто текстовый ,"DER"    
@@ -182,7 +182,7 @@ public class lMessage{
                     StringBuilder out_buf=new StringBuilder();
                     {
                      int begin=0;
-                     msg_count_str   = 0;
+                     //msg_count_str   = 0;
                      while(len_txt>0){
                            int len=Integer.min(len_txt, 76);
                            String s=body_bin_txt.substring(begin,begin+len);
@@ -190,7 +190,7 @@ public class lMessage{
                            len_txt-=len;
                            out_buf.append(s);
                            if(len==76)out_buf.append("\r\n");
-                           msg_count_str++;
+                           //msg_count_str++;
                      }
                      //out_buf.append("\r\n");
                   }
@@ -202,7 +202,7 @@ public class lMessage{
                        body_bin        =null;
                        body_bin_txt    ="";  
                        body_bin_txt76  ="";  
-                       msg_count_str   = 0;
+                       //msg_count_str   = 0;
                        setSize(0);
                        return;
                     }

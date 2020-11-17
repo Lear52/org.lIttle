@@ -17,7 +17,7 @@ public class commonSMTP extends common{
        private static final Logger logger = LoggerFactory.getLogger(commonSMTP.class);
        private static commonSMTP  cfg=new commonSMTP();
       
-       private int           bind_port                      ;
+       private int           bind_server_port               ;
        private String        ldap_url                       ;
        private String        ldap_ad_username               ;
        private String        ldap_ad_password               ;
@@ -25,6 +25,8 @@ public class commonSMTP extends common{
        private String        local_bind_server              ;
        private boolean       case_sensitive_folder          ;
        private boolean       is_proxy                       ;
+       private String        client_host                    ;
+       private int           client_port                    ;
       
        private String        default_domain                 ;
       
@@ -36,7 +38,9 @@ public class commonSMTP extends common{
        public void clear(){
               super.clear();
               setNodeName("littlesmtp");
-              bind_port =2525;
+              bind_server_port               =2525;
+              client_host                    ="127.0.0.1";
+              client_port                    =25;
               ldap_url                       ="ldap://rdc22-vip01.vip.cbr.ru:3268";
               local_bind_client              ="*";
               local_bind_server              ="*";
@@ -53,8 +57,12 @@ public class commonSMTP extends common{
                  NodeList glist=node_cfg.getChildNodes();     
                  for(int i=0;i<glist.getLength();i++){
                      Node n=glist.item(i);
-                     if("port"             .equals(n.getNodeName())){String s         =n.getTextContent(); try{bind_port=Integer.parseInt(s, 10);              }catch(Exception e){ bind_port=8080;             logger.error("bind_port:"+s);               } logger.info("Bind port:"+bind_port);}
+                     if("port"             .equals(n.getNodeName())){String s         =n.getTextContent(); try{bind_server_port=Integer.parseInt(s, 10);       }catch(Exception e){ bind_server_port=2525;        logger.error("bind_server_port:"+s);} logger.info("Bind port:"+bind_server_port);}
                      else
+                     if("client_port"      .equals(n.getNodeName())){String s         =n.getTextContent(); try{client_port=Integer.parseInt(s, 10);            }catch(Exception e){ client_port=25;               logger.error("client_port:"+s);     } logger.info("client_port:"+client_port);}
+                     else
+                     if("client_host"      .equals(n.getNodeName())){client_host      =n.getTextContent(); logger.info("client_host:"+ldap_url);               }
+                     else                                                                                                            
                      if("ldap_url"         .equals(n.getNodeName())){ldap_url         =n.getTextContent(); logger.info("ldap_url:"+ldap_url);                  }
                      else                                                                                                            
                      if("ldap_ad_username" .equals(n.getNodeName())){ldap_ad_username =n.getTextContent(); logger.info("ldap_ad_username:"+ldap_ad_username);  }
@@ -63,7 +71,7 @@ public class commonSMTP extends common{
                      else
                      if("local_bind_client".equals(n.getNodeName())){local_bind_client=n.getTextContent(); logger.info("local_bind_client:"+local_bind_client);}
                      else
-                     if("default_domain"     .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
+                     if("default_domain"     .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);    }
                      else
                      if("case_sensitive_folder".equals(n.getNodeName())){String s=n.getTextContent(); try{case_sensitive_folder=Boolean.parseBoolean(s);}catch(Exception e){ case_sensitive_folder=true;logger.error("case_sensitive_folder:"+s);} logger.info("case_sensitive_folder:"+case_sensitive_folder);}
                      else
@@ -90,7 +98,9 @@ public class commonSMTP extends common{
        @Override
        public void initMBean(){
        }
-       public int           getPort(){return bind_port;}
+       public int           getPort(){return bind_server_port;}
+       public int           getClientPort             (){return client_port;}
+       public String        getClientHost             (){return client_host;               }
        public String        getLdapUsername           (){return ldap_ad_username;               }
        public String        getLdapPassword           (){return ldap_ad_password;               }
        public String        getLdapUrl                (){return ldap_url;                       }

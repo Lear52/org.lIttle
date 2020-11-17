@@ -21,57 +21,10 @@ public class ExtendedHello extends SmtpRequest {
                this.command    = SmtpCommand.EHLO;
         }
 
-        @Override
-        public CharSequence getCommandVerb() {
-                return "EHLO";
-        }
-        /*
         //@Override
-        public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-               ctxMailSession.resetMailTransaction();
-
-               logger.trace("resetMailTransaction ");
-
-               CharSequence domainOrAddressLiteral = argument;
-               String greeting = "little SMTP server";
-
-               List<String> lines = new ArrayList<String>();
-
-               lines.add(domainOrAddressLiteral + " " + greeting);
-               lines.add("SIZE" + " " + "102400");
-
-               lines.add("8BITMIME");
-               
-               lines.add(Auth.getCommandAuth());
-
-               if(!ctxMailSession.tlsActive)lines.add("STARTTLS");
-               
-               //for(SmtpCommand cmd: SmtpRegistry.get().getHelloKeywords(ctxMailSession)) {
-               //        CharSequence helloKeyword = cmd.getHelloKeyword(ctxMailSession);
-               //        if(helloKeyword != null) {
-               //           String line = helloKeyword.toString();
-               //           //if(cmd.getHelloParams(ctxMailSession) != null) {
-               //           //   for(CharSequence param: cmd.getHelloParams(ctxMailSession)) {
-               //           //           line += " " + param;
-               //           //   }
-               //           //}
-               //           lines.add(line);
-               //        }
-               //}
-
-               logger.info("using lines: "+lines);
-
-               SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R250, lines);
-
-               logger.trace("reply:"+reply);
-
-               return reply;
-        }
-        */
+        //public CharSequence getCommandVerb() {
+        //        return "EHLO";
+        //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
                 String log_str="";

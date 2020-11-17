@@ -41,10 +41,10 @@ public class Content extends SmtpRequest {
                boolean rc = true;
                
                StringBuilder buf=new StringBuilder(); 
-               for(int i=0;i< parameters.size();i++)buf.append(parameters.get(i));
+               for(int i=0;i<parameters.size();i++)buf.append(parameters.get(i));
                byte [] dest=buf.toString().getBytes();
 
-               logger.trace("SMTP msg:\r\n"+new String(dest));
+               //logger.trace("SMTP msg:\r\n"+new String(dest));
 
                //---------------------------------------------------------
                ByteArrayInputStream in_byte=new ByteArrayInputStream(dest);
@@ -110,7 +110,23 @@ public class Content extends SmtpRequest {
     	@Override
         public SmtpResponse   filterCommand() {
                SmtpResponse reply=null;
-               //SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, "OK");
+               StringBuilder buf=new StringBuilder(); 
+               for(int i=0;i<parameters.size();i++)buf.append(parameters.get(i));
+               byte [] dest=buf.toString().getBytes();
+               //---------------------------------------------------------
+               ByteArrayInputStream in_byte=new ByteArrayInputStream(dest);
+               BufferedInputStream  in=new BufferedInputStream(in_byte);
+
+               lMessage[] buf_message=ELM2lMessage.parse(in);
+
+               if(buf_message==null){
+                  logger.info("no SMTP msg");
+                  reply = new SmtpResponse(SmtpResponseStatus.R541, "The message could not be delivered for policy reasons");
+               }
+               else {
+
+               }
+
                return reply;
 
         }

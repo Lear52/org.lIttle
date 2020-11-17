@@ -6,7 +6,6 @@ import org.little.util.LoggerFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
 public class NullProxyInitializer extends ChannelInitializer<SocketChannel> {
        private static final Logger      LOG = LoggerFactory.getLogger(NullProxyInitializer.class);

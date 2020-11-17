@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Vector;
 
-import org.little.util.Except;
 import org.little.util.Logger;
-import org.little.util.LoggerFactory;
 
 /** 
  *

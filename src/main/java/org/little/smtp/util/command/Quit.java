@@ -23,40 +23,25 @@ public class Quit extends SmtpRequest {
         public Quit(){
                this.command    = SmtpCommand.QUIT;
         }
-	@Override
-	public CharSequence getCommandVerb() {
-		return "QUIT";
-	}
-	/*
-	//@Override
-	public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-		SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R221, "BYE");
-		ctxChannel.writeAndFlush(reply);
-		ctxChannel.close();
-
-                logger.trace("reply:"+reply);
-
-                return null;
-        }
-        */
+       //@Override
+       //public CharSequence getCommandVerb() {
+       //       return "QUIT";
+       //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-                String log_str="";
+               // String log_str="";
+               // for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               // logger.trace(log_str);
+               logger.trace(toString());
 
-                for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-                logger.trace(log_str);
 
-		SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R221, "BYE");
-		ctxChannel.writeAndFlush(reply);
-		ctxChannel.close();
+               SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R221, "BYE");
+               ctxChannel.writeAndFlush(reply);
+               ctxChannel.close();
 
-                logger.trace("reply:"+reply);
+               logger.trace("reply:"+reply);
 
-                return null;
+               return null;
         }
 
 }

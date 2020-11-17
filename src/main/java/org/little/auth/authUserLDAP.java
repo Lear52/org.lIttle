@@ -15,6 +15,7 @@ public class authUserLDAP implements authUser {
        public authUserLDAP(){
               realm="vip.cbr.ru";
               ldap_url="ldap://rdc22-vip01.vip.cbr.ru:3268";
+              domain="vip.cbr.ru";
        }
        public authUserLDAP(String r){
               ldap_url="ldap://rdc22-vip01.vip.cbr.ru:3268";
@@ -22,9 +23,11 @@ public class authUserLDAP implements authUser {
        }
        public String    getRealm(){return realm;}
        public void      setRealm(String r){realm=r;}
+       public String    getDomain(){return domain;}
+       public void      setDomain(String r){domain=r;}
 
-       private void      loadUsers4Realm(String r){
-              setRealm(r);
+       private void      loadUsers4Realm(String _realm){
+              setRealm(_realm);
        }
     
        @Override

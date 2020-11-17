@@ -1,7 +1,5 @@
 package org.little.wrapper;
 
-import org.little.proxy.util.commonProxy;
-import org.little.proxy.util.runWrapper;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.iWrapper;

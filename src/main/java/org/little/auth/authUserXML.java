@@ -107,7 +107,7 @@ public class authUserXML implements authUser {
                return ret;
         }
         private String getPswd(String user) {
-               boolean ret=false;
+               //boolean ret=false;
                if(user==null )return null;
 
                for(int i=0;i<ulist.getLength();i++){

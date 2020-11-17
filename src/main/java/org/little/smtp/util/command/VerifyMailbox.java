@@ -19,29 +19,14 @@ public class VerifyMailbox extends SmtpRequest {
         public VerifyMailbox(){
                this.command    = SmtpCommand.VRFY;
         }
-        @Override
-        public CharSequence getCommandVerb() {return "VRFY";}
-        /*
         //@Override
-        public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-                boolean isValid = verifyUserOrMailbox(argument.toString());
-                SmtpSrvResponse reply;
-                if(isValid) reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R250, "OK");
-                else        reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R250, "OK");
-
-                logger.trace("reply:"+reply);
-                return reply;
-        }
-        */
+        //public CharSequence getCommandVerb() {return "VRFY";}
     	@Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-               String log_str="";
-               for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-               logger.trace(log_str);
+               //String log_str="";
+               //for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               //logger.trace(log_str);
+               logger.trace(toString());
 
                boolean isValid = verifyUserOrMailbox(parameters.get(0).toString());
                SmtpResponse reply;

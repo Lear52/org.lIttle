@@ -24,28 +24,18 @@ public class ExpandMailingList extends SmtpRequest {
                this.command    = SmtpCommand.EXPN;
         }
 
-	@Override
-	public CharSequence getCommandVerb() {
-		return "EXPN";
-	}
-	/*
 	//@Override
-	public SmtpSrvResponse processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel,CharSequence argument) {
-                if(argument==null)logger.trace(getCommandVerb().toString());
-                else              logger.trace(getCommandVerb().toString()+" "+argument.toString());
-
-               SmtpSrvResponse reply = new SmtpSrvResponse(SmtpSrvResponseStatus.R502, "TODO");
-
-               logger.trace("reply:"+reply);
-               return reply;
-	}
-	*/
+	//public CharSequence getCommandVerb() {
+	//	return "EXPN";
+	//}
 	@Override
 	public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
-               String log_str="";
+               //String log_str="";
+               //for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
+               //logger.trace(log_str);
 
-               for(int i=0;i< parameters.size();i++)log_str+=parameters.get(i)+" ";
-               logger.trace(log_str);
+               logger.trace(toString());
+
                SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R502, "TODO");
 
                logger.trace("reply:"+reply);

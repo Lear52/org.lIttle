@@ -1,21 +1,10 @@
 package org.little.mailx;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.Date;
 //import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
-
-import org.little.util.Logger;
-import org.little.util.LoggerFactory;
-import org.little.util.Except;
-
-
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -26,6 +15,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import org.little.util.Except;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
 
 import com.sun.mail.imap.IMAPFolder;
 
