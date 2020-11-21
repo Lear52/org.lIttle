@@ -28,6 +28,7 @@ public class commonHTTP extends common{
        private String        local_bind_server              ;
        private String        default_domain                 ;
        private String        root_document                  ;
+       private boolean       is_dump_log                    ;
 
        public  static commonHTTP  get(){ if(cfg==null)cfg=new commonHTTP();return cfg;};
       
@@ -52,6 +53,7 @@ public class commonHTTP extends common{
               ldap_ad_password               ="3edcVFR$";             
               default_domain                 ="vip.cbr.ru";
               root_document                  ="";
+              is_dump_log                    =false;
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){
@@ -80,6 +82,8 @@ public class commonHTTP extends common{
                      if("local_bind_server"              .equals(n.getNodeName())){local_bind_server=n.getTextContent();              logger.info("local_bind_server:"+local_bind_server);             }
                      else
                      if("default_domain"                  .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
+                     else
+                     if("dump_log"                       .equals(n.getNodeName())){String s=n.getTextContent(); try{is_dump_log=Boolean.parseBoolean(s);                }catch(Exception e){ is_dump_log=false;logger.error("dump_log:"+s);} logger.info("dump_log:"+is_dump_log);}
       
                      //else
                  }
@@ -116,6 +120,7 @@ public class commonHTTP extends common{
        public String        getDefaultDomain          (){return default_domain;                 }
        public String        getRootDocument           (){return root_document;                  }
        public String        getAppName                (){return "appkeystore";                  }
+       public boolean       isDumpLog                 (){return is_dump_log;                    }
 
 
 }

@@ -22,8 +22,9 @@ public class commonIMAP extends common{
        private String        ldap_ad_password               ;
        private String        local_bind_client              ;
        private String        local_bind_server              ;
-       private String        default_domain         ;
-       private boolean       case_sensitive_folder  ;
+       private String        default_domain                 ;
+       private boolean       case_sensitive_folder          ;
+       private boolean       is_dump_log                    ;
       
       
        public  static commonIMAP  get(){ if(cfg==null)cfg=new commonIMAP();return cfg;};
@@ -42,6 +43,7 @@ public class commonIMAP extends common{
               ldap_ad_password               ="3edcVFR$";             
               default_domain                 ="vip.cbr.ru";
               case_sensitive_folder          =true;
+              is_dump_log                    =false;
               
        }
        private void initGlobal(Node node_cfg){
@@ -65,6 +67,8 @@ public class commonIMAP extends common{
                      if("default_domain"       .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
                      else
                      if("case_sensitive_folder".equals(n.getNodeName())){String s=n.getTextContent(); try{case_sensitive_folder=Boolean.parseBoolean(s);}catch(Exception e){ case_sensitive_folder=true;logger.error("case_sensitive_folder:"+s);} logger.info("case_sensitive_folder:"+case_sensitive_folder);}
+                     else
+                     if("dump_log"                       .equals(n.getNodeName())){String s=n.getTextContent(); try{is_dump_log=Boolean.parseBoolean(s);                }catch(Exception e){ is_dump_log=false;logger.error("dump_log:"+s);} logger.info("dump_log:"+is_dump_log);}
                  }
               }                               
        }
@@ -93,9 +97,10 @@ public class commonIMAP extends common{
        public String        getLdapUrl                (){return ldap_url;             }
        public String        getLocalServerBind        (){return local_bind_server;    }
        public String        getLocalClientBind        (){return local_bind_client;    }
-       public String        getDefaultDomain          (){return default_domain;      }
+       public String        getDefaultDomain          (){return default_domain;       }
        public boolean       isSSL                     (){return false;                }
        public boolean       isCaseSensitive           (){return case_sensitive_folder;}
+       public boolean       isDumpLog                 (){return is_dump_log;          }
       
 }
 

@@ -45,6 +45,8 @@ public class commonProxy extends common{
        private String        local_bind_server              ;
        
        private int           specified_number_of_threads    ;
+
+       private boolean       is_dump_log                    ;
        
        public  static commonProxy  get(){ if(cfg==null)cfg=new commonProxy();return cfg;};
        
@@ -78,6 +80,7 @@ public class commonProxy extends common{
               specified_number_of_threads    = 1;
               local_bind_client              ="*";
               local_bind_server              ="*";
+              is_dump_log                    =false;
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){
@@ -117,6 +120,8 @@ public class commonProxy extends common{
                      }
                      else
                      if("threads"                        .equals(n.getNodeName())){String s=n.getTextContent(); try{specified_number_of_threads=Integer.parseInt(s, 10);}catch(Exception e){ specified_number_of_threads=1; } logger.info("threads:"+specified_number_of_threads);}
+                     else
+                     if("dump_log"                       .equals(n.getNodeName())){String s=n.getTextContent(); try{is_dump_log=Boolean.parseBoolean(s);                }catch(Exception e){ is_dump_log=false;logger.error("dump_log:"+s);} logger.info("dump_log:"+is_dump_log);}
                  }
               }                               
        
@@ -178,7 +183,9 @@ public class commonProxy extends common{
        public boolean       isTransparent             (){return transparent;                    }
        public listChannel   getChannel                (){return channels;                       }
        public listCookie    getCookie                 (){return cookie;                         }
-       public String        getDefaultDomain          (){return default_domain;                  }
+       public String        getDefaultDomain          (){return default_domain;                 }
+
+       public boolean       isDumpLog                 (){return is_dump_log;                    }
        
        public boolean       authenticate(String userName, String password){
               boolean ret=auth_user.checkUser(userName,password);

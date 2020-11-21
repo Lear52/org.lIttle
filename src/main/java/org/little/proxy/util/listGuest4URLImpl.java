@@ -17,7 +17,8 @@ public class listGuest4URLImpl implements listGuest4URL {
     //private listPointHost             global_list_host;
 
     public listGuest4URLImpl(){
-           setDefaultUser("noname");
+           default_user="noname";
+           
     }
 
     public void init(Node node_cfg){

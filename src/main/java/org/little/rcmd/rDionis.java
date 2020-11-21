@@ -149,7 +149,7 @@ public class rDionis{
              
               String f_name;
               if(arg.length>3)f_name=arg[3];
-              else            f_name="littleproxy_h.xml";
+              else            f_name="littleproxy.xml";
              
               ret=apk.loadCFG(f_name);
               if(ret==false) {

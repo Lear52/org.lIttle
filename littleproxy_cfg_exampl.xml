@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+        <littleproxy>
+            <global_option>
+               <type type_http="http" type_null="null">http</type>
+               <port>9090</port>
+               <transparent>false</transparent>
+               <authenticateClients noauth="0" basic="1" digest="2" kerberos="3">3</authenticateClients>
+               <ldap_ad_username>k1svcfarmadmin</ldap_ad_username>
+               <ldap_ad_password>3edcVFR$</ldap_ad_password>
+               <java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+               <java_security_auth_login_config>login.conf</java_security_auth_login_config>
+               <ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+               <default_realm>vip.cbr.ru</default_realm>
+               <default_domain>vip.cbr.ru</default_domain>
+               <local_bind_server>*</local_bind_server>
+               <local_bind_client>*</local_bind_client>
+               <dump_log>true</dump_log>
+            </global_option>
+
+            <guest default_user="CC_SKOI">
+               <p host="177.*"        user="CC_SKOI" ></p>
+               <p host="10.93.128.14" user="CC_SKOI" ></p>
+               <p host="10.85.32.*"   user="CC_SKOI" ></p>
+               <p host="10.85.36.*"   user="CC_SKOI" ></p>
+               <p host="10.85.40.*"   user="CC_SKOI" ></p>
+               <p host="10.85.45.*"   user="CC_SKOI" ></p>
+               <p host="10.85.47.*"   user="CC_SKOI" ></p>
+               <p host="10.85.80.*"   user="CC_SKOI" ></p>
+               <p host="10.85.81.*"   user="CC_SKOI" ></p>
+               <p host="10.85.107.*"  user="CC_SKOI" ></p>
+               <p host="10.90.2.*"    user="CC_SKOI" ></p>
+               <p url="/performance/*.jnlp" user="CC_SKOI" ></p>
+               <p url="/performance/*.jar" user="CC_SKOI" ></p>
+               <p url="/performance/performance*" user="CC_SKOI" ></p>
+               <p url="/performanceMsk/performance*.jnlp" user="CC_SKOI" ></p>
+               <p url="/performanceMsk/Performance*.jnlp" user="CC_SKOI" ></p>
+               <p url="/performanceMsk/*.jar" user="CC_SKOI" ></p>
+               <p url="/performanceMsk/performance*" user="CC_SKOI" ></p>
+               <p url="/manager*" user="CC_SKOI" ></p>
+               <p url="/DAVWWWRoot*" user="CC_SKOI" ></p>
+            </guest>
+
+            <user_host>
+               <default><host>10.6.112.36:8997</host></default>
+               <p user="ShadrinAV@cbr.ru"  url="/*"       ><host>10.6.112.36:8997</host><host>10.6.112.17:8997</host><host>10.6.112.19:8997</host></p>
+            </user_host>
+
+            <cookie>
+               <clear>WebAccessBean_sessionTicket=""; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/</clear>
+               <clear>WebAccessBean_sessionTicket_STENDSOK=""; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/</clear>
+            </cookie>
+
+        </littleproxy>
+
+
+	<littlehttp>
+		<global_option>
+                        <type type_http="http" type_null="null">http</type>
+			<port>8080</port>
+			<authenticateClients noauth="0" basic="1" digest="2" kerberos="3">2</authenticateClients>
+			<ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+			<ldap_username>k1svcfarmadmin</ldap_username>
+			<ldap_password>3edcVFR$</ldap_password>
+			<java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+			<java_security_auth_login_config>login.conf</java_security_auth_login_config>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_domain>vip.cbr.ru</default_domain>
+			<local_bind_server>127.0.0.1</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+			<root_doc>var/html</root_doc>
+                        <dump_log>true</dump_log>
+
+
+			<keystoreFile>tomcat_store</keystoreFile>
+			<keystorePass>2wsxXSW@</keystorePass>
+			<keystoreType>JKS</keystoreType>
+			<keyAlias>lear</keyAlias>
+
+		</global_option>
+	</littlehttp>
+	<littlesmtp>
+		<global_option>
+			<port>2525</port>
+			<default_domain>vip.cbr.ru</default_domain>
+			<ldap_ad_username>k1svcfarmadmin</ldap_ad_username>
+			<ldap_ad_password>3edcVFR$</ldap_ad_password>
+			<java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+			<java_security_auth_login_config>login.conf</java_security_auth_login_config>
+			<ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_domain>vip.cbr.ru</default_domain>
+			<local_bind_server>*</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+			<case_sensitive_folder>false</case_sensitive_folder>
+			<smtp_proxy>false</smtp_proxy>
+                        <dump_log>true</dump_log>
+		</global_option>
+
+	</littlesmtp>
+	<littleimap>
+		<global_option>
+			<default_domain>vip.cbr.ru</default_domain>
+			<port>1143</port>
+			<ldap_ad_username>k1svcfarmadmin</ldap_ad_username>
+			<ldap_ad_password>3edcVFR$</ldap_ad_password>
+			<local_bind_server>*</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+			<case_sensitive_folder>false</case_sensitive_folder>
+                        <dump_log>true</dump_log>
+		</global_option>
+	</littleimap>
+	<littlecmd>
+		<global_option>
+			<host>192.168.1.1</host>
+		</global_option>
+		<commanddi>
+		      <getgkey>
+		         <cmd><req>crypto access key init floppy0:/start.p15</req><res>[y/n]</res></cmd>
+		         <cmd><req>y</req><res>NX#</res></cmd>
+		         <cmd><req>crypto access key store floppy0</req><res>[y/n]</res></cmd>
+		         <cmd><req>y</req><res>word:</res></cmd>
+		         <cmd><req></req><res>epeat:</res></cmd>
+		         <cmd><req></req><res>NX#</res></cmd>
+		      </getgkey>
+		      <loadkey>
+		         <cmd><req>configure terminal</req><res>(config)#</res></cmd>
+		         <cmd><req>crypto access key load floppy0</req><res>(config)#</res></cmd>
+		         <cmd><req>do write</req><res>(config)#</res></cmd>
+		         <cmd><req>end</req><res>NX#</res></cmd>
+		      </loadkey>
+		      <write>
+		         <cmd><req>write</req><res>NX#</res></cmd>
+		      </write>
+		      <loadrootsert>
+		         <cmd><req>crypto pki import root ca cert from flash0:/root.cer</req><res>[y/n]</res></cmd>
+		         <cmd><req>y</req><res>NX# </res></cmd>
+		      </loadrootsert>
+		      <loadsrl>
+		         <cmd><req>crypto pki import crl from flash0:/root.crl</req><res>[y/n]</res></cmd>
+		         <cmd><req>y</req><res>NX# </res></cmd>
+		      </loadsrl>
+		      <genrequest>
+		         <cmd><req> </req><res>[y/n]</res></cmd>
+		         <cmd><req>y</req><res>NX# </res></cmd>
+		      </genrequest>
+		      <getrequest>
+		         <get><remote>/out.bin</remote><local>out.bin</local></get>
+		         <get><remote>/out.bin</remote><smtp>av@vip.cbr.ru</smtp></get>
+		         <get><remote>/out.bin</remote><http>http://127.0.0.1/put</http></get>
+		      </getrequest>
+		      <putsertificate>
+		         <put><remote>out.bin</remote><local>out.bin</local></put>
+		      </putsertificate>
+		      <exit>
+		         <cmd><req>exit</req></cmd>
+		      </exit>
+		      <clear>
+		         <cmd><req>clear alert</req><res>#</res></cmd>
+		      </clear>
+		</commanddi>
+	</littlecmd>
+</little>
+

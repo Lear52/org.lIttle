@@ -27,6 +27,7 @@ NULL TCP proxy
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 org.little.proxy.Null - clean tcp proxy
 
+run java -cp little-xxxxxxxx-SNAPSHOT-little-shade.jar  -Duser.region=US  -Dlog4j.configuration=log4j.xml -Dencoding=Cp866 -Dfile.encoding=UTF8  org.little.proxy.Null.NullProxyMain --cfg littleproxy.xml 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 HTTP server

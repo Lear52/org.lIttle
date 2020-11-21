@@ -29,6 +29,9 @@ public class commonSMTP extends common{
        private int           client_port                    ;
       
        private String        default_domain                 ;
+
+       private boolean       is_dump_log                    ;
+
       
        public  static commonSMTP  get(){ if(cfg==null)cfg=new commonSMTP();return cfg;};
       
@@ -49,6 +52,7 @@ public class commonSMTP extends common{
               default_domain                  ="vip.cbr.ru";
               case_sensitive_folder          =true;
               is_proxy                       =false;
+              is_dump_log                    =false;
               
        }
        private void initGlobal(Node node_cfg){
@@ -76,6 +80,8 @@ public class commonSMTP extends common{
                      if("case_sensitive_folder".equals(n.getNodeName())){String s=n.getTextContent(); try{case_sensitive_folder=Boolean.parseBoolean(s);}catch(Exception e){ case_sensitive_folder=true;logger.error("case_sensitive_folder:"+s);} logger.info("case_sensitive_folder:"+case_sensitive_folder);}
                      else
                      if("smtp_proxy".equals(n.getNodeName())){String s=n.getTextContent(); try{is_proxy=Boolean.parseBoolean(s);}catch(Exception e){ is_proxy=false;logger.error("smtp_proxy:"+s);} logger.info("smtp_proxy:"+is_proxy);}
+                     else
+                     if("dump_log"                       .equals(n.getNodeName())){String s=n.getTextContent(); try{is_dump_log=Boolean.parseBoolean(s);                }catch(Exception e){ is_dump_log=false;logger.error("dump_log:"+s);} logger.info("dump_log:"+is_dump_log);}
                  }
               }                               
        }
@@ -122,6 +128,7 @@ public class commonSMTP extends common{
        public boolean       verifyUser(String username) {return true;}
        public boolean       isCaseSensitive           (){return case_sensitive_folder;}
        public boolean       isProxy                   (){return is_proxy;}
+       public boolean       isDumpLog                 (){return is_dump_log;}
       
       
       

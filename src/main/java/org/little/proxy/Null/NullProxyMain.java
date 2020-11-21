@@ -33,7 +33,6 @@ public class NullProxyMain implements  Runnable{
     private   EventLoopGroup                     child_event_group;
     private   EventLoopGroup                     sharp_event_group;
     private   ServerBootstrap                    server_boot_strap;
-    //private   GlobalChannelTrafficShapingHandler countHandler;
     protected Thread                             process_tread;
 
 
@@ -54,26 +53,13 @@ public class NullProxyMain implements  Runnable{
         LOG.trace("begin run()");
 
         try {
+            NullProxyInitializer child_channel;
+            LoggingHandler       log;
             server_boot_strap      = new ServerBootstrap();
             parent_event_group     = new NioEventLoopGroup(commonProxy.get().getNumberThreads()); //specified_number_of_threads = 4;//1
             child_event_group      = new NioEventLoopGroup();
-            /*
-            sharp_event_group      = new NioEventLoopGroup();
-
-            long TRAFFIC_SHAPING_CHECK_INTERVAL_MS = 250L;
-            long writeThrottleBytesPerSecond       = 1000000000;
-            long readThrottleBytesPerSecond        = 1000000000; 
-
-            countHandler           = new GlobalChannelTrafficShapingHandler(sharp_event_group,
-                                         writeThrottleBytesPerSecond,readThrottleBytesPerSecond,
-                                         TRAFFIC_SHAPING_CHECK_INTERVAL_MS,
-                                         Long.MAX_VALUE
-                                         );
-
-            NullProxyInitializer child_channel               = new NullProxyInitializer(countHandler);
-            */
-            NullProxyInitializer child_channel               = new NullProxyInitializer();
-            LoggingHandler       log                         = new NullProxyLog();
+            child_channel          = new NullProxyInitializer();
+            log                    = new NullProxyLog();
 
             
             LOG.trace("create ServerBootstrap");
@@ -151,19 +137,7 @@ public class NullProxyMain implements  Runnable{
            server_boot_strap  = null;
            process_tread      = null;
     }
-    /*
-    public long queuesSize() {
-        if(countHandler!=null)return countHandler.queuesSize();
-        else return 0;
-    }
-    public String toString() {
-        if(countHandler!=null)return 
-               "queuesSize:"+countHandler.queuesSize()+" "
-              +countHandler.trafficCounter().toString()
-              ;
-        else return "";
-    }
-    */
+
     public static void main(String[] args) {
 
            System.setProperty("java.net.preferIPv4Stack","true");
@@ -172,7 +146,7 @@ public class NullProxyMain implements  Runnable{
            NullProxyMain server=new NullProxyMain();
 
            if(!NullProxyMain.opt(server,args)){
-              LOG.error("check args");
+              LOG.error("unknow args");
               return;
            }
           
@@ -193,15 +167,8 @@ public class NullProxyMain implements  Runnable{
            LOG.trace("EXIT wrapper");
     }
     public static boolean opt(NullProxyMain server,String[] args) {
-           
-           //String            OPTION_PORT  = "port";
-           //String            OPTION_RPORT = "rport";
            String            OPTION_HELP  = "help";
-           //String            OPTION_RHOST = "rhost";
            String            OPTION_CFG   = "cfg";
-           //int               LOCAL_PORT  ;
-           //String            REMOTE_HOST ;
-           //int               REMOTE_PORT ;
            String            xpath ;
            Options           options;
            CommandLineParser parser;
@@ -210,11 +177,14 @@ public class NullProxyMain implements  Runnable{
            options = new Options();
            parser  = new DefaultParser();
            
-           //options.addOption(null, OPTION_PORT  , true, "Run on the specified port.");
-           //options.addOption(null, OPTION_RPORT , true, "Run as reverse proxy.");
-           //options.addOption(null, OPTION_RHOST , true, "Run as reverse proxy.");
            options.addOption(null, OPTION_CFG   , true, "Run with cfg");
            options.addOption(null, OPTION_HELP  , false,"Display command line help.");
+           {  StringBuilder buf=new StringBuilder();
+              buf.append(NullProxyMain.class).append(" ");
+              for(int i=0;i<args.length;i++)buf.append("\"").append(args[i]).append("\" ");
+              LOG.info("run: " + buf.toString());
+           }
+
            try {
                cmd = parser.parse(options, args);
            } catch (final ParseException e) {
@@ -227,44 +197,13 @@ public class NullProxyMain implements  Runnable{
                printHelp(options, null);
                return false;
            }
-           /*
-           if (cmd.hasOption(OPTION_RHOST)) {
-               REMOTE_HOST = cmd.getOptionValue(OPTION_RHOST);
-           }
-           else REMOTE_HOST = "127.0.0.1";
-          
-           if (cmd.hasOption(OPTION_RPORT)) {
-               final String val = cmd.getOptionValue(OPTION_RPORT);
-               try{
-                   REMOTE_PORT = Integer.parseInt(val);
-               } 
-               catch (final NumberFormatException e) {
-                     LOG.error("Unexpected remote port " + val, e);
-                     printHelp(options, "Unexpected remote port " + val);
-                     return false;
-               }
-           } else {
-               REMOTE_PORT = 19;
-           }
-           if (cmd.hasOption(OPTION_PORT)) {
-               final String val = cmd.getOptionValue(OPTION_PORT);
-               try{
-                   LOCAL_PORT = Integer.parseInt(val);
-               } 
-               catch (final NumberFormatException e) {
-                     LOG.error("Unexpected bind port " + val, e);
-                     printHelp(options, "Unexpected bind port " + val);
-                     return false;
-               }
-           } else {
-               LOCAL_PORT = 8080;
-           }
-           */
            if (cmd.hasOption(OPTION_CFG)) {
                xpath = cmd.getOptionValue(OPTION_CFG);
            } else {
-               xpath = "littleproxy_0.xml";
+               xpath = "littleproxy.xml";
            }
+
+           LOG.info("config file:"+xpath);
            
            if(commonProxy.get().loadCFG(xpath)==false){
               LOG.error("error read config file:"+xpath);
@@ -273,11 +212,6 @@ public class NullProxyMain implements  Runnable{
            commonProxy.get().init();
            commonProxy.get().initMBean();
 
-           //System.out.println("Proxying *:" + LOCAL_PORT + " to " + REMOTE_HOST + ':' + REMOTE_PORT + " ...");
-           //server.setPort(LOCAL_PORT);
-           //server.setRPort(REMOTE_PORT);
-           //server.setRHost(REMOTE_HOST);
-           
            server.init();
 
            System.out.println("Proxying bind:" + commonProxy.get().getPort() + " to " + commonProxy.get().getHosts().getDefaultHost() + ':' + commonProxy.get().getHosts().getDefaultPort() + " ...");

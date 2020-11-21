@@ -1,5 +1,6 @@
 package org.little.smtp.handler;
 
+import org.little.smtp.commonSMTP;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -18,11 +19,11 @@ public class SmtpClnInitializer extends ChannelInitializer<SocketChannel> {
 
        @Override
        public void initChannel(SocketChannel ch) {
-              ch.pipeline().addLast("snmpLog"      , new LoggingHandler(LogLevel.INFO));
-              ch.pipeline().addLast("smptRequest"  , new SmtpClnRequestEncoder());
-              ch.pipeline().addLast("smtpResponse" , new SmtpClnResponseDecoder(1024));
-              ch.pipeline().addLast("ChunkedWrite" , new ChunkedWriteHandler());
-              ch.pipeline().addLast("smtpCommand"  , command);
+              if(commonSMTP.get().isDumpLog())ch.pipeline().addLast("smtpCLog"      , new LoggingHandler(LogLevel.DEBUG));
+              ch.pipeline().addLast("smtpCRequest"  , new SmtpClnRequestEncoder());
+              ch.pipeline().addLast("smtpCResponse" , new SmtpClnResponseDecoder(1024));
+              ch.pipeline().addLast("ChunkedWrite"  , new ChunkedWriteHandler());
+              ch.pipeline().addLast("smtpCCommand"  , command);
 
               logger.trace("client pipeline init");
        }

@@ -28,10 +28,10 @@ public  class ImapServerlInitializer extends ChannelInitializer<SocketChannel> {
                          SslHandler ssl_handler=SSLHandlerProvider0.getSSLHandler();
                          pipeline.addLast(ssl_handler);
                      }
-                     pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-                     pipeline.addLast(new SessionInitiationHandler());
-                     pipeline.addLast(new ImapCommandDecoder());
-                     pipeline.addLast(new ImapCommandHandler());
+                     if(commonIMAP.get().isDumpLog())pipeline.addLast("IMAPLog",new LoggingHandler(LogLevel.DEBUG));
+                     pipeline.addLast("IMAPSession",new SessionInitiationHandler());
+                     pipeline.addLast("IMAPCommandDecoder",new ImapCommandDecoder());
+                     pipeline.addLast("IMAPCommandHandler",new ImapCommandHandler());
 
                      logger.trace("initChannel OK");
 

@@ -18,12 +18,13 @@ public class SmtpSrvInitializer extends ChannelInitializer<SocketChannel> {
 
        @Override
        public void initChannel(SocketChannel ch) {
-              ch.pipeline().addLast("log"            , new LoggingHandler(LogLevel.INFO));
-              ch.pipeline().addLast("smtpOutReply"   , new SmtpSrvReplyEncoder());
-              ch.pipeline().addLast("smptInitSession", new SmtpSrvInitSession());
-              ch.pipeline().addLast("smtpInLine"     , new DelimiterBasedFrameDecoder(commonSMTP.get().getDefaultCommandLen(), true, Delimiters.lineDelimiter()[0]));
-              ch.pipeline().addLast("smptInCommand"  , new SmtpSrvCommandHandler());
-              ch.pipeline().addLast("exceptionLogger", new SmtpSrvExceptionLogger());
+
+              if(commonSMTP.get().isDumpLog())ch.pipeline().addLast("smtpSLog", new LoggingHandler(LogLevel.DEBUG));
+              ch.pipeline().addLast("smtpSSutReply"   , new SmtpSrvReplyEncoder());
+              ch.pipeline().addLast("smptSInitSession", new SmtpSrvInitSession());
+              ch.pipeline().addLast("smtpSInLine"     , new DelimiterBasedFrameDecoder(commonSMTP.get().getDefaultCommandLen(), true, Delimiters.lineDelimiter()[0]));
+              ch.pipeline().addLast("smptSInCommand"  , new SmtpSrvCommandHandler());
+              ch.pipeline().addLast("exceptionSLogger", new SmtpSrvExceptionLogger());
               logger.trace("smtp server init");
        }
 }
