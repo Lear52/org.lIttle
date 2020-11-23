@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
 
-import org.little.smtp.util.SmtpCommand;
-import org.little.smtp.util.SmtpRequest;
+import org.little.smtp.element.SmtpCommand;
+import org.little.smtp.element.SmtpRequest;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -67,25 +67,25 @@ public class SmtpClnRequestEncoder extends MessageToMessageEncoder<Object> {
                     logger.trace("alloc buffer");
                 
                     try{
-                        req.command().encode(buffer);
+                        req.getCommand().encode(buffer);
                 
-                        boolean notEmpty = req.command() != SmtpCommand.EMPTY;
+                        boolean notEmpty = req.getCommand() != SmtpCommand.EMPTY;
 
-                        boolean isContent = (req.command() == SmtpCommand.CONTENT)||(req.command() == SmtpCommand.LASTCONTENT);
+                        boolean isContent = (req.getCommand() == SmtpCommand.CONTENT)||(req.getCommand() == SmtpCommand.LASTCONTENT);
                         logger.trace("write SmtpRequest (SmtpCommand.CONTENT)||SmtpCommand.LASTCONTENT) :"+isContent);
                 
                         if(isContent){
-                           writeParameters(req.parameters(), buffer);
+                           writeParameters(req.getParameters(), buffer);
                            logger.trace("write SmtpRequest (SmtpCommand.CONTENT)||SmtpCommand.LASTCONTENT)");
-                           if(req.command() == SmtpCommand.LASTCONTENT){
+                           if(req.getCommand() == SmtpCommand.LASTCONTENT){
                               logger.trace("write SmtpRequest SmtpCommand.LASTCONTENT)");
                               buffer.writeByte('.').writeByte('\r').writeByte('\n');
                            }
 
                         }
                         else{
-                           logger.trace("write SmtpRequest SmtpCommand:"+req.command().name());
-                           writeParameters(req.parameters(), buffer, notEmpty);
+                           logger.trace("write SmtpRequest SmtpCommand:"+req.getCommand().getName());
+                           writeParameters(req.getParameters(), buffer, notEmpty);
                            ByteBufUtil.writeShortBE(buffer, CRLF_SHORT);
                         }
 

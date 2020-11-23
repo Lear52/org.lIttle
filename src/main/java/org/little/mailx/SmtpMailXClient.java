@@ -1,5 +1,5 @@
 package org.little.mailx;
-
+        
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,21 +22,21 @@ import javax.mail.internet.MimeMultipart;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
-public class SmtpCLN {
-    private static final Logger  logger = LoggerFactory.getLogger(SmtpCLN.class);
+public class SmtpMailXClient {
+    private static final Logger  logger = LoggerFactory.getLogger(SmtpMailXClient.class);
 
-
-       private String to       ;
-       private String from     ;
-       private String host     ;
-       private int    port     ;
-       private String userName ;
-       private String password ;
-       private String subject  ;
-       private String msgText  ;
+       private String  to       ;
+       private String  from     ;
+       private String  host     ;
+       private int     port     ;
+       private String  userName ;
+       private String  password ;
+       private String  subject  ;
+       private String  msgText  ;
        private boolean debug   ;
+       private boolean is_auth ;
 
-    	public SmtpCLN(){
+       public SmtpMailXClient(){
               debug   = true;
               to       ="";
               from     ="";
@@ -46,6 +46,7 @@ public class SmtpCLN {
               password ="";
               subject  ="";
               msgText  ="";
+              is_auth  =true;
        }
        public void setTo(String to) {
               this.to = to;
@@ -58,7 +59,7 @@ public class SmtpCLN {
        }
        public void setPort(int _port) {
            this.port = _port;
-    }
+       }
        public void setUserName(String userName) {
               this.userName = userName;
        }
@@ -72,56 +73,66 @@ public class SmtpCLN {
               this.msgText = msgText;
        }
        public void setDebug(boolean debug) {
-		     this.debug = debug;
+              this.debug = debug;
+       }
+       public void setAuth(boolean auth) {
+              this.is_auth = auth;
        }
        @SuppressWarnings("resource")
        public void sent(String filename){
-    	   ByteArrayOutputStream out=new ByteArrayOutputStream();
-           FileInputStream       in =null;
-           try {
-			   in = new FileInputStream(filename);
-		   } catch (Exception e) {
-			   try {in.close();}catch(Exception e1){;}
-			   try {out.close();}catch(Exception e2){}
-			   logger.error("ex:"+e);
-			   return;
-		   }
-           
-
-           byte[] buf = new byte[512];
-           int count;
-           try {
-			while ((count = in.read(buf)) > 0) {
-			       out.write(buf, 0, count);
-			   }
-           } catch (IOException e) {
- 			   logger.error("ex:"+e);
-			   return;
-		   }
-    	   sent(out,filename);
+              ByteArrayOutputStream out=new ByteArrayOutputStream();
+              FileInputStream       in =null;
+              try {
+                   in = new FileInputStream(filename);
+              } catch (Exception e) {
+                try {in.close();}catch(Exception e1){;}
+                try {out.close();}catch(Exception e2){}
+                logger.error("ex:"+e);
+                return;
+              }
+             
+              byte[] buf = new byte[512];
+              int count;
+              try {
+                   while ((count = in.read(buf)) > 0) {
+                          out.write(buf, 0, count);
+                   }
+              } catch (IOException e) {
+                   logger.error("ex:"+e);
+                   return;
+              }
+              sent(out,filename);
        }
        public void sent(ByteArrayOutputStream os,String filename){
-    	      byte [] buffer2= os.toByteArray();
-    	      sent(buffer2,filename);
+                  byte [] buffer2= os.toByteArray();
+                  sent(buffer2,filename);
        }
        public void sent(byte [] buffer2,String filename){
-    	   
+               
               System.setProperty("java.net.preferIPv4Stack","true");
               Properties props = System.getProperties();
-              props.put("mail.smtp.user", from);
-              props.put("mail.smtp.auth", true);
-              props.put("mail.smtp.auth.mechanisms", "LOGIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
               props.put("mail.smtp.host", host);
               props.put("mail.smtp.port", ""+port);
-              Authenticator auth=new Authenticator() {
-                 @Override
-                 protected PasswordAuthentication getPasswordAuthentication() {
-                           return new PasswordAuthentication(userName,password);
-                 }
-              };
-             
-              Session session = Session.getInstance(props, auth);//null
-             
+
+              Session session;
+              if(is_auth){
+                 System.out.println("mail.smtp.auth:"+is_auth);
+                 props.put("mail.smtp.user", userName);
+                 props.put("mail.smtp.auth", true);
+                 props.put("mail.smtp.auth.mechanisms", "LOGIN"); //"LOGIN PLAIN DIGEST-MD5 NTLM"
+                 Authenticator auth=new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                              return new PasswordAuthentication(userName,password);
+                    }
+                 };
+                 session = Session.getInstance(props, auth);
+              }
+              else{
+                 System.out.println("mail.smtp.auth:"+is_auth);
+                 props.put("mail.smtp.auth", false);
+                 session = Session.getInstance(props, null);
+              }
               session.setDebug(debug);
              
               try {
@@ -160,11 +171,9 @@ public class SmtpCLN {
                        }
               }
               
-              System.out.println("ok!");
+              //System.out.println("ok!");
               
        }
-       public static void main(String[] args) {
 
 
-       }
 }

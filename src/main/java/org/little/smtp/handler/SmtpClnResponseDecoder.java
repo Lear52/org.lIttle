@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.little.util.LoggerFactory;
-import org.little.smtp.util.SmtpResponse;
+import org.little.smtp.element.SmtpResponse;
 import org.little.util.Logger;
 
 /**

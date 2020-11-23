@@ -1,9 +1,10 @@
 package org.little.smtp.handler;
 
 import org.little.smtp.commonSMTP;
-import org.little.smtp.util.SmtpSessionContext;
-import org.little.smtp.util.SmtpResponse;
-import org.little.smtp.util.SmtpResponseStatus;
+import org.little.smtp.element.SmtpAuthTransaction;
+import org.little.smtp.element.SmtpResponse;
+import org.little.smtp.element.SmtpResponseStatus;
+import org.little.smtp.element.SmtpSessionContext;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -28,18 +29,23 @@ public class SmtpSrvInitSession extends ChannelInboundHandlerAdapter {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
-                SmtpSessionContext            sc             = new SmtpSessionContext();
+                SmtpSessionContext            ctxMailSession             = new SmtpSessionContext();
 
                 Attribute<SmtpSessionContext> sessionStarted = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY);
-                sessionStarted.set(sc);
-                if(commonSMTP.get().isProxy()){
-                   
-                   sc.createClient(ctx);
+                sessionStarted.set(ctxMailSession);
 
+                if(commonSMTP.get().getAuthRequared()==false){
+                   ctxMailSession.authTransaction=new SmtpAuthTransaction(true);
                 }
                 else{
-                    SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R220, commonSMTP.get().getDefaultDomain());
-                    ctx.writeAndFlush(reply);
+                   ctxMailSession.authTransaction=null;
+                }
+                if(commonSMTP.get().isProxy()){
+                   ctxMailSession.createClient(ctx);
+                }
+                else{
+                   SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R220, commonSMTP.get().getDefaultDomain());
+                   ctx.writeAndFlush(reply);
                 }
 
                 logger.trace("Start new smtp session");

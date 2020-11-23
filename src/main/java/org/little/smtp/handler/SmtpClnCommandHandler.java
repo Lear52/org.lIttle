@@ -2,8 +2,8 @@ package org.little.smtp.handler;
 
 import java.util.ArrayDeque;
 
-import org.little.smtp.util.SmtpRequest;
-import org.little.smtp.util.SmtpResponse;
+import org.little.smtp.element.SmtpRequest;
+import org.little.smtp.element.SmtpResponse;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -62,7 +62,7 @@ public class SmtpClnCommandHandler extends ChannelInboundHandlerAdapter {
               if(msg instanceof SmtpResponse) {
             	 SmtpResponse res=(SmtpResponse)msg; 
 
-                 if(request!=null)request.add(res);
+                 if(request!=null)request.addResponse(res);
 
                  if(out_channel!=null){
                     logger.trace("prewrite response to server channel");

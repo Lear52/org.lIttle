@@ -1,4 +1,4 @@
-package org.little.smtp.util;
+package org.little.smtp.element;
 
 import org.little.smtp.SmtpClient;
 import org.little.util.Logger;

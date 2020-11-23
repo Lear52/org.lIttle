@@ -1,9 +1,9 @@
 package org.little.rcmd.rsh;
-
+ 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.little.mailx.SmtpCLN;
+import org.little.mailx.SmtpMailXClient;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         
@@ -113,7 +113,7 @@ public class rCP_R2S extends rCP_R2L{
               return ret;
         }
         public boolean sent(ByteArrayOutputStream os){
-    	      SmtpCLN cln=new SmtpCLN();
+    	      SmtpMailXClient cln=new SmtpMailXClient();
     	      cln.sent(os, rfile);
               return false;
         }

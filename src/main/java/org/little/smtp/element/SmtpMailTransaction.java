@@ -1,9 +1,9 @@
-package org.little.smtp.util;
+package org.little.smtp.element;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.little.smtp.tool.Path;
+import org.little.smtp.util.Path;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -16,7 +16,7 @@ public class SmtpMailTransaction {
 
         private Path              reversePath; // MAIL command (1 time) - i.e. FROM
         private List<Path>        forwardPath = new ArrayList<>(); //RCPT commands (n times, should be limited to 100?) - i.e. TO
-        public  SmtpRequest  mail_content;
+        public  SmtpRequest       mail_content;
 
         public SmtpMailTransaction() {
                logger.info("Begin new MailTransaction");
@@ -29,8 +29,18 @@ public class SmtpMailTransaction {
         }
 
         public void setFrom(CharSequence argument) {
-               if(argument         == null) throw new IllegalArgumentException();
-               if(this.reversePath != null) throw new IllegalStateException();
-               this.reversePath = Path.parse(argument);
+               if(argument         == null){
+                  logger.error("MailTransaction.setFrom(null)");
+                  return ;
+                  //throw new IllegalArgumentException();
+               }
+               Path  _reversePath=Path.parse(argument);
+               if(this.reversePath != null){
+                  logger.error("MailTransaction.setFrom("+_reversePath+") -> "+this.reversePath);
+                  //throw new IllegalStateException();
+               }
+               else this.reversePath = _reversePath;
+
+               logger.trace("MailTransaction.setFrom("+reversePath+")");
         }
 }

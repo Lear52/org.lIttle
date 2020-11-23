@@ -2,10 +2,10 @@ package org.little.smtp;
 
 import java.net.InetSocketAddress;
 
+import org.little.smtp.element.SmtpRequest;
+import org.little.smtp.element.SmtpRequestBuilder;
 import org.little.smtp.handler.SmtpClnCommandHandler;
 import org.little.smtp.handler.SmtpClnInitializer;
-import org.little.smtp.util.SmtpRequest;
-import org.little.smtp.util.SmtpRequestBuilder;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util._Base64;
@@ -32,16 +32,16 @@ public class SmtpClient{
         private Channel               server_channel; 
 
         public SmtpClient() {
-               localGroup   = null; 
-               remote_port=commonSMTP.get().getClientPort();         
-               remote_host=commonSMTP.get().getClientHost();
                server_channel=null;
+               localGroup    =null; 
+               remote_port   =commonSMTP.get().getClientPort();         
+               remote_host   =commonSMTP.get().getClientHost();
         }
         public SmtpClient(Channel  _server_channel) {
-               localGroup   = server_channel.eventLoop(); 
-               remote_port=commonSMTP.get().getClientPort();         
-               remote_host=commonSMTP.get().getClientHost();
                server_channel=_server_channel;
+               localGroup    =server_channel.eventLoop(); 
+               remote_port   =commonSMTP.get().getClientPort();         
+               remote_host   =commonSMTP.get().getClientHost();
         }
 
         public Channel getChannel() {return client_channel;}

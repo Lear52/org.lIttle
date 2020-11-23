@@ -1,4 +1,4 @@
-package org.little.smtp.tool;
+package org.little.util;
 
 
 public class arrbyte {

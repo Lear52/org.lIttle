@@ -4,16 +4,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.little.smtp.util.SmtpSessionContext;
-import org.little.smtp.util.command.Content;
-import org.little.smtp.util.SmtpRequestBuilder;
 import org.little.smtp.commonSMTP;
-import org.little.smtp.util.SmtpAuthTransaction;
-import org.little.smtp.util.SmtpCommand;
-import org.little.smtp.util.SmtpMailTransaction;
-import org.little.smtp.util.SmtpRequest;
-import org.little.smtp.util.SmtpResponse;
-import org.little.smtp.util.SmtpResponseStatus;
+import org.little.smtp.element.SmtpAuthTransaction;
+import org.little.smtp.element.SmtpCommand;
+import org.little.smtp.element.SmtpMailTransaction;
+import org.little.smtp.element.SmtpRequest;
+import org.little.smtp.element.SmtpRequestBuilder;
+import org.little.smtp.element.SmtpResponse;
+import org.little.smtp.element.SmtpResponseStatus;
+import org.little.smtp.element.SmtpSessionContext;
+import org.little.smtp.element.command.Content;
 import org.little.util.CharSequenceComparator;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -36,33 +36,37 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
        private static Logger logger = LoggerFactory.getLogger(SmtpSrvCommandHandler.class);
        @Override
        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-               ByteBuf frame = (ByteBuf) msg;
-               //logger.trace("channelRead");
-               Attribute<SmtpSessionContext> sessionStarted = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY);
-               if(sessionStarted == null) {
-                   logger.error("!isSessionContext(ctx)");
-                   return;
-               }
-               SmtpSessionContext sessionContext = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY).get();
-               if(sessionContext == null) {
-                   logger.error("!isSessionContext(ctx)");
-                   return;
-               }
+              ByteBuf frame = (ByteBuf) msg;
+              //logger.trace("channelRead");
+              Attribute<SmtpSessionContext> sessionStarted = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY);
+              if(sessionStarted == null) {
+                 logger.error("!isSessionContext(ctx)");
+                 return;
+              }
+              SmtpSessionContext sessionContext = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY).get();
+              if(sessionContext == null) {
+                 logger.error("!isSessionContext(ctx)");
+                 return;
+              }
 
-               if(sessionContext.mailTransaction==null) {
-                      channelReadRequest(ctx,sessionContext,frame);
-               }
-               else
-               if(sessionContext.mailTransaction.mail_content==null) {
-                       channelReadRequest(ctx,sessionContext,frame);
-               }
-               else {
-                       channelReadContext(ctx,sessionContext,frame);
-               }
+              if(sessionContext.mailTransaction==null){
+                 // read smtp  command
+                 channelReadRequest(ctx,sessionContext,frame);
+              }
+              else
+              if(sessionContext.mailTransaction.mail_content==null) {
+                 // read mail header in mail trasaction
+                 channelReadRequest(ctx,sessionContext,frame);
+              }
+              else {
+                 // read mail body 
+                 channelReadContext(ctx,sessionContext,frame);
+              }
                
                
        }
        public void channelReadContext(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf buffer) throws Exception {
+
               if(buffer.readableBytes() >= 1 && buffer.getByte(buffer.readerIndex()) == '.') {
                   if(buffer.readableBytes() > 1) {
                      buffer.readByte(); // consume '.' if there are other characters on the line
@@ -72,8 +76,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
                // is the line a single dot i.e. end of DATA?
                if(buffer.readableBytes() == 1 && buffer.getByte(buffer.readerIndex()) == '.') {
                   SmtpResponse reply;
-                  logger.trace("get request end send date (.) request.command:"+sessionContext.mailTransaction.mail_content.command());
-
+                  logger.trace("get request end send date (.) request.command:"+sessionContext.mailTransaction.mail_content.getCommand());
          
                   if(commonSMTP.get().isProxy()==false){
                     // process command
@@ -95,14 +98,11 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
                   }
 
                   logger.trace("end mail trasaction");
-    
                   sessionContext.resetMailTransaction();
 
               } 
               else {
-
                  int  len=buffer.readableBytes();
-                 //logger.trace("addDataLine:"+len);
               
                  byte [] b=new byte [len+2];
                  if(len>0)buffer.readBytes(b,0,len);
@@ -113,173 +113,214 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
               }
 
        }
+       //public void checkAuth(SmtpSessionContext sessionContext, ArrayList<CharSequence> list_cmd){
+       //       SmtpResponse reply=null;
+       //
+       //}
        public void channelReadRequest(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf frame) throws Exception {
-              SmtpRequest smtp_request = null;
 
               logger.trace("channelRead size:"+frame.readableBytes());
 
+              //------------------------------------------------------------------------------------------------------- 
+              // check length request
+              //------------------------------------------------------------------------------------------------------- 
               if(frame.readableBytes() < 4) {
                  logger.error("readableBytes < 4");
-                 throw new UnknownCommandException("readableBytes < 4");
+                 //throw new UnknownCommandException("readableBytes < 4");
+                 return;
               }
 
-              CharSequence line = frame.readCharSequence(frame.readableBytes(), StandardCharsets.US_ASCII);
-
-              logger.trace("channelRead line:"+line.toString());
               //------------------------------------------------------------------------------------------------------- 
               // parse line request
-              stringParser            cmds=new stringParser(line.toString()," \r\n");
-              ArrayList<CharSequence> list_cmd=cmds.getList();
-
+              //------------------------------------------------------------------------------------------------------- 
+              CharSequence line = frame.readCharSequence(frame.readableBytes(), StandardCharsets.US_ASCII);
+              logger.trace("channelRead line:"+line.toString());
+              stringParser            cmd_string=new stringParser(line.toString()," \r\n");
+              ArrayList<CharSequence> list_cmd=cmd_string.getList();
+              //------------------------------------------------------------------------------------------------------- 
+              //
               //------------------------------------------------------------------------------------------------------- 
               SmtpResponse reply=null;
+              SmtpRequest  smtp_request = null;
+              //------------------------------------------------------------------------------------------------------- 
+              //
+              //------------------------------------------------------------------------------------------------------- 
               if(sessionContext.authTransaction!=null){
-                  logger.trace("auth transaction is not null session auth:"+sessionContext.authTransaction.isAuth());
-                  //get login and passwd for request AUTH       
-                  if(sessionContext.authTransaction.isAuth()==false) {
-                     //logger.trace("session not auth");
-                     //--------------------------------------------------------------------------------------------------------
-                     if(sessionContext.authTransaction.isTypePlain()) {
+                 // begin auth
+                 logger.trace("auth transaction is not null session auth:"+sessionContext.authTransaction.isAuth());
+                 //get login and passwd for request AUTH       
+                 if(sessionContext.authTransaction.isAuth()==false) {
+                    logger.trace("session not auth");
+                    //--------------------------------------------------------------------------------------------------------
+                    //
+                    //--------------------------------------------------------------------------------------------------------
+                    if(sessionContext.authTransaction.isTypePlain()) {
+                       // after get  AUTH PLAIN
+                       sessionContext.authTransaction.setPlain(list_cmd.get(0));
 
-                            sessionContext.authTransaction.setPlain(list_cmd.get(0));
-                            
-                        logger.trace("get request for AUTH PLAIN "+list_cmd.get(0));
+                       logger.trace("get request for AUTH PLAIN "+list_cmd.get(0)+" auth:"+sessionContext.authTransaction.isAuth());
                         
-                            if(commonSMTP.get().isProxy()==false) {
-                           if(sessionContext.authTransaction.isAuth()){
-                                  reply = new SmtpResponse(SmtpResponseStatus.R235, "2.7.0 Authentication successful");                                        
-                           }
-                           else{
-                              reply = new SmtpResponse(SmtpResponseStatus.R530, "5.7.0  Authentication required");
-                           }
-                            }
-                            else {
-                                    smtp_request = SmtpRequestBuilder.empty(list_cmd);          
-                            }
-                     }        
-                     else
-                     //--------------------------------------------------------------------------------------------------------
-                     if(sessionContext.authTransaction.isTypeLogin()){
-                        logger.trace("get command AUTH LOGIN "+list_cmd.get(0));
+                       if(commonSMTP.get().isProxy()) { 
+                          sessionContext.authTransaction.setAuth(true);
+                          smtp_request = SmtpRequestBuilder.empty(list_cmd); // pack data to  smtp_request;        
+                       }
+                       else{
+                          sessionContext.authTransaction.checkUser();
+                          if(sessionContext.authTransaction.isAuth()){
+                             reply = new SmtpResponse(SmtpResponseStatus.R235, "2.7.0 Authentication successful");                                        
+                          }
+                          else{
+                             reply = new SmtpResponse(SmtpResponseStatus.R530, "5.7.0  Authentication required");
+                          }
+                       }
+                    }        
+                    else
+                    //--------------------------------------------------------------------------------------------------------
+                    if(sessionContext.authTransaction.isTypeLogin()){
+                       // after get  AUTH LOGIN
+                        logger.trace("get request AUTH LOGIN "+list_cmd.get(0));
 
                         if(sessionContext.authTransaction.isLogin()==false) {
                            // get login
                            sessionContext.authTransaction.setLogin(list_cmd.get(0));
                            smtp_request = SmtpRequestBuilder.empty(list_cmd);
                            
-                           logger.trace("set login"+sessionContext.authTransaction.getLogin());
-                           if(commonSMTP.get().isProxy()==false) {
-                              reply = new SmtpResponse(SmtpResponseStatus.R334, "UGFzc3dvcmQA"); // Password
+                           logger.trace("set login:"+sessionContext.authTransaction.getLogin());
+
+                           if(commonSMTP.get().isProxy()) {
+                              smtp_request = SmtpRequestBuilder.empty(list_cmd);
                            }
                            else {
-                                  smtp_request = SmtpRequestBuilder.empty(list_cmd);
+                              reply = new SmtpResponse(SmtpResponseStatus.R334, "UGFzc3dvcmQA"); // Password
                            }
                         } 
                         else{
-                                // get login
+                            // get passwd
                             sessionContext.authTransaction.setPasswd(list_cmd.get(0)); 
                             logger.trace("set passwd");
 
-                            if(commonSMTP.get().isProxy()==false) {
+                            if(commonSMTP.get().isProxy()) {
+                               sessionContext.authTransaction.setAuth(true);
+                               smtp_request = SmtpRequestBuilder.empty(list_cmd);
+                            }
+                            else{
+                               sessionContext.authTransaction.checkUser(); 
                                if(sessionContext.authTransaction.isAuth()){
                                   reply = new SmtpResponse(SmtpResponseStatus.R235, "2.7.0 Authentication successful");
                                }
                                else{
                                   reply = new SmtpResponse(SmtpResponseStatus.R530, "5.7.0  Authentication required");
                                }
-                                }   
-                            else {
-                                    smtp_request = SmtpRequestBuilder.empty(list_cmd);
                             }
                         }
-                     }
-                     //--------------------------------------------------------------------------------------------------------
-                     else{
+                    }
+                    else
+                    //--------------------------------------------------------------------------------------------------------
+                    if(sessionContext.authTransaction.isTypePreset()){
+                    }
+                    //--------------------------------------------------------------------------------------------------------
+                    else{
+                         // expected date for "LOGIN" or "PLAIN" but received something that did not expect
                          smtp_request=null;
                          logger.error("Received unknown command:"+list_cmd.get(0));
                          // unknown auth type
                          reply = new SmtpResponse(SmtpResponseStatus.R500, "WAT?");
-                     }
-                  }
-                  else {
-                        logger.trace("session is auth !");
-                  }
-                } // end sessionContext.authTransaction.isAuth()==false
-               
-                String cmd="";
-                if(smtp_request==null && reply==null){
-                   cmd=list_cmd.get(0).toString();list_cmd.remove(0);
-                   
-                   validateCommand(cmd);
-                   validateCommandOrder(sessionContext, cmd);/* order-independent commands: "The NOOP, HELP, EXPN, VRFY, and RSET commands can be used at any time during a session"*/
-                   smtp_request = SmtpRequestBuilder.get().getCommand(cmd);
-                   
-                   if(smtp_request == null) {
-                      logger.error("Received unknown command:"+cmd);
-                      // unknown command
-                      reply = new SmtpResponse(SmtpResponseStatus.R500, "WAT?");
-                   }
-                   else {
-                       if(smtp_request.command() == SmtpCommand.AUTH) {
-                          SmtpAuthTransaction authTx = new SmtpAuthTransaction();
-                          authTx.setType(list_cmd.get(0));
-                          sessionContext.authTransaction = authTx;
-                          logger.trace("set session  auth object");
-                       }
-                       else
-                       if(smtp_request.command() == SmtpCommand.MAIL) {
-                          SmtpMailTransaction mailTx = new SmtpMailTransaction();
-                          mailTx.setFrom(list_cmd.get(0));
-                          sessionContext.mailTransaction = mailTx;
-                          logger.trace("set session  mail  object");
-                       }
-                       else
-                       if(smtp_request.command() == SmtpCommand.DATA) {
-                          if(sessionContext.mailTransaction!=null)sessionContext.mailTransaction.mail_content= new Content(); 
-                          logger.trace("set session  content  object");
-                       }
-                       smtp_request.setParam(list_cmd); 
-                   }
-                   
-                }
-                
-                if(reply!=null) {
-                    ctx.writeAndFlush(reply);
-                    return;
-                }
-                
-                
-                //------------------------------------------------------------------------------------------
-                if(commonSMTP.get().isProxy()==false){
-                   // process command
-                   reply = smtp_request.processCommand(sessionContext, ctx);
-                   logger.trace("processCommand");
-                   if(reply != null) {
-                      ctx.writeAndFlush(reply);
-                   }
-                }
-                else{
-                     if(sessionContext.client!=null){
-                        // send request to backend
-                        logger.trace("write response to client channel");
-                        reply = smtp_request.filterCommand();
-                        if(reply==null) sessionContext.client.getChannel().writeAndFlush(smtp_request);
-                        else {
-                              // no send to backend
-                              ctx.writeAndFlush(reply);
-                        }
-                        //
                     }
-                }
-                //------------------------------------------------------------------------------------------
-                sessionContext.lastCmd = cmd;
+                 }
+                 else { //sessionContext.authTransaction.isAuth()==true
+                        logger.trace("session is auth !");
+                 }
+              } // end sessionContext.authTransaction!=null
+              else{
+
+              } // end sessionContext.authTransaction==null
+               
+
+              if(smtp_request==null && reply==null){
+
+                 smtp_request = SmtpRequestBuilder.make(list_cmd);
+                   
+                 if(smtp_request == null) {
+                    logger.error("Received unknown command:"+line);
+                    // unknown command
+                    reply = new SmtpResponse(SmtpResponseStatus.R500, "WAT?");
+                 }
+                 else {
+                      boolean is_valid;
+                      if(sessionContext.authTransaction==null){
+                         is_valid=validatePreCommand(smtp_request);
+                         if(is_valid==false){
+                            logger.info("session requared auth");
+                            reply = new SmtpResponse(SmtpResponseStatus.R530, "5.7.0  Authentication required");
+                            ctx.writeAndFlush(reply);
+                            return;
+                         }
+                      }
+                      else{
+                         is_valid=validateCommand(smtp_request);
+                         if(is_valid){
+                            is_valid=validateCommandOrder(sessionContext, smtp_request);/* order-independent commands: "The NOOP, HELP, EXPN, VRFY, and RSET commands can be used at any time during a session"*/
+                         }
+                      }
+                     
+                      logger.trace("command:"+smtp_request.getCommand()+" is validate:"+is_valid);
+
+                     if(smtp_request.getCommand() == SmtpCommand.AUTH) {
+                        SmtpAuthTransaction authTx = new SmtpAuthTransaction();
+                        sessionContext.authTransaction = authTx;
+                        authTx.setType(smtp_request.getParameters().get(0));
+                        logger.trace("set session auth object");
+                     }
+                     else
+                     if(smtp_request.getCommand() == SmtpCommand.MAIL) {
+                        SmtpMailTransaction mailTx = new SmtpMailTransaction();
+                        sessionContext.mailTransaction = mailTx;
+                        mailTx.setFrom(smtp_request.getParameters().get(0));
+                        logger.trace("set session mail object");
+                     }
+                     else
+                     if(smtp_request.getCommand() == SmtpCommand.DATA) {
+                        if(sessionContext.mailTransaction!=null)sessionContext.mailTransaction.mail_content= new Content(); 
+                        logger.trace("set session content object");
+                     }
+                     
+                 }
+                   
+              }
+                
+              if(reply!=null) {
+                 ctx.writeAndFlush(reply);
+                 return;
+              }
+                
+                
+              //------------------------------------------------------------------------------------------
+              if(commonSMTP.get().isProxy()==false){
+                 // process command
+                 reply = smtp_request.processCommand(sessionContext, ctx);
+
+                 logger.trace("processCommand");
+                 if(reply != null) {
+                    ctx.writeAndFlush(reply);
+                 }
+              }
+              else{
+                   if(sessionContext.client!=null){
+                      // send request to backend
+                      logger.trace("write response to client channel");
+                      reply = smtp_request.filterCommand();
+                      if(reply==null) sessionContext.client.getChannel().writeAndFlush(smtp_request);
+                      else {
+                            // no send to backend
+                            ctx.writeAndFlush(reply);
+                      }
+                      //
+                  }
+              }
+              //------------------------------------------------------------------------------------------
+              sessionContext.lastCmd = line;
        }
 
-       //private boolean isSessionContext(ChannelHandlerContext ctx) {
-       //         Attribute<SmtpSessionContext> sessionStarted = ctx.channel().attr(SmtpSessionContext.ATTRIBUTE_KEY);
-
-       //         return sessionStarted.get() != null;
-       //}
 
        private static final CharSequence[] ALWAYS_ALLOWED_COMMANDS = new String[] {"HELO", "EHLO", "RSET"};
 
@@ -288,15 +329,16 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
          * @param ctx
          * @param cmd
          */
-       private boolean validateCommandOrder(SmtpSessionContext ctx, CharSequence cmd) {
-                if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd))) return true;
+       private boolean validateCommandOrder(SmtpSessionContext ctx, SmtpRequest req) {
+    	   String cmd=req.getCommand().getName().toString();
+               if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd))) return true;
 
-                if(ctx.lastCmd == null) {
-                        return false;
-                }
+               if(ctx.lastCmd == null) {
+                  return false;
+               }
 
-                // is a mail transaction going on already
-                if(ctx.mailTransaction != null) {
+               // is a mail transaction going on already
+               if(ctx.mailTransaction != null) {
                    if(CharSequenceComparator.equals(cmd, "RCPT") && CharSequenceComparator.equals(ctx.lastCmd, "MAIL") ||
                       CharSequenceComparator.equals(cmd, "RCPT") && CharSequenceComparator.equals(ctx.lastCmd, "RCPT") ||
                       CharSequenceComparator.equals(cmd, "DATA") && CharSequenceComparator.equals(ctx.lastCmd, "RCPT")
@@ -305,20 +347,28 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
                    }
                    //throw new IllegalStateException();
                    return false;
-                }
-                return true;
+               }
+               return true;
        }
 
-       private static final CharSequence[] VALID_COMMANDS = new String[] {"HELO", "EHLO", "MAIL", "RSET", "VRFY", "EXPN", "NOOP", "QUIT" , "AUTH"};
+       private static final CharSequence[] VALID_COMMANDS     = new String[] {"HELP","HELO", "EHLO", "MAIL", "RSET", "VRFY", "EXPN", "NOOP", "QUIT" , "AUTH"};
+       private static final CharSequence[] VALID_PRE_COMMANDS = new String[] {"HELP","HELO", "EHLO", "RSET", "NOOP", "QUIT", "AUTH"};
 
         /**
          * is this an valid SMTP command?
          * @param cmd
          */
-       private boolean validateCommand(CharSequence cmd) {
-                logger.trace("validateCommand cmd:"+cmd.toString());
+       private boolean validateCommand(SmtpRequest req) {
+    	   String cmd=req.getCommand().getName().toString();
+               logger.trace("validateCommand cmd:"+cmd);
 
-                return Arrays.stream(VALID_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd));
+               return Arrays.stream(VALID_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd));
+       }
+       private boolean validatePreCommand(SmtpRequest req) {
+               String cmd=req.getCommand().getName().toString();
+               logger.trace("validateCommand cmd:"+cmd);
+
+               return Arrays.stream(VALID_PRE_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd));
        }
 
 }

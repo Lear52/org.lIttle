@@ -58,10 +58,10 @@ public class ELM2lMessage{
                if(eml instanceof Message){
                    Address[] addr;
                    // FROM
-                   if ((addr = eml.getFrom())          != null) msg.setFrom(addr[0].toString());
+                   if ((addr = eml.getFrom())          != null) msg.setFrom(getLocalUser(addr[0].toString()));
                    // TO
                    //if ((a = eml.getReplyTo())       != null) for (int j = 0; j < a.length; j++)msg.addTO(a[j].toString());
-                   if ((addr = eml.getAllRecipients()) != null) for (int j = 0; j < addr.length; j++)msg.addTO(addr[j].toString());
+                   if ((addr = eml.getAllRecipients()) != null) for (int j = 0; j < addr.length; j++)msg.addTO(getLocalUser(addr[j].toString()));
                    // SUBJECT
                    msg.setSubject (eml.getSubject());
                    // DATE
@@ -166,6 +166,11 @@ public class ELM2lMessage{
                   return -1; 
            }
            return 0;
+    }
+    public static String getLocalUser(String addr) {
+        int len=addr.indexOf('@');
+        if(len<0)return addr; 
+        return addr.substring(0, len);
     }
 
 }

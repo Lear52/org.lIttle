@@ -1,13 +1,13 @@
-package org.little.smtp.util.command;
+package org.little.smtp.element.command;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.little.smtp.util.SmtpCommand;
-import org.little.smtp.util.SmtpRequest;
-import org.little.smtp.util.SmtpResponse;
-import org.little.smtp.util.SmtpResponseStatus;
-import org.little.smtp.util.SmtpSessionContext;
+import org.little.smtp.element.SmtpCommand;
+import org.little.smtp.element.SmtpRequest;
+import org.little.smtp.element.SmtpResponse;
+import org.little.smtp.element.SmtpResponseStatus;
+import org.little.smtp.element.SmtpSessionContext;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -18,13 +18,12 @@ public class ExtendedHello extends SmtpRequest {
         private static final Logger logger = LoggerFactory.getLogger(ExtendedHello.class);
 
         public ExtendedHello(){
-               this.command    = SmtpCommand.EHLO;
+               super(SmtpCommand.EHLO);
+        }
+        public ExtendedHello(CharSequence hostname){
+               super(SmtpCommand.EHLO,hostname);
         }
 
-        //@Override
-        //public CharSequence getCommandVerb() {
-        //        return "EHLO";
-        //}
         @Override
         public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
                 String log_str="";
@@ -45,20 +44,6 @@ public class ExtendedHello extends SmtpRequest {
                 lines.add("SIZE" + " " + "102400");
                 lines.add(Auth.getCommandAuth());
                 
-/*               
-                for(SmtpCommand cmd: SmtpRegistry.get().getHelloKeywords(ctxMailSession)) {
-                        CharSequence helloKeyword = cmd.getHelloKeyword(ctxMailSession);
-                        if(helloKeyword != null) {
-                                String line = helloKeyword.toString();
-                                //if(cmd.getHelloParams(ctxMailSession) != null) {
-                                //        for(CharSequence param: cmd.getHelloParams(ctxMailSession)) {
-                                //                line += " " + param;
-                                //        }
-                                //}
-                                lines.add(line);
-                        }
-                }
-  */             
                 logger.info("using lines: "+lines);
                
                 SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, lines);

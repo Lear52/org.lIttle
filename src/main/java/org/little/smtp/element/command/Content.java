@@ -1,13 +1,13 @@
-package org.little.smtp.util.command;
+package org.little.smtp.element.command;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
-import org.little.smtp.util.SmtpCommand;
-import org.little.smtp.util.SmtpRequest;
-import org.little.smtp.util.SmtpResponse;
-import org.little.smtp.util.SmtpResponseStatus;
-import org.little.smtp.util.SmtpSessionContext;
+import org.little.smtp.element.SmtpCommand;
+import org.little.smtp.element.SmtpRequest;
+import org.little.smtp.element.SmtpResponse;
+import org.little.smtp.element.SmtpResponseStatus;
+import org.little.smtp.element.SmtpSessionContext;
 import org.little.store.ELM2lMessage;
 import org.little.store.lFolder;
 import org.little.store.lMessage;
@@ -100,12 +100,8 @@ public class Content extends SmtpRequest {
 
                logger.trace("SMTP:reply:"+reply.toString());
             
-            
-            
-            return reply;
-                 
-                    
-            }
+               return reply;
+        }
 
     	@Override
         public SmtpResponse   filterCommand() {

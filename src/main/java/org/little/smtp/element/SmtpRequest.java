@@ -1,10 +1,10 @@
-package org.little.smtp.util;
+package org.little.smtp.element;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.little.smtp.tool.SequenceUtils;
+import org.little.smtp.util.SequenceUtils;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.ObjectUtil;
@@ -13,7 +13,7 @@ public class SmtpRequest  {
 
        protected SmtpCommand              command;
        protected List<CharSequence>       parameters;
-       private   ArrayList<SmtpResponse>  response;
+       protected ArrayList<SmtpResponse>  response;
       
        public SmtpRequest() {
               this.command    = null;
@@ -49,14 +49,14 @@ public class SmtpRequest  {
                parameters.add(p);
        };
 
-       public  void add(SmtpResponse res){response.add(res);};
+       public  void addResponse(SmtpResponse res){response.add(res);};
       
 
-       public SmtpCommand command() {
+       public SmtpCommand getCommand() {
            return command;
        }
       
-       public List<CharSequence> parameters() {
+       public List<CharSequence> getParameters() {
            return parameters;
        }
       
@@ -75,11 +75,11 @@ public class SmtpRequest  {
       
            SmtpRequest other = (SmtpRequest) o;
       
-           return command().equals(other.command()) && parameters().equals(other.parameters());
+           return getCommand().equals(other.getCommand()) && getParameters().equals(other.getParameters());
        }
 
        public CharSequence getCommandVerb(){
-              return command.name().toString();
+              return command.getName().toString();
        };
 
        public void  setParam(List<CharSequence> _parameters){

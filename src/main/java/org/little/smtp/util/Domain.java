@@ -1,4 +1,4 @@
-package org.little.smtp.tool;
+package org.little.smtp.util;
 
 public class Domain {
 
@@ -63,6 +63,10 @@ public class Domain {
 	}
 
 	public CharSequence getDomain() {
-		return domain;
+               return domain;
 	}
+	public String toString() {
+	       return domain.toString();
+	}
+
 }

@@ -1,4 +1,4 @@
-package org.little.smtp.util;
+package org.little.smtp.element;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -32,20 +32,20 @@ public class SmtpCommand {
 
 
        static {
-           COMMANDS.put(EHLO.name().toString(),  EHLO);
-           COMMANDS.put(HELO.name().toString(),  HELO);
-           COMMANDS.put(AUTH.name().toString(),  AUTH);
-           COMMANDS.put(MAIL.name().toString(),  MAIL);
-           COMMANDS.put(RCPT.name().toString(),  RCPT);
-           COMMANDS.put(DATA.name().toString(),  DATA);
-           COMMANDS.put(NOOP.name().toString(),  NOOP);
-           COMMANDS.put(RSET.name().toString(),  RSET);
-           COMMANDS.put(EXPN.name().toString(),  EXPN);
-           COMMANDS.put(VRFY.name().toString(),  VRFY);
-           COMMANDS.put(HELP.name().toString(),  HELP);
-           COMMANDS.put(QUIT.name().toString(),  QUIT);
-           COMMANDS.put(STLS.name().toString(),  STLS);
-           COMMANDS.put(EMPTY.name().toString(), EMPTY);
+           COMMANDS.put(EHLO.getName().toString(),  EHLO);
+           COMMANDS.put(HELO.getName().toString(),  HELO);
+           COMMANDS.put(AUTH.getName().toString(),  AUTH);
+           COMMANDS.put(MAIL.getName().toString(),  MAIL);
+           COMMANDS.put(RCPT.getName().toString(),  RCPT);
+           COMMANDS.put(DATA.getName().toString(),  DATA);
+           COMMANDS.put(NOOP.getName().toString(),  NOOP);
+           COMMANDS.put(RSET.getName().toString(),  RSET);
+           COMMANDS.put(EXPN.getName().toString(),  EXPN);
+           COMMANDS.put(VRFY.getName().toString(),  VRFY);
+           COMMANDS.put(HELP.getName().toString(),  HELP);
+           COMMANDS.put(QUIT.getName().toString(),  QUIT);
+           COMMANDS.put(STLS.getName().toString(),  STLS);
+           //COMMANDS.put(EMPTY.name().toString(), EMPTY);
        }
 
 
@@ -69,12 +69,14 @@ public class SmtpCommand {
        /**
         * Return the command name.
         */
-       public AsciiString name() {
+       public AsciiString getName() {
              return name;
        }
       
        public void encode(ByteBuf buffer) {
-              if(name.equals("")==false && name.equals("LASTCONTENT")==false && name.equals("CONTENT")==false)ByteBufUtil.writeAscii(buffer, name);
+              if(name.toString().equals("")==false && name.toString().equals("LASTCONTENT")==false && name.toString().equals("CONTENT")==false) {
+            	  ByteBufUtil.writeAscii(buffer, name);
+              }
        }
       
        public boolean isContentExpected() {
@@ -94,7 +96,7 @@ public class SmtpCommand {
               if (!(obj instanceof SmtpCommand)) {
                   return false;
               }
-              return name.contentEqualsIgnoreCase(((SmtpCommand) obj).name());
+              return name.contentEqualsIgnoreCase(((SmtpCommand) obj).getName());
        }
       
        @Override

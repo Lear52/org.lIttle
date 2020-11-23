@@ -1,4 +1,4 @@
-package org.little.smtp.tool;
+package org.little.smtp.util;
 
 import java.util.Arrays;
 import java.util.Collections;
