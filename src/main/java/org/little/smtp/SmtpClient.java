@@ -94,14 +94,15 @@ public class SmtpClient{
                      boot_strap.option (ChannelOption.AUTO_READ, true);
                      boot_strap.option (ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000);
               
-                     f_client_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
+                     if("*".equals(commonSMTP.get().getLocalClientBind()))f_client_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port));
+                     else                                                 f_client_channel = boot_strap.connect(new InetSocketAddress(remote_host, remote_port),new InetSocketAddress(commonSMTP.get().getLocalClientBind(), 0));
+
                      client_channel=f_client_channel.channel();
                      logger.trace("channel id:"+client_channel.id().asShortText());
                 } 
                 catch (Exception e) {
                         logger.error("run SmtpClient", e);
                 } 
-        	
         	
         	
         }

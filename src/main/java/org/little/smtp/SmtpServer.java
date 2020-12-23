@@ -56,6 +56,7 @@ public class SmtpServer implements Runnable {
                 workerGroup        = new NioEventLoopGroup(1);
                 bossGroup          = new NioEventLoopGroup();
                 //LoggingHandler log = new LoggingHandler(LogLevel.INFO);
+
                 try {
                      ServerBootstrap server_boot_strap = new ServerBootstrap();
                      server_boot_strap.group(bossGroup,workerGroup);
@@ -63,7 +64,12 @@ public class SmtpServer implements Runnable {
                      server_boot_strap.channel(NioServerSocketChannel.class);
                      server_boot_strap.childHandler(new SmtpSrvInitializer());
                      server_boot_strap.childOption(ChannelOption.AUTO_READ, true);
-                     ChannelFuture ch_ret = server_boot_strap.bind(port);
+
+                     ChannelFuture ch_ret;// = server_boot_strap.bind(port);
+
+                     if("*".equals(commonSMTP.get().getLocalServerBind())) ch_ret = server_boot_strap.bind(port);
+                     else ch_ret = server_boot_strap.bind(commonSMTP.get().getLocalServerBind(),port);
+
                      logger.trace("run SmtpServer");
                      //ChannelFuture f = b.register().sync();
                      ch_ret=ch_ret.sync();

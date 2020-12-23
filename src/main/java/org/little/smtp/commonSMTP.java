@@ -40,21 +40,23 @@ public class commonSMTP extends common{
        @Override
        public void clear(){
               super.clear();
+
               setNodeName("littlesmtp");
+
               bind_server_port               =2525;
               client_host                    ="127.0.0.1";
               client_port                    =25;
-              ldap_url                       ="ldap://rdc22-vip01.vip.cbr.ru:3268";
               local_bind_client              ="*";
               local_bind_server              ="*";
-              ldap_ad_username               ="k1svcfarmadmin";       
-              ldap_ad_password               ="3edcVFR$";    
               default_domain                  ="vip.cbr.ru";
               case_sensitive_folder          =true;
               is_proxy                       =false;
               is_dump_log                    =false;
               auth_requared                  =true;
               
+              ldap_ad_username               ="k1svcfarmadmin";       
+              ldap_ad_password               ="3edcVFR$";    
+              ldap_url                       ="ldap://rdc22-vip01.vip.cbr.ru:3268";
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){

@@ -128,18 +128,19 @@ public class sendfile {
                } 
                if(cmd.hasOption(OPTION_PORT)) {
                   String _port = cmd.getOptionValue(OPTION_PORT);
+                  if(_port!=null)
                   try{port=Integer.parseInt(_port, 10);}catch(Exception e){port=2525;}
                } 
        
                if(cmd.hasOption(OPTION_AUTH)) {
-                  String _auth = cmd.getOptionValue(OPTION_PORT);
+                  String _auth = cmd.getOptionValue(OPTION_AUTH);
+                  if(_auth!=null)
                   try{is_auth=Boolean.parseBoolean(_auth);}catch(Exception e){is_auth=true;}
                } 
                if(cmd.hasOption(OPTION_DEBUG)) {
                   String _debug = cmd.getOptionValue(OPTION_DEBUG);
-                  //System.out.println("_debug:"+_debug);
+                  if(_debug!=null)
                   try{debug=Boolean.parseBoolean(_debug);}catch(Exception e){debug=true;}
-                  //System.out.println("debug:"+debug);
                } 
                if(cmd.hasOption(OPTION_USER)) {
             	  username = cmd.getOptionValue(OPTION_USER);
@@ -155,6 +156,7 @@ public class sendfile {
                } 
 
                print();
+
                run();      
 
                System.out.println("ok!");
