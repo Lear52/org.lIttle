@@ -12,7 +12,7 @@ import org.little.store.lFolder;
 import org.little.store.lMessage;
 import org.little.util.Except;
 import org.little.util._Base64;
-import org.little.util.strDate;
+import org.little.util.string.stringDate;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -171,15 +171,15 @@ public class lFSMessage  extends lFSElement {
                    else                                                                                                                                                                  
                    if("msg_mimetype"    .equals(n.getNodeName())){ get().setMime       (n.getTextContent());                                                                              continue;}
                    else                                                                                                                                                                  
-                   if("msg_create_date" .equals(n.getNodeName())){ get().setCreateDate (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   if("msg_create_date" .equals(n.getNodeName())){ get().setCreateDate (stringDate.str2date(n.getTextContent()));                                                            continue;}
                    else                                                                                                                                                                  
-                   if("msg_sent_date"   .equals(n.getNodeName())){ get().setSentDate   (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   if("msg_sent_date"   .equals(n.getNodeName())){ get().setSentDate   (stringDate.str2date(n.getTextContent()));                                                            continue;}
                    else                                                                                                                                                                  
-                   if("msg_receive_date".equals(n.getNodeName())){ get().setReceiveDate(strDate.str2date(n.getTextContent()));                                                            continue;}
+                   if("msg_receive_date".equals(n.getNodeName())){ get().setReceiveDate(stringDate.str2date(n.getTextContent()));                                                            continue;}
                    else                                                                                                                                                                  
-                   if("msg_del_date"   .equals(n.getNodeName())){ get().setDelDate     (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   if("msg_del_date"   .equals(n.getNodeName())){ get().setDelDate     (stringDate.str2date(n.getTextContent()));                                                            continue;}
                    else                                                                                                                                                                  
-                   if("msg_answer_date".equals(n.getNodeName())){ get().setAnswerDate  (strDate.str2date(n.getTextContent()));                                                            continue;}
+                   if("msg_answer_date".equals(n.getNodeName())){ get().setAnswerDate  (stringDate.str2date(n.getTextContent()));                                                            continue;}
                    else
                    if("msg_uid"        .equals(n.getNodeName())){ String s=n.getTextContent(); int _id=0;  try{_id=Integer.parseInt(s);   }catch(Exception e){_id=0;} get().setUID(_id);    continue;}
                    else                                                                                                                                                                  
@@ -204,9 +204,9 @@ public class lFSMessage  extends lFSElement {
                    else
                    if("x509_type_file" .equals(n.getNodeName())){ get().setX509TypeFile (n.getTextContent());          continue;}
                    else
-                   if("x509_begin_date".equals(n.getNodeName())){ get().setX509BeginDate(strDate.str2date(n.getTextContent()));continue;}
+                   if("x509_begin_date".equals(n.getNodeName())){ get().setX509BeginDate(stringDate.str2date(n.getTextContent()));continue;}
                    else
-                   if("x509_end_date"  .equals(n.getNodeName())){ get().setX509EndDate  (strDate.str2date(n.getTextContent()));continue;}
+                   if("x509_end_date"  .equals(n.getNodeName())){ get().setX509EndDate  (stringDate.str2date(n.getTextContent()));continue;}
                    else
                    if("x509_serial"    .equals(n.getNodeName())){ get().setX509Serial   (n.getTextContent());          continue;}
                    else
@@ -230,11 +230,11 @@ public class lFSMessage  extends lFSElement {
             buf.append("</msg_to>\n");
            }
 
-           if(get().getCreateDate() !=null){buf.append("<msg_create_date>").append(strDate.date2str(get().getCreateDate())).append("</msg_create_date>\n");             }
-           if(get().getSentDate()   !=null){buf.append("<msg_sent_date>").append(strDate.date2str(get().getSentDate())).append("</msg_sent_date>\n");                   }
-           if(get().getReceiveDate()!=null){buf.append("<msg_receive_date>");buf.append(strDate.date2str(get().getReceiveDate()));  buf.append("</msg_receive_date>\n");}
-           if(get().getDelDate()    !=null){buf.append("<msg_del_date>").append(strDate.date2str(get().getReceiveDate())).append("</msg_del_date>\n");                  }
-           if(get().getAnswerDate() !=null){buf.append("<msg_answer_date>").append(strDate.date2str(get().getReceiveDate())).append("</msg_answer_date>\n");            }
+           if(get().getCreateDate() !=null){buf.append("<msg_create_date>").append(stringDate.date2str(get().getCreateDate())).append("</msg_create_date>\n");             }
+           if(get().getSentDate()   !=null){buf.append("<msg_sent_date>").append(stringDate.date2str(get().getSentDate())).append("</msg_sent_date>\n");                   }
+           if(get().getReceiveDate()!=null){buf.append("<msg_receive_date>");buf.append(stringDate.date2str(get().getReceiveDate()));  buf.append("</msg_receive_date>\n");}
+           if(get().getDelDate()    !=null){buf.append("<msg_del_date>").append(stringDate.date2str(get().getReceiveDate())).append("</msg_del_date>\n");                  }
+           if(get().getAnswerDate() !=null){buf.append("<msg_answer_date>").append(stringDate.date2str(get().getReceiveDate())).append("</msg_answer_date>\n");            }
 
            buf.append("<msg_id>")      .append(_Base64.byteArrayToBase64(get().getId().getBytes()))     .append("</msg_id>\n");
            buf.append("<msg_subject>") .append(_Base64.byteArrayToBase64(get().getSubject().getBytes())).append("</msg_subject>\n");
@@ -246,8 +246,8 @@ public class lFSMessage  extends lFSElement {
            buf.append("<x509>\n");                                                               
            buf.append("<x509_type>");       buf.append(get().getX509Type     ());                  buf.append("</x509_type>\n");
            buf.append("<x509_type_file>");  buf.append(get().getX509TypeFile ());                  buf.append("</x509_type_file>\n");
-           buf.append("<x509_begin_date>"); buf.append(strDate.date2str(get().getX509BeginDate()));buf.append("</x509_begin_date>\n");
-           buf.append("<x509_end_date>");   buf.append(strDate.date2str(get().getX509EndDate  ()));buf.append("</x509_end_date>\n");
+           buf.append("<x509_begin_date>"); buf.append(stringDate.date2str(get().getX509BeginDate()));buf.append("</x509_begin_date>\n");
+           buf.append("<x509_end_date>");   buf.append(stringDate.date2str(get().getX509EndDate  ()));buf.append("</x509_end_date>\n");
            buf.append("<x509_serial>");     buf.append(get().getX509Serial   ());                  buf.append("</x509_serial>\n");
            buf.append("<x509_subject>");    buf.append(get().getX509Subject  ());                  buf.append("</x509_subject>\n");
            buf.append("<x509_issuer>");     buf.append(get().getX509Issuer   ());                  buf.append("</x509_issuer>\n");

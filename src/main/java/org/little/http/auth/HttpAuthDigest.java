@@ -2,7 +2,7 @@ package org.little.http.auth;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.utilTransform;
+import org.little.util.string.stringTransform;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,14 +34,14 @@ public class HttpAuthDigest extends HttpAuth {
               String username  =null;
               response=new HttpAuthResponse();
 
-              if(utilTransform.isEmpty(str_auth)) {
+              if(stringTransform.isEmpty(str_auth)) {
                  String nonce = calculateNonce();
                  response.setStatus(HttpResponseStatus.UNAUTHORIZED);
                  response.setUser(null);
                  response.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
 
                  String header = "Digest realm=" + getRealm() + ", ";
-                 if(!utilTransform.isEmpty(authMethod)) {
+                 if(!stringTransform.isEmpty(authMethod)) {
                      header += "qop=" + authMethod + ", ";
                  }
                  header += "nonce=" + nonce + ", "+ "opaque=" + getOpaque(getRealm(), nonce) + ", algoritm=\"MD5\", state=\"FALSE\"";
@@ -64,17 +64,17 @@ public class HttpAuthDigest extends HttpAuth {
                       String ha1;
                       String ha2;
                      
-                      if(!utilTransform.isEmpty(qop) && qop.equals("auth-int")) {
+                      if(!stringTransform.isEmpty(qop) && qop.equals("auth-int")) {
                           String requestBody="";
-                          String entityBodyMd5 = utilTransform.getMD5Hash(requestBody); 
-                          ha2 = utilTransform.getMD5Hash(request_method + ":" + reqURI + ":" + entityBodyMd5);
+                          String entityBodyMd5 = stringTransform.getMD5Hash(requestBody); 
+                          ha2 = stringTransform.getMD5Hash(request_method + ":" + reqURI + ":" + entityBodyMd5);
                       } 
                       else {
-                          ha2 = utilTransform.getMD5Hash(request_method + ":" + reqURI);
+                          ha2 = stringTransform.getMD5Hash(request_method + ":" + reqURI);
                       }
                       String pre_serverResponse;
                      
-                      if(utilTransform.isEmpty(qop)) {
+                      if(stringTransform.isEmpty(qop)) {
                          pre_serverResponse=":" + nonce + ":" + ha2;
                       } 
                       else {
@@ -86,7 +86,7 @@ public class HttpAuthDigest extends HttpAuth {
                       }
 
                       ha1 =list.getDigestUser(username,getRealm());
-                      ha2 = utilTransform.getMD5Hash(ha1 + pre_serverResponse); 
+                      ha2 = stringTransform.getMD5Hash(ha1 + pre_serverResponse); 
 
                       boolean is_auth=ha2.equals(clientResponse);
 
@@ -105,7 +105,7 @@ public class HttpAuthDigest extends HttpAuth {
                           response.setUser(null);
                           response.setBodyMsg(getBody("Digest",HttpResponseStatus.UNAUTHORIZED));
                           String header = "Digest realm=" + getRealm() + ", ";
-                          if(!utilTransform.isEmpty(authMethod)) {
+                          if(!stringTransform.isEmpty(authMethod)) {
                               header += "qop=" + authMethod + ", ";
                           }
                           header += "nonce=" + nonce + ", ";
@@ -134,11 +134,11 @@ public class HttpAuthDigest extends HttpAuth {
                Random           rand      = new Random(100000);
                Integer          randomInt = rand.nextInt();
 
-               return utilTransform.getMD5Hash(fmtDate + randomInt.toString());
+               return stringTransform.getMD5Hash(fmtDate + randomInt.toString());
        }
 
        private String getOpaque(String domain, String nonce) {
-               return utilTransform.getMD5Hash(domain + nonce);
+               return stringTransform.getMD5Hash(domain + nonce);
        }
        private HashMap<String, String> parseHeader(String headerString) {
                // seperte out the part of the string which tells you which Auth scheme is it

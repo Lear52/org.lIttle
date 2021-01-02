@@ -1,11 +1,11 @@
-package org.little.proxy.util;
+package org.little.proxy;
 
 import java.net.InetSocketAddress;
 
-import org.little.proxy.Null.NullProxyMain;
+import org.little.proxy.Null.NullProxyServer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.iWrapper;
+import org.little.util.wrapper.iWrapper;
 import org.littleshoot.proxy.DefaultHostResolver;
 import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.HttpProxyServerBootstrap;
@@ -18,7 +18,7 @@ public class runWrapper implements iWrapper{
 
     private static final Logger      LOG = LoggerFactory.getLogger(runWrapper.class);
 
-    private NullProxyMain            server;
+    private NullProxyServer          server;
     private HttpProxyServerBootstrap bootstrap;
     private HttpProxyServer          proxyserver;
     private boolean                  m_mainComplete;
@@ -86,13 +86,13 @@ public class runWrapper implements iWrapper{
               }
               bootstrap = DefaultHttpProxyServer.bootstrap()
                          .withTransparent(transparent)
-                         //.withPort(port)
                          .withAllowLocalOnly(false)
                          .withAllowRequestToOriginServer(true)
                          .withServerResolver(new DefaultHostResolver())
                          .withAuthenticateSslClients(true) 
                          .withNetworkInterface(client_address)
                          .withAddress(server_address)
+                         //.withPort(port)
                          //.withThrottling(readThrottleBytesPerSecond,writeThrottleBytesPerSecond)
                          //.plusActivityTracker(new ActivityTrackerImpl())/**/
                          //.withFiltersSource(new BasicHttpFiltersSource())
@@ -108,7 +108,7 @@ public class runWrapper implements iWrapper{
            }                                              
            else                                               
            if(commonProxy.get().getType()==0){            
-              server   = new NullProxyMain();             
+              server   = new NullProxyServer();             
               LOG.trace("create NullProxyMain");
               server.init();
               server.start();

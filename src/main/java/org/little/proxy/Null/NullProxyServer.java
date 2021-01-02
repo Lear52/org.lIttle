@@ -9,9 +9,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-
-import org.little.proxy.util.commonProxy;
-
+import org.little.proxy.commonProxy;
+import org.little.proxy.Null.handler.NullProxyInitializer;
+import org.little.proxy.Null.handler.NullProxyLogHandler;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -22,12 +22,12 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
-//import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
-public class NullProxyMain implements  Runnable{
+public class NullProxyServer implements  Runnable{
 
-    private static final Logger LOG = LoggerFactory.getLogger(NullProxyMain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NullProxyServer.class);
 
     private   EventLoopGroup                     parent_event_group;
     private   EventLoopGroup                     child_event_group;
@@ -39,7 +39,7 @@ public class NullProxyMain implements  Runnable{
     /**
      *
      */
-    public NullProxyMain(){
+    public NullProxyServer(){
            parent_event_group = null;
            child_event_group  = null;
            server_boot_strap  = null;
@@ -59,14 +59,14 @@ public class NullProxyMain implements  Runnable{
             parent_event_group     = new NioEventLoopGroup(commonProxy.get().getNumberThreads()); //specified_number_of_threads = 4;//1
             child_event_group      = new NioEventLoopGroup();
             child_channel          = new NullProxyInitializer();
-            log                    = new NullProxyLog();
+            log                    = new NullProxyLogHandler();
 
             
             LOG.trace("create ServerBootstrap");
             server_boot_strap=server_boot_strap.group(parent_event_group, child_event_group);
             LOG.trace("register parent_event_group, child_event_group");
             // 
-            server_boot_strap=server_boot_strap.channel(NullProxyServerChannel.class);
+            server_boot_strap=server_boot_strap.channel(NioServerSocketChannel.class);
             // 
             server_boot_strap=server_boot_strap.handler(log);
             // 
@@ -143,9 +143,9 @@ public class NullProxyMain implements  Runnable{
            System.setProperty("java.net.preferIPv4Stack","true");
            LOG.trace("Set java property:java.net.preferIPv4Stack=true");
 
-           NullProxyMain server=new NullProxyMain();
+           NullProxyServer server=new NullProxyServer();
 
-           if(!NullProxyMain.opt(server,args)){
+           if(!NullProxyServer.opt(server,args)){
               LOG.error("unknow args");
               return;
            }
@@ -166,7 +166,7 @@ public class NullProxyMain implements  Runnable{
            server.stop();
            LOG.trace("EXIT wrapper");
     }
-    public static boolean opt(NullProxyMain server,String[] args) {
+    public static boolean opt(NullProxyServer server,String[] args) {
            String            OPTION_HELP  = "help";
            String            OPTION_CFG   = "cfg";
            String            xpath ;
@@ -180,7 +180,7 @@ public class NullProxyMain implements  Runnable{
            options.addOption(null, OPTION_CFG   , true, "Run with cfg");
            options.addOption(null, OPTION_HELP  , false,"Display command line help.");
            {  StringBuilder buf=new StringBuilder();
-              buf.append(NullProxyMain.class).append(" ");
+              buf.append(NullProxyServer.class).append(" ");
               for(int i=0;i<args.length;i++)buf.append("\"").append(args[i]).append("\" ");
               LOG.info("run: " + buf.toString());
            }

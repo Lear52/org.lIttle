@@ -2,7 +2,7 @@ package org.little.proxy.util;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.stringWildCard;
+import org.little.util.string.stringWildCard;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 

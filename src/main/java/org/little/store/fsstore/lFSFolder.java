@@ -9,9 +9,9 @@ import java.util.Random;
 import org.little.store.lFolder;
 import org.little.store.lMessage;
 import org.little.store.lUID;
-import org.little.util._qSortString;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.util.string._stringQSort;
 
 
 public class lFSFolder  extends lFSElement implements lFolder {
@@ -109,7 +109,7 @@ public class lFSFolder  extends lFSElement implements lFolder {
                  if(ls!=null){
                     logger.trace("folder:"+getFullName()+" count file:"+ls.length);
                    
-                    _qSortString sorter = new _qSortString();
+                    _stringQSort sorter = new _stringQSort();
                     sorter.sort(ls);
                     int countnum=1;
                    

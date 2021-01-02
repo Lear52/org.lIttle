@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util._Base64;
-import org.little.util.utilTransform;
+import org.little.util.string.stringTransform;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -28,19 +28,19 @@ public class HttpAuthBasic extends HttpAuth {
 
               response=new HttpAuthResponse();
 
-              if(utilTransform.isEmpty(auth)) is_empty=true;
+              if(stringTransform.isEmpty(auth)) is_empty=true;
               else {
-                   String       value           = utilTransform.substringAfter(auth, "Basic ").trim();        
-                   if(utilTransform.isEmpty(value)) is_empty=true;
+                   String       value           = stringTransform.substringAfter(auth, "Basic ").trim();        
+                   if(stringTransform.isEmpty(value)) is_empty=true;
                    else {
                         byte[] decodedValue   = _Base64.base64ToByteArray(value);
                         String decodedString   = new String(decodedValue, Charset.forName("UTF-8"));
-                        if(utilTransform.isEmpty(decodedString))is_empty=true;
+                        if(stringTransform.isEmpty(decodedString))is_empty=true;
                         else {
-                              username        = utilTransform.substringBefore(decodedString, ":");
-                              password        = utilTransform.substringAfter(decodedString, ":");
-                              if(utilTransform.isEmpty(username))is_empty=true;
-                              if(utilTransform.isEmpty(password))is_empty=true;
+                              username        = stringTransform.substringBefore(decodedString, ":");
+                              password        = stringTransform.substringAfter(decodedString, ":");
+                              if(stringTransform.isEmpty(username))is_empty=true;
+                              if(stringTransform.isEmpty(password))is_empty=true;
                         }
                           
                    }

@@ -11,8 +11,8 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 
 
-public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObject> {
-       private static final Logger  logger = LoggerFactory.getLogger(HttpX509ServerHandler.class);
+public class lHttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+       private static final Logger  logger = LoggerFactory.getLogger(lHttpServerHandler.class);
 
        //private lHttpRequest      req;
       
@@ -26,7 +26,7 @@ public class HttpX509ServerHandler extends SimpleChannelInboundHandler<HttpObjec
        //      req =_req; 
        //}
 
-       public HttpX509ServerHandler(){
+       public lHttpServerHandler(){
               //req =new HttpX509Request(); 
               logger.info("create HttpX509ServerHandler");
        }

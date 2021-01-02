@@ -3,6 +3,14 @@ package org.little.util;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
+/** 
+ * class Logger
+ *
+ * 
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002 - 2021
+ * @version 1.4
+ */
+
 public class Logger{
 
        final private static String CLASS_NAME="org.little.util.Logger";

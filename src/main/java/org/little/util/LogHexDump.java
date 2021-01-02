@@ -2,9 +2,9 @@ package org.little.util;
 
 import java.io.IOException;
 
-public class HexDump {
+public class LogHexDump {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HexDump.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogHexDump.class);
 
     public static void toString(byte[] data)throws IOException, ArrayIndexOutOfBoundsException,IllegalArgumentException {
         StringBuilder buffer = new StringBuilder();

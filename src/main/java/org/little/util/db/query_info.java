@@ -1,17 +1,16 @@
 package org.little.util.db;
 
-//import prj0.util.Logger;
 
 /** 
  * Класс Query_Info содержит информацию о базе
  *
  * 
- * @author <b>Andrey Shadrin</b>, Copyright &#169; 2009-2017
- * @version 1.2
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2009-2021
+ * @version 1.4
  */
 
 public class query_info{
-       private final static String CLASS_NAME="prj0.util.db.query_info";
+       private final static String CLASS_NAME="org.little.util.db.query_info";
        private final static int    CLASS_ID  =206;
              public        static String getClassName(){return CLASS_NAME;}
              public        static int    getClassId(){return CLASS_ID;}

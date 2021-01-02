@@ -2,7 +2,7 @@ package org.little.auth;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.utilTransform;
+import org.little.util.string.stringTransform;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -142,7 +142,7 @@ public class authUserXML implements authUser {
         public String getDigestUser(String user,String realm) {
                if(!isUser(user)) return null;
                String password=getPswd(user);
-               String ha1 = utilTransform.getMD5Hash(user + ":" + realm + ":" + password);
+               String ha1 = stringTransform.getMD5Hash(user + ":" + realm + ":" + password);
                return ha1;
         }
         public boolean checkVisible(String user1,String user2) {

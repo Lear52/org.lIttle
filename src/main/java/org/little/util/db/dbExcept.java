@@ -7,13 +7,12 @@ import org.little.util.Except;
  * Класс  Basa_Except
  *
  * 
- * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2017
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2021
  * @version 1.1
  */
 
-
 public class dbExcept extends Except{
-       final private static String CLASS_NAME="prj0.util.db.dbExcept";
+       final private static String CLASS_NAME="org.little.util.db.dbExcept";
        final private static int    CLASS_ID  =202;
              final private static long   serialVersionUID = 19690401L+CLASS_ID;
              public  static String getClassName(){return CLASS_NAME;}
@@ -32,7 +31,7 @@ public class dbExcept extends Except{
               public int getCode() {
                      return code; 
               }
-              
+               
               public dbExcept(Except e){super(e);code=-1;}
               
 }

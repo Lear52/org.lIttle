@@ -4,7 +4,7 @@ package org.little.util;
  * class Except
  *
  * 
- * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002 - 2020
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002 - 2021
  * @version 1.6
  */
 public class Except extends Exception{

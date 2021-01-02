@@ -2,13 +2,13 @@ package org.little.http;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.iWrapper;
+import org.little.util.wrapper.iWrapper;
 
 public class runWrapper implements iWrapper{
 
     private static final Logger      LOG = LoggerFactory.getLogger(runWrapper.class);
 
-    private HttpX509Server           server;
+    private lHttpServer           server;
     private boolean                  m_mainComplete;
 
     public runWrapper(){
@@ -44,7 +44,7 @@ public class runWrapper implements iWrapper{
            commonHTTP.get().init();
            commonHTTP.get().initMBean();
            //---------------------------------------------------------------------------------
-           server   = new HttpX509Server(commonHTTP.get().getPort());             
+           server   = new lHttpServer(commonHTTP.get().getPort());             
            LOG.trace("create httpServer port:"+commonHTTP.get().getPort());
            server.start();
            

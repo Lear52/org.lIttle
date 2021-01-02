@@ -5,16 +5,17 @@ import java.sql.DriverManager;
 import java.util.Vector;
 
 import org.little.util.Logger;
+import org.little.util.cfg.iconfig;
 
 /** 
  *
  * 
- * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2017
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2021
  * @version 1.4
  */
 
 public class connection_pool {
-       final private static String CLASS_NAME="prj0.util.db.connection_pool";
+       final private static String CLASS_NAME="org.little.util.db.connection_pool";
        final private static int    CLASS_ID  =201;
              public  static String getClassName(){return CLASS_NAME;}
              public  static int    getClassId(){return CLASS_ID;}
@@ -56,13 +57,42 @@ public class connection_pool {
         /** 
          * 
          */
-        protected connection_pool() {
+        public connection_pool() {
                is_load = false;
                connections = new Vector<query>(10);
                db_drv=null;
                db_url=null;
                username=null;
                passwd=null;
+        }
+        public void init(iconfig cfg) throws dbExcept{
+
+                log.trace("connection_pool.init() is_load:"+is_load);
+
+                synchronized (lock) {
+                      is_load   = false;
+                     
+                      db_drv    = null;
+                      db_url    = null;
+                      username  = null;
+                      passwd    = null;
+                      String cfg_topic = cfg.getTopic();
+                      try {
+                           db_drv   = cfg.get(org.little.util.cfg.def.def_res_db_drv);
+                           db_url   = cfg.get(org.little.util.cfg.def.def_res_db_url);
+                           username = cfg.get(org.little.util.cfg.def.def_res_db_username);
+                           passwd   = cfg.get(org.little.util.cfg.def.def_res_db_passwd);
+                      } catch (Exception e) {
+                              String s="";
+                              if(db_drv==null)  s=s+" db_drv==null ";
+                              if(db_url==null)  s=s+" db_url==null ";
+                              if(username==null)s=s+" username==null ";
+                              if(passwd==null)  s=s+" passwd==null ";
+                              log.error(dbMsg.error_load_res+" topic:"+cfg_topic+s);
+                      }
+                }
+                log.trace("connection_pool.init() ok");
+
         }
         /** 
          * 

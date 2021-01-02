@@ -1,6 +1,6 @@
-package org.little.util;
+package org.little.util.string;
 
-public class _qSortString {
+public class _stringQSort {
 
        private String buffer[];
        private int    length;
@@ -53,7 +53,7 @@ public class _qSortString {
        public static void main(String[] args) {
            String ls[] = {"zzw", "qqqaa", "wcc", "1hh", "1bb", "1ee", "2ll"}; 
 
-           _qSortString sorter = new _qSortString();
+           _stringQSort sorter = new _stringQSort();
            sorter.sort(ls);
       
            for (String i : ls) {

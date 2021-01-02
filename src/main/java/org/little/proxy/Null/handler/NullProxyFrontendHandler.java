@@ -1,8 +1,8 @@
-package org.little.proxy.Null;
+package org.little.proxy.Null.handler;
 
 import java.net.InetSocketAddress;
 
-import org.little.proxy.util.commonProxy;
+import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;

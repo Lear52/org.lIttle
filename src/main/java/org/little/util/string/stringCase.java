@@ -1,4 +1,4 @@
-package org.little.util;
+package org.little.util.string;
 
 public final class stringCase {
 

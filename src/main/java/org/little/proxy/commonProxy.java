@@ -1,4 +1,4 @@
-package org.little.proxy.util;
+package org.little.proxy;
 
 import java.lang.management.ManagementFactory;
 
@@ -11,9 +11,17 @@ import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.common;
-import org.little.util.utilTransform;
+import org.little.util.string.stringTransform;
 import org.little.auth.authUser;
 import org.little.auth.authUserLDAP;
+import org.little.proxy.util.listChannel;
+import org.little.proxy.util.listCookie;
+import org.little.proxy.util.listGuest4URL;
+import org.little.proxy.util.listGuest4URLImpl;
+import org.little.proxy.util.listHost4User;
+import org.little.proxy.util.listHost4UserImpl;
+import org.little.proxy.util.listPointHost;
+import org.little.proxy.util.statProxy;
 /**
  * 
  */
@@ -127,8 +135,8 @@ public class commonProxy extends common{
        
               System.setProperty("java.security.krb5.conf",        getPathKbr5()        );
               System.setProperty("java.security.auth.login.config",getPathLogin());
-              if(utilTransform.isEmpty(local_bind_server))local_bind_server="*";
-              if(utilTransform.isEmpty(local_bind_client))local_bind_server="*";
+              if(stringTransform.isEmpty(local_bind_server))local_bind_server="*";
+              if(stringTransform.isEmpty(local_bind_client))local_bind_server="*";
        
        }
        @Override
@@ -196,7 +204,7 @@ public class commonProxy extends common{
               boolean u=auth_user.isUser(userName);
               if(u==false)return false;
               String ha1=auth_user.getDigestUser(userName,default_realm);
-              String ha2 = utilTransform.getMD5Hash(ha1 + pre_serverResponse); 
+              String ha2 = stringTransform.getMD5Hash(ha1 + pre_serverResponse); 
        
               return ha2.equals(clientResponse);
               

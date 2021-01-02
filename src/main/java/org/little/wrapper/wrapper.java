@@ -1,10 +1,10 @@
 package org.little.wrapper;
 
-import org.little.proxy.util.commonProxy;
-import org.little.proxy.util.runWrapper;
+import org.little.proxy.commonProxy;
+import org.little.proxy.runWrapper;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.iWrapper;
+import org.little.util.wrapper.iWrapper;
 import org.tanukisoftware.wrapper.WrapperListener;
 import org.tanukisoftware.wrapper.WrapperManager;
 

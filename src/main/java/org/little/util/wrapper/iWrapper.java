@@ -1,4 +1,4 @@
-package org.little.util;
+package org.little.util.wrapper;
 
 import java.util.Arrays;
 
@@ -9,6 +9,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.lang3.StringUtils;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
 
 
 
@@ -27,7 +29,6 @@ public interface iWrapper extends Runnable{
     public static void printHelp(final Options options,final String errorMessage) {
         if (!StringUtils.isBlank(errorMessage)) {
             _LOG.error(errorMessage);
-            //System.err.println(errorMessage);
         }
 
         final HelpFormatter formatter = new HelpFormatter();

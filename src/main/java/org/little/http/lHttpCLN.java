@@ -16,13 +16,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 
-public class HttpCLN {
+public class lHttpCLN {
 
 
-       private String url      ;
+       private String  url      ;
        private boolean debug   ;
 
-       public HttpCLN(){
+       public lHttpCLN(){
               debug   = true;
               url       ="http://localhost:8080/upload.php";
        }
@@ -81,7 +81,7 @@ public class HttpCLN {
               
        }
        public static void main(String[] args) throws Exception {
-    	   HttpCLN cln=new HttpCLN();
+    	   lHttpCLN cln=new lHttpCLN();
            String  f_name;
     	   cln.setURL("http://sa5lear1.vip.cbr.ru:8080/main/doc/жа/law_cb.pdf");
     	   ByteArrayOutputStream os=new ByteArrayOutputStream();

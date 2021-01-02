@@ -14,10 +14,10 @@ import org.little.smtp.element.SmtpResponse;
 import org.little.smtp.element.SmtpResponseStatus;
 import org.little.smtp.element.SmtpSessionContext;
 import org.little.smtp.element.command.Content;
-import org.little.util.CharSequenceComparator;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.stringParser;
+import org.little.util.string.charsequenceComparator;
+import org.little.util.string.stringParser;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -331,7 +331,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
          */
        private boolean validateCommandOrder(SmtpSessionContext ctx, SmtpRequest req) {
     	   String cmd=req.getCommand().getName().toString();
-               if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd))) return true;
+               if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd))) return true;
 
                if(ctx.lastCmd == null) {
                   return false;
@@ -339,9 +339,9 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
 
                // is a mail transaction going on already
                if(ctx.mailTransaction != null) {
-                   if(CharSequenceComparator.equals(cmd, "RCPT") && CharSequenceComparator.equals(ctx.lastCmd, "MAIL") ||
-                      CharSequenceComparator.equals(cmd, "RCPT") && CharSequenceComparator.equals(ctx.lastCmd, "RCPT") ||
-                      CharSequenceComparator.equals(cmd, "DATA") && CharSequenceComparator.equals(ctx.lastCmd, "RCPT")
+                   if(charsequenceComparator.equals(cmd, "RCPT") && charsequenceComparator.equals(ctx.lastCmd, "MAIL") ||
+                      charsequenceComparator.equals(cmd, "RCPT") && charsequenceComparator.equals(ctx.lastCmd, "RCPT") ||
+                      charsequenceComparator.equals(cmd, "DATA") && charsequenceComparator.equals(ctx.lastCmd, "RCPT")
                      ) {
                            return true;
                    }
@@ -362,13 +362,13 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
     	   String cmd=req.getCommand().getName().toString();
                logger.trace("validateCommand cmd:"+cmd);
 
-               return Arrays.stream(VALID_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd));
+               return Arrays.stream(VALID_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd));
        }
        private boolean validatePreCommand(SmtpRequest req) {
                String cmd=req.getCommand().getName().toString();
                logger.trace("validateCommand cmd:"+cmd);
 
-               return Arrays.stream(VALID_PRE_COMMANDS).anyMatch(c -> CharSequenceComparator.equals(c, cmd));
+               return Arrays.stream(VALID_PRE_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd));
        }
 
 }

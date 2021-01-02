@@ -1,6 +1,6 @@
-package org.little.proxy.Null;
+package org.little.proxy.Null.handler;
 
-import org.little.proxy.util.commonProxy;
+import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Except;
 import org.little.util.Logger;

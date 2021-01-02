@@ -22,12 +22,12 @@ import org.little.util.LoggerFactory;
  */
 public class serviceLDAP {
 
-             private String                                    searchBase;
-             private DirContext                                ctx;
-             private NamingEnumeration<SearchResult>           answer;
-             private SearchResult                              searchR;
-             private NamingEnumeration<? extends Attribute>    n_attrs;
-             private static final Logger log = LoggerFactory.getLogger(serviceLDAP.class);
+       private String                                    searchBase;
+       private DirContext                                ctx;
+       private NamingEnumeration<SearchResult>           answer;
+       private SearchResult                              searchR;
+       private NamingEnumeration<? extends Attribute>    n_attrs;
+       private static final Logger log = LoggerFactory.getLogger(serviceLDAP.class);
 
         private void _clear(){
              ctx          = null;

@@ -2,7 +2,7 @@ package org.little.auth;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.utilTransform;
+import org.little.util.string.stringTransform;
 
 
 public class authUserStub implements authUser {
@@ -47,7 +47,7 @@ public class authUserStub implements authUser {
                if(!isUser(user)) return null;
                String password="123";
 
-               String ha1 = utilTransform.getMD5Hash(user + ":" + realm + ":" + password);
+               String ha1 = stringTransform.getMD5Hash(user + ":" + realm + ":" + password);
                return ha1;
 
         }

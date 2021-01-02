@@ -6,6 +6,7 @@ import javax.management.AttributeChangeNotification;
 import javax.management.MBeanNotificationInfo;
 import javax.management.NotificationBroadcasterSupport;
 
+import org.little.proxy.commonProxy;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 

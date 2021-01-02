@@ -1,11 +1,16 @@
-package org.little.util;
+package org.little.util.string;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class utilTransform {
-       private static final Logger  logger = LoggerFactory.getLogger(utilTransform.class);
+import org.little.util.Except;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
+import org.little.util._Base64;
+
+public class stringTransform {
+       private static final Logger  logger = LoggerFactory.getLogger(stringTransform.class);
             
        /**
         *

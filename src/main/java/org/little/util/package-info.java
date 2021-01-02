@@ -2,7 +2,7 @@
  * 
  */
 /**
- * @author lear5
+ * @author lear52
  *
  */
 package org.little.util;

@@ -9,7 +9,7 @@ package org.little.util.db;
  */
 public class dbMsg{
 
-       private final static String CLASS_NAME="prj0.util.db.dbMsg";
+       private final static String CLASS_NAME="org.little.util.db.dbMsg";
        private final static int    CLASS_ID  =203;
        public        static String getClassName(){return CLASS_NAME;}
        public        static int    getClassId(){return CLASS_ID;}

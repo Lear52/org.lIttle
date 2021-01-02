@@ -23,7 +23,7 @@ import org.little.store.lMessage;
 import org.little.store.lMessage2ELM;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.stringParser;
+import org.little.util.string.stringParser;
 
 
 

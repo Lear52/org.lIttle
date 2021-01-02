@@ -6,9 +6,7 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
-import org.little.util.strDate;
+import org.little.util.string.stringDate;
 
 
 
@@ -73,19 +71,19 @@ public class lMessage2JSON  {
               obj.put("Id"            ,msg.getId                             ());
               obj.put("Subject"       ,msg.getSubject                        ());
               obj.put("Filename"      ,msg.getFilename                       ());
-              if(msg.getCreateDate     ()!=null)obj.put("CreateDate" ,strDate.date2prn(msg.getCreateDate ())); else obj.put("CreateDate" ,"");
-              if(msg.getSentDate       ()!=null)obj.put("SentDate"   ,strDate.date2prn(msg.getSentDate   ())); else obj.put("SentDate"   ,"");
-              if(msg.getReceiveDate    ()!=null)obj.put("ReceiveDate",strDate.date2prn(msg.getReceiveDate())); else obj.put("ReceiveDate","");
-              if(msg.getDelDate        ()!=null)obj.put("DelDate"    ,strDate.date2prn(msg.getDelDate    ())); else obj.put("DelDate"    ,"");
-              if(msg.getAnswerDate     ()!=null)obj.put("AnswerDate" ,strDate.date2prn(msg.getAnswerDate ())); else obj.put("AnswerDate" ,"");
+              if(msg.getCreateDate     ()!=null)obj.put("CreateDate" ,stringDate.date2prn(msg.getCreateDate ())); else obj.put("CreateDate" ,"");
+              if(msg.getSentDate       ()!=null)obj.put("SentDate"   ,stringDate.date2prn(msg.getSentDate   ())); else obj.put("SentDate"   ,"");
+              if(msg.getReceiveDate    ()!=null)obj.put("ReceiveDate",stringDate.date2prn(msg.getReceiveDate())); else obj.put("ReceiveDate","");
+              if(msg.getDelDate        ()!=null)obj.put("DelDate"    ,stringDate.date2prn(msg.getDelDate    ())); else obj.put("DelDate"    ,"");
+              if(msg.getAnswerDate     ()!=null)obj.put("AnswerDate" ,stringDate.date2prn(msg.getAnswerDate ())); else obj.put("AnswerDate" ,"");
 
               obj.put("Mime"          ,msg.getMime                           ());
               obj.put("Size"          ,msg.getSize                           ());
                                               
               obj.put("X509Type"      ,msg.getX509Type                       ());
               obj.put("X509TypeFile"  ,msg.getX509TypeFile                   ());
-              obj.put("X509BeginDate" ,strDate.date2prn(msg.getX509BeginDate()));
-              obj.put("X509EndDate"   ,strDate.date2prn(msg.getX509EndDate  ()));
+              obj.put("X509BeginDate" ,stringDate.date2prn(msg.getX509BeginDate()));
+              obj.put("X509EndDate"   ,stringDate.date2prn(msg.getX509EndDate  ()));
               obj.put("X509Serial"    ,msg.getX509Serial                     ());
               obj.put("X509Subject"   ,msg.getX509Subject                    ());
               obj.put("X509Issuer"    ,msg.getX509Issuer                     ());

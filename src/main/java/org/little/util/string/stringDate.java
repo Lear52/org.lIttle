@@ -1,9 +1,9 @@
-package org.little.util;
+package org.little.util.string;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class strDate{
+public class stringDate{
 
     public static Date str2date(String s){
            if(s==null) return null;

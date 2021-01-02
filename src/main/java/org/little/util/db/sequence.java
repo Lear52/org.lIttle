@@ -2,34 +2,54 @@ package org.little.util.db;
 
 import java.sql.SQLException;
 
-//import prj0.util.Logger;
 /** 
- * È ﬁﬂﬂ Sequence ⁄¡ ⁄≈–ﬂ⁄ Õ¿Õ Õ¬…Õ» ƒ ⁄ ŒÕﬂ ≈ƒÕ¡ﬁ–≈ ›ÃÕﬂ–’ ¡ ‡ﬁ√≈
- *
- * 
- * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2017
- * @version 1.3
+ * @author <b>Andrey Shadrin</b>, Copyright &#169; 2002-2021
+ * @version 1.4
  */
 public class sequence {
-       private final static String CLASS_NAME="prj0.util.db.sequence";
+       private final static String CLASS_NAME="org.little.util.db.sequence";
        private final static int    CLASS_ID  =207;
              public        static String getClassName(){return CLASS_NAME;}
              public        static int    getClassId(){return CLASS_ID;}
-             //private static Logger log=new Logger(CLASS_NAME);
 
        private              String id;	
+       private              query  q;
        /**
         * @param _id string
         */
        public sequence(String _id) {
                this.id = _id;
+               this.q = null;
+       }
+       public sequence(String _id,query  _q) {
+               this.id = _id;
+               this.q = _q;
        }
 
 
        public String String_Next() {
                return id + ".NEXTVAL";
        }
-       public String get(query q) throws dbExcept {
+       public String get(query _q) throws dbExcept {
+              if(_q==null){
+                 dbExcept ex = new dbExcept("query is null");
+                 throw ex;
+              }
+               try {
+                       _q.getResult("SELECT " + id + ".NEXTVAL FROM DUAL");
+                       //----------------------------------------------
+                       while (_q.isNextResult()) {
+                               // ŒÕ —¬≈Ã’≈ œ≈√— ›–ﬁ–ﬁ
+                               return _q.Result().getString(1);
+                       }
+               } catch (SQLException e) {
+                       dbExcept ex = new dbExcept("Get result sequence(string) " + e);
+                       throw ex;
+               }
+               //----------------------------------------------
+               return null;
+       }
+       public String get() throws dbExcept {
               if(q==null){
                  dbExcept ex = new dbExcept("query is null");
                  throw ex;

@@ -1,4 +1,4 @@
-package org.little.proxy.Null;
+package org.little.proxy.Null.handler;
 import java.net.SocketAddress;
 
 import org.little.util.Logger;
@@ -12,34 +12,21 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 
-public class NullProxyLog  extends LoggingHandler {
-    private static final Logger      LOG = LoggerFactory.getLogger(NullProxyLog.class);
+public class NullProxyLogHandler  extends LoggingHandler {
+    private static final Logger      LOG = LoggerFactory.getLogger(NullProxyLogHandler.class);
 
-    public NullProxyLog(LogLevel level){
+    public NullProxyLogHandler(LogLevel level){
            super(level);
     }
 
 
-    public NullProxyLog(){
+    public NullProxyLogHandler(){
     }
 
     private String _format(ChannelHandlerContext ctx, String eventName) {
         String chStr = ctx.channel().toString();
         return new StringBuilder(chStr.length() + 1 + eventName.length()).append(chStr).append(' ').append(eventName).toString();
     }
-    /*
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-           LOG.trace(_format(ctx, "*REGISTERED"));
-           ctx.fireChannelRegistered();
-    }
-
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-           LOG.trace(_format(ctx, "*UNREGISTERED"));
-           ctx.fireChannelUnregistered();
-    }
-    */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
            LOG.trace(_format(ctx, "*ACTIVE"));
@@ -87,43 +74,4 @@ public class NullProxyLog  extends LoggingHandler {
            LOG.trace(_format(ctx, "*CLOSE"));
            ctx.close(promise);
     }
-    /*
-    @Override
-    public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-           LOG.trace(_format(ctx, "*DEREGISTER"));
-           ctx.deregister(promise);
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-           LOG.trace(_format(ctx, "*READ COMPLETE"));
-           ctx.fireChannelReadComplete();
-    }
-
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-           String msgStr = String.valueOf(msg);
-           LOG.trace(_format(ctx, "*READ")+" msg:"+msgStr);
-           ctx.fireChannelRead(msg);
-    }
-
-    @Override
-    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-           String msgStr = String.valueOf(msg);
-           LOG.trace(_format(ctx, "*WRITE")+" msg:"+msgStr);
-           ctx.write(msg, promise);
-    }
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-           LOG.trace(_format(ctx, "*WRITABILITY CHANGED"));
-           ctx.fireChannelWritabilityChanged();
-    }
-
-    @Override
-    public void flush(ChannelHandlerContext ctx) throws Exception {
-           LOG.trace(_format(ctx, "*FLUSH"));
-           ctx.flush();
-    }
-    */
 }

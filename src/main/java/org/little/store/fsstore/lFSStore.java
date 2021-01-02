@@ -8,7 +8,7 @@ import org.little.store.lRoot;
 import org.little.store.lStore;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util._qSortString;
+import org.little.util.string._stringQSort;
 
 
 
@@ -107,7 +107,7 @@ public class lFSStore  extends lFSElement implements lStore  {
       
            if(ls!=null){
               logger.trace("folder:"+folder_name+" count file:"+ls.length);
-              _qSortString sorter = new _qSortString();
+              _stringQSort sorter = new _stringQSort();
               sorter.sort(ls);
               for(int i = 0;i < ls.length; i++){
                   String short_name  = ls[i];

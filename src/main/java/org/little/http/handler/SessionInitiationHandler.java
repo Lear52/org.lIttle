@@ -1,6 +1,6 @@
 package org.little.http.handler;
 
-import org.little.http.HttpApp;
+import org.little.http.lHttpApp;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -15,7 +15,7 @@ public class SessionInitiationHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
-                lHttpRequest            sc             = HttpApp.create();
+                lHttpRequest            sc             = lHttpApp.create();
 
                 Attribute<lHttpRequest> sessionStarted = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY);
 

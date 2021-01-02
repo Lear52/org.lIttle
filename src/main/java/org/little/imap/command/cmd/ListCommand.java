@@ -13,8 +13,8 @@ import org.little.imap.response.ImapResponse;
 import org.little.store.lFolder;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.stringCase;
-import org.little.util.stringWildCard;
+import org.little.util.string.stringCase;
+import org.little.util.string.stringWildCard;
 
 import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
 import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR

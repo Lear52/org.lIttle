@@ -1,6 +1,6 @@
-package org.little.util;
+package org.little.util.string;
 
-public class CharSequenceComparator {
+public class charsequenceComparator {
 
 	public static boolean equals(CharSequence c1, CharSequence c2) {
 		if(c1 == null && c2 == null)

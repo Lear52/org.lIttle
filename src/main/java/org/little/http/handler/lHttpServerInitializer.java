@@ -12,10 +12,10 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-public class HttpX509ServerInitializer extends ChannelInitializer<SocketChannel> {
-       private static final Logger  looger = LoggerFactory.getLogger(HttpX509ServerInitializer.class);
+public class lHttpServerInitializer extends ChannelInitializer<SocketChannel> {
+       private static final Logger  looger = LoggerFactory.getLogger(lHttpServerInitializer.class);
 
-       public HttpX509ServerInitializer() {}
+       public lHttpServerInitializer() {}
 
        @Override
        public void initChannel(SocketChannel ch) {
@@ -28,7 +28,7 @@ public class HttpX509ServerInitializer extends ChannelInitializer<SocketChannel>
            pipeline.addLast("httpDecoder",new HttpRequestDecoder());
            pipeline.addLast("httpEncoder",new HttpResponseEncoder());
            //pipeline.addLast("compressor",new HttpContentCompressor());
-           pipeline.addLast("httpHandel",new HttpX509ServerHandler());
+           pipeline.addLast("httpHandel",new lHttpServerHandler());
 
            looger.trace("HttpX509Server Initializer pipeline ok");
 

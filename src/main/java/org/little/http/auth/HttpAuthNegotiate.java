@@ -26,7 +26,7 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
-import org.little.proxy.util.commonProxy;
+import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Except;
 import org.little.util.Logger;

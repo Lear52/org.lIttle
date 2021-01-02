@@ -2,7 +2,7 @@ package org.little.smtp;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.iWrapper;
+import org.little.util.wrapper.iWrapper;
 
 public class runWrapper implements iWrapper{
 
