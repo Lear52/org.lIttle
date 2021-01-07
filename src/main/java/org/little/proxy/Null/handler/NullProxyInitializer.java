@@ -23,7 +23,7 @@ public class NullProxyInitializer extends ChannelInitializer<SocketChannel> {
            NullProxyFrontendHandler    front_handel = new NullProxyFrontendHandler();
            ChannelPipeline             pipeline = channel.pipeline();
 
-           if(commonProxy.get().isDumpLog())pipeline.addLast("NullLog",new LoggingHandler(LogLevel.DEBUG));
+           if(commonProxy.get().getCfgServer().isDumpLog())pipeline.addLast("NullLog",new LoggingHandler(LogLevel.DEBUG));
            pipeline.addLast("NullFrontHandler",front_handel);
 
            LOG.trace("initChannel create pipeline");

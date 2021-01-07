@@ -198,8 +198,9 @@ public class lHttpResponse {
        public void getFile(ChannelHandlerContext ctx,lHttpRequest req) {
                    String path0=req.getPath();
 
-                   if(path0.equals(""))path0="/index.html";
-                   if(path0.equals("/"))path0="/index.html";
+                   if(path0.equals(""))  path0="/index.html";
+                   if(path0.equals("/")) path0="/index.html";
+                   if(path0.equals("\\"))path0="/index.html";
 
                    getFile(ctx,req,path0);
 
@@ -223,11 +224,11 @@ public class lHttpResponse {
                       sendTxt(ctx,req,err,HttpResponseStatus.FORBIDDEN,true);
                       return ;
                    }
-                   RandomAccessFile raf;
+                   RandomAccessFile source_file;
                    long fileLength =0;
                    try {
-                       raf = new RandomAccessFile(file, "r");
-                       fileLength = raf.length();
+                       source_file = new RandomAccessFile(file, "r");
+                       fileLength = source_file.length();
                    } 
                    catch (Exception ignore) {
                       String err="file:"+path+" not exists"; 
@@ -289,17 +290,22 @@ public class lHttpResponse {
                    
                    try {
                          if (ctx.pipeline().get(SslHandler.class) == null) {
-                             sendFileFuture    = ctx.write(new DefaultFileRegion(raf.getChannel(), 0, fileLength), ctx.newProgressivePromise());
-                             // Write the end marker.
-                             lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+                           logger.trace("sendFileFuture no SslHandler size:"+fileLength);
+                           DefaultFileRegion  _f=new DefaultFileRegion(source_file.getChannel(), 0, fileLength);
+                           sendFileFuture    = ctx.write        (_f,ctx.newProgressivePromise());
+                           // Write the end marker.
+                           lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
                          } 
                          else {
-                             sendFileFuture    = ctx.writeAndFlush(new HttpChunkedInput(new ChunkedFile(raf, 0, fileLength, 8192)),ctx.newProgressivePromise());
+                             logger.trace("sendFileFuture is SslHandler size:"+fileLength);
+                             HttpChunkedInput _f=new HttpChunkedInput(new ChunkedFile(source_file, 0, fileLength, 8192));
+                             sendFileFuture    = ctx.writeAndFlush(_f,ctx.newProgressivePromise());
                              // HttpChunkedInput will write the end marker (LastHttpContent) for us.
                              lastContentFuture = sendFileFuture;
                          }
                    } 
-                   catch (IOException e) {
+                   //catch (IOException e) {
+                   catch (Exception e) {
                              String err="file:"+path+" not exists"; 
                              logger.error(err);
                              sendTxt(ctx,req,err,HttpResponseStatus.NOT_FOUND,true);
@@ -322,7 +328,7 @@ public class lHttpResponse {
 
                        @Override
                        public void operationComplete(ChannelProgressiveFuture future) {
-                           logger.trace(future.channel() + " Transfer complete.");
+                              logger.trace(future.channel() + " Transfer complete.");
                        }
                    });
 

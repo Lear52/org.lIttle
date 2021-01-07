@@ -26,7 +26,7 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
-import org.little.proxy.util.commonProxy;
+import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Except;
 import org.little.util.Logger;
@@ -111,7 +111,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
         //channel_info   = null;
         //SPNEGO_OID     = getOid();
 
-        if(commonProxy.get().getTypeAuthenticateClients()==3){
+        if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
            LOG.debug("type_authenticateClients:Kerberos");
 
            try{
@@ -121,12 +121,12 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                                   for (int i=0; i<callback.length; i++) {
                                       if(callback[i] instanceof NameCallback) {
                                          NameCallback nameCallback = (NameCallback) callback[i];
-                                         nameCallback.setName(commonProxy.get().getLdapUsername());
+                                         nameCallback.setName(commonProxy.get().getCfgAuth().getLdapUsername());
                                       } 
                                       else 
                                       if(callback[i] instanceof PasswordCallback) {
                                          PasswordCallback passCallback = (PasswordCallback) callback[i];
-                                         passCallback.setPassword(commonProxy.get().getLdapPassword().toCharArray());
+                                         passCallback.setPassword(commonProxy.get().getCfgAuth().getLdapPassword().toCharArray());
                                       } else {
                                          LOG.info("Unsupported Callback i=" + i + "; class=" + callback[i].getClass().getName());
                                       }
@@ -148,7 +148,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
            catch(Exception ex){
                Except ex1=new Except(ex.toString(),ex);
                LOG.error("AuthClientToProxyConnection() type_authenticateClients:kerberos  ex:"+ex1);
-               LOG.info("type_authenticateClients:"+commonProxy.get().getTypeAuthenticateClients());
+               LOG.info("type_authenticateClients:"+commonProxy.get().getCfgAuth().getTypeAuthenticateClients());
            }
         }
 
@@ -171,7 +171,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
            return commonProxy.get().isTransparent();
     }
     static public int getPort(){
-           return commonProxy.get().getPort();
+           return commonProxy.get().getCfgServer().getPort();
     }
     @Override
     protected void serverDisconnected(ProxyToServerConnection serverConnection) {
@@ -278,7 +278,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  LOG.warn("AuthenticationRequired ip:"+channel_info.getSrc()+" server ip:"+host_addr_port+" return:401");
                  //hh.add("Set-Cookie","WebAccessBean_sessionTicket=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/");
                  //hh.add("Set-Cookie","WebAccessBean_sessionTicket_STENDSOK=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/");
-                 writeAuthenticationRequired("",commonProxy.get().getRealm(),"",hh);
+                 writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",hh);
                  authenticated.set(false);
                  return;
               }
@@ -301,12 +301,12 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
 
         if(!request.headers().contains(HttpHeaderNames.AUTHORIZATION)){
             String nonce = calculateNonce();
-            writeAuthenticationRequired("auth",commonProxy.get().getRealm(),nonce,null);
+            writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
             return true;
         }
         if (!authHeader1.startsWith("Digest")) {
             String nonce = calculateNonce();
-            writeAuthenticationRequired("auth",commonProxy.get().getRealm(),nonce,null);
+            writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
             return true;
         }
         HashMap<String, String> headerValues = parseHeader(authHeader1);
@@ -343,8 +343,8 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
            }
           
            if(!commonProxy.get().authenticate(username,pre_serverResponse,clientResponse)){
-               LOG.debug("no authorization! for realm:"+commonProxy.get().getRealm()+" u:"+username);
-               writeAuthenticationRequired(method,commonProxy.get().getRealm(),nonce,null);
+               LOG.debug("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username);
+               writeAuthenticationRequired(method,commonProxy.get().getCfgAuth().getRealm(),nonce,null);
                return true;
            }
            ret=false;
@@ -374,7 +374,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
         }
 
         if (!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) {
-            writeAuthenticationRequired("",commonProxy.get().getRealm(),"",null);
+            writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
             return true;
         }
 
@@ -390,8 +390,8 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
         username=commonProxy.get().getFullUserName(username);
         if(ret==true){
            if (!commonProxy.get().authenticate(username, password)) {
-               LOG.warn("no authorization! for realm:"+commonProxy.get().getRealm()+" u:"+username+" p:"+password);
-               writeAuthenticationRequired("",commonProxy.get().getRealm(),"",null);
+               LOG.warn("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username+" p:"+password);
+               writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
                return true;
            }
            LOG.debug("Got authorization!"+" u:"+username);
@@ -415,7 +415,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
     private boolean authenticationNegotiateRequired(HttpRequest request) {//,String cln_addr
         String  principal="unknown_principal";
         boolean ret=true;
-        String  realm=commonProxy.get().getRealm();//"vip.cbr.ru";/**/
+        String  realm=commonProxy.get().getCfgAuth().getRealm();//"vip.cbr.ru";/**/
 
         if (authenticated.get()) {
             LOG.debug("AuthenticationNegotiateNOTRequired client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" username:"+username+" is authenticated");
@@ -677,20 +677,20 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
               if(authenticated.get()==false && is_auth_disable==false) {
                  //LOG.trace("authenticated.get()==false && is_auth_disable==false");
                  //---------------------------------------------------------------------------------------------------------
-                 if(commonProxy.get().getTypeAuthenticateClients()==0){
+                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==0){
                     ret=false;  
                     //ret=authenticationBasicRequired (request,cln_addr);     
                  }
                  else
-                 if(commonProxy.get().getTypeAuthenticateClients()==1){
+                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==1){
                     ret=authenticationBasicRequired (request);  
                  }
                  else
-                 if(commonProxy.get().getTypeAuthenticateClients()==2){
+                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==2){
                     ret=authenticationDigestRequired(request); 
                  }
                  else
-                 if(commonProxy.get().getTypeAuthenticateClients()==3){
+                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
                     ret=authenticationNegotiateRequired(request); 
                     //LOG.trace("authenticationNegotiateRequired(request) return:"+ret);
                  }
@@ -728,13 +728,13 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
               String             type;
 
 
-              if(commonProxy.get().getTypeAuthenticateClients()==1){
+              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==1){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  header = "Basic realm=\"" + (realm == null ? "Restricted Files" : realm) + "\"";
                  type   = "Basic";
               }
               else
-              if(commonProxy.get().getTypeAuthenticateClients()==2){
+              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==2){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  header = "Digest realm=" + realm + ", ";
                  if (!isBlank(authMethod)) {
@@ -745,7 +745,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  type   = "Digest";
               }
               else
-              if(commonProxy.get().getTypeAuthenticateClients()==3){
+              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  type    = "Kerberos";
                  //header  = "Negotiate,Basic realm=\""+realm+"\"";

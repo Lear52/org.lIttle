@@ -1,4 +1,4 @@
-package org.little.proxy.relay;
+package org.little.proxy.tcpRelay;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ import java.util.Date;
  * @author Sanjiva Weerawarana (sanjiva@watson.ibm.com)
  * @author Scott Nichol (snichol@computer.org)
  */
-public class Relay extends Thread {
+public class TcpRelay extends Thread {
        final static int BUFSIZ = 1000;
        InputStream  in;
        OutputStream out;
@@ -22,7 +22,7 @@ public class Relay extends Thread {
        String enc = "8859_1";
        String tag;
 
-       Relay(InputStream in, OutputStream out, OutputStream os, String enc,String tag) {
+       TcpRelay(InputStream in, OutputStream out, OutputStream os, String enc,String tag) {
            this.in = in;
            this.out = out;
            this.os = os;

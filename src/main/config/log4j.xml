@@ -57,6 +57,10 @@
         <level value="trace"/>
         <appender-ref ref="prj0app"/>
     </logger>
+    <logger name="org.spnego" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="prj0app"/>
+    </logger>
     <logger name="org.json" additivity="false">
         <level value="trace"/>
         <appender-ref ref="prj0app"/>

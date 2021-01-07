@@ -44,11 +44,11 @@ public class runWrapper implements iWrapper{
            commonHTTP.get().init();
            commonHTTP.get().initMBean();
            //---------------------------------------------------------------------------------
-           server   = new lHttpServer(commonHTTP.get().getPort());             
-           LOG.trace("create httpServer port:"+commonHTTP.get().getPort());
+           server   = new lHttpServer(commonHTTP.get().getCfgServer().getPort());             
+           LOG.trace("create httpServer port:"+commonHTTP.get().getCfgServer().getPort());
            server.start();
            
-           LOG.trace("start httpServer port:"+commonHTTP.get().getPort());
+           LOG.trace("start httpServer port:"+commonHTTP.get().getCfgServer().getPort());
            //---------------------------------------------------------------------------------
            new Thread(this).start();
            LOG.trace(" start thread server");

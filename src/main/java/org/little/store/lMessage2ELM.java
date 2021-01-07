@@ -14,34 +14,35 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.little.imap.commonIMAP;
+//import org.little.imap.commonIMAP;
 
  
 
 public class lMessage2ELM{
    
-    public static  void parse(lMessage msg,String filename) {
+    public static  void parse(lMessage msg,String filename,String _domain) {
            try{
                OutputStream out=new FileOutputStream(filename);
-               parse(msg,out);
+               parse(msg,out,_domain);
            }
            catch(Exception e){ 
                e.printStackTrace(System.out);
            }
 
     }
-    public  static String parse(lMessage msg){
+    public  static String parse(lMessage msg,String _domain){
     	ByteArrayOutputStream out=new ByteArrayOutputStream();
-    	parse(msg,out);
+    	parse(msg,out,_domain);
     	
     	return out.toString();
     }
-    public  static void  parse(lMessage msg,OutputStream out){
+    public  static void  parse(lMessage msg,OutputStream out,String _domain){
            MimeMessage eml;
 
            Properties props = System.getProperties();
            Session session = Session.getInstance(props, null);
-           String default_domen=commonIMAP.get().getDefaultDomain();
+           //String default_domen=commonIMAP.get().getDefaultDomain();
+           String default_domen=_domain;
            default_domen="@"+default_domen;
            try{
                eml = new MimeMessage(session);

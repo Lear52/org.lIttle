@@ -101,7 +101,6 @@ public class SSLHandlerProvider0 {
 
             }
 
-
             serverSSLContext = SSLContext.getInstance("TLS");
             //SSLContext.setCipherSuite(serverSSLContext, "ALL", false);
             serverSSLContext.init(keyManagers, trustManagers, null);

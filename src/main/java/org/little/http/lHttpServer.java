@@ -1,6 +1,7 @@
 package org.little.http;
               
 import org.little.http.handler.lHttpServerInitializer;
+import org.little.ssl.SSLHandlerProvider;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -49,7 +50,11 @@ public class lHttpServer implements Runnable {
        }
        @Override
        public void run() {
-             logger.trace("HttpX509Server.run()");
+              logger.trace("HttpX509Server.run()");
+              
+              if(commonHTTP.get().getCfgSSL().isSSL()){
+                 SSLHandlerProvider.initSSLContext(commonHTTP.get().getCfgSSL());
+              }
 
              bossGroup   = new NioEventLoopGroup(1);
              workerGroup = new NioEventLoopGroup();

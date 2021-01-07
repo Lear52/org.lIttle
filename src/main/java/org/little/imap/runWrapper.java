@@ -44,7 +44,7 @@ public class runWrapper implements iWrapper{
            commonIMAP.get().init();
            commonIMAP.get().initMBean();
            //---------------------------------------------------------------------------------
-           server   = new ImapServer(commonIMAP.get().getPort());             
+           server   = new ImapServer(commonIMAP.get().getCfgServer().getPort());             
            LOG.trace("create server");
            server.start();
            

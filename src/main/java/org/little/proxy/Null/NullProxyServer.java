@@ -75,10 +75,10 @@ public class NullProxyServer implements  Runnable{
 
             ChannelFuture ch_ret;
 
-            int localPort=commonProxy.get().getPort();
+            int localPort=commonProxy.get().getCfgServer().getPort();
 
-            if("*".equals(commonProxy.get().getLocalServerBind())) ch_ret = server_boot_strap.bind(localPort);
-            else ch_ret = server_boot_strap.bind(commonProxy.get().getLocalServerBind(),localPort);
+            if("*".equals(commonProxy.get().getCfgServer().getLocalServerBind())) ch_ret = server_boot_strap.bind(localPort);
+            else ch_ret = server_boot_strap.bind(commonProxy.get().getCfgServer().getLocalServerBind(),localPort);
 
             LOG.trace("bind local port");
             // ch_ret - The result of an asynchronous Channel I/O operation. 
@@ -214,7 +214,7 @@ public class NullProxyServer implements  Runnable{
 
            server.init();
 
-           System.out.println("Proxying bind:" + commonProxy.get().getPort() + " to " + commonProxy.get().getHosts().getDefaultHost() + ':' + commonProxy.get().getHosts().getDefaultPort() + " ...");
+           System.out.println("Proxying bind:" + commonProxy.get().getCfgServer().getPort() + " to " + commonProxy.get().getHosts().getDefaultHost() + ':' + commonProxy.get().getHosts().getDefaultPort() + " ...");
 
            return true;
     }

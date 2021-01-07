@@ -1,101 +1,188 @@
 package org.little.ssl;
 
-import io.netty.handler.ssl.SslHandler;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.*;
-import java.io.*;
-import java.security.*;
-import java.security.cert.*;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 
 public class SSLHandlerProvider {
     private static final Logger logger = Logger.getLogger(SSLHandlerProvider.class);
 
-    private static final String KEYSTORE         = "certificates.jks";
-    private static final String KEYSTORE_TYPE    = "JKS";
-    private static final String KEYSTORE_PASSWORD= "123456";
-    private static final String CERT_PASSWORD    = "123456";
-    private static SSLContext serverSSLContext   = null;
 
-    public static SslHandler getSSLHandler(){
-        SSLEngine sslEngine;
-        sslEngine = serverSSLContext.createSSLEngine();
-        sslEngine.setUseClientMode(false);
-        sslEngine.setNeedClientAuth(false);
 
-        return new SslHandler(sslEngine);
-    }
 
-    public static void initSSLContext () {
+    public static SslHandler SslHandlerBuilder(commonSSL ssl_cfg){
 
-        logger.info("Initiating SSLcontext ...");
-        //String algorithm = Security.getProperty(ALGORITHM);
-        //if (algorithm == null) {
-        //    algorithm = ALGORITHM_SUN_X509;
-        //}
-        KeyStore ks = null;
-        InputStream inputStream=null;
-        try {
-            inputStream = new FileInputStream(KEYSTORE);
-            ks = KeyStore.getInstance(KEYSTORE_TYPE);
-            ks.load(inputStream,KEYSTORE_PASSWORD.toCharArray());
-        } catch (IOException e) {
-            logger.error("Cannot load the keystore file",e);
-        } catch (CertificateException e) {
-            logger.error("Cannot get the certificate",e);
-        }  catch (NoSuchAlgorithmException e) {
-            logger.error("Somthing wrong with the SSL algorithm",e);
-        } catch (KeyStoreException e) {
-            logger.error("Cannot initialize keystore",e);
-        } finally {
+           SslContext        sslCtx=null;
+           SslContextBuilder context_builder =null;
+           try {
+              File _certificate=new File(ssl_cfg.getCertificate());
+              File _privatekey=new File(ssl_cfg.getPrivateKey());
+              //File _trastcert=new File("rootCA.pem");
+                
+              context_builder = SslContextBuilder.forServer(_certificate, _privatekey);
+              context_builder.trustManager(InsecureTrustManagerFactory.INSTANCE);
+              context_builder.sslProvider(SslProvider.JDK);
+              sslCtx = context_builder.build();
+              //ssl_cfg.setSSLContext(serverSSLContext);
+
+
+              /*
+                 File   key         = new File(SmtpConfig.getTlsKeyFile());
+                 String keyPassword = SmtpConfig.getTlsKeyPassword();
+                 File trustStore    = new File(SmtpConfig.getTlsTrustStoreFile());
+
+                 SslContext sslCtx = SslContextBuilder.forServer(key, trustStore, keyPassword).build();
+              */
+              return new SslHandler(sslCtx.newEngine(PooledByteBufAllocator.DEFAULT), true);
+
+           } catch(Exception e) {
+                 logger.error("Failed to establish TLS!", e);
+                 return null;
+           }
+
+        }
+
+        public static SslHandler getSSLSelfHandler(commonSSL ssl_cfg){
+            SslContext        sslCtx         =null;
             try {
-                inputStream.close();
-            } catch (IOException e) {
-                logger.error("Cannot close keystore file stream ",e);
+                SelfSignedCertificate ssc = new SelfSignedCertificate();
+                sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+                
+                SSLEngine  engine=sslCtx.newEngine(PooledByteBufAllocator.DEFAULT);
+       
+                return new SslHandler(engine, true);
+            } catch(Exception e) {
+                logger.error("Failed to establish TLS!", e);
+                return null;
             }
         }
+
+
+        public static SslHandler getSSLHandler(commonSSL ssl_cfg){
+           if(ssl_cfg.isSSL()==false)return null;
+           if(ssl_cfg.getSSLContext()==null)return null;
+           
+           logger.info("create SSL handler ...");
+           //javax.net.ssl.SSLEngine
+           SSLEngine sslEngine;
+           sslEngine = ssl_cfg.getSSLContext().createSSLEngine();
+           sslEngine.setUseClientMode(ssl_cfg.getUseClientMode());
+           sslEngine.setNeedClientAuth(ssl_cfg.getNeedClientAuth());
+           //sslEngine.
+           return new SslHandler(sslEngine);
+    }
+/*
+    public static void initSSLSelfContext(commonSSL ssl_cfg){
+        SslContext        serverSSLContext;
         try {
+            SelfSignedCertificate ssc = new SelfSignedCertificate();
+            serverSSLContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+            //serverSSLContext.
+            //ssl_cfg.setSSLContext(serverSSLContext);
 
-            // Set up key manager factory to use our key store
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks,CERT_PASSWORD.toCharArray());
-            KeyManager[] keyManagers = kmf.getKeyManagers();
-
-
-
-            // Setting trust store null since we don't need a CA certificate or Mutual Authentication
-            TrustManager[] trustManagers = null;
-            {
-                trustManagers = new TrustManager[] { new X509TrustManager() {
-                    // TrustManager that trusts all servers
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] arg0,String arg1) throws CertificateException {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] arg0,String arg1) throws CertificateException {
-                    }
-
-                    @Override
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-                } };
-
-            }
-
-
-            serverSSLContext = SSLContext.getInstance("TLS");
-            //SSLContext.setCipherSuite(serverSSLContext, "ALL", false);
-            serverSSLContext.init(keyManagers, trustManagers, null);
-
-
-        } catch (Exception e) {
-            logger.error("Failed to initialize the server-side SSLContext",e);
+        } catch(Exception e) {
+            logger.error("Failed init self SSLContext", e);
         }
-        logger.info("Initiating SSLcontext OK");
+    }
+*/    
+    public static void initSSLContext (commonSSL ssl_cfg) {
+           // javax.net.ssl.SSLContext
+    	   SSLContext serverSSLContext   = null;
+    	   if(ssl_cfg.isSSL()==false)return;
+           logger.info("Initiating SSLcontext ...");
+           //String algorithm = Security.getProperty(ALGORITHM);
+           //if (algorithm == null) {
+           //    algorithm = ALGORITHM_SUN_X509;
+           //}
+           KeyStore    ks = null;
+           // load KeyStore           
+    	   InputStream inputStream=null;    
+           try {
+               inputStream = new FileInputStream(ssl_cfg.getKeyStore());//KEYSTORE = "certificates.jks"
+               ks = KeyStore.getInstance(ssl_cfg.getKeyStoreType());//KEYSTORE_TYPE = "JKS"
+               String psw=ssl_cfg.getKeyStorePassword();
+               ks.load(inputStream,psw.toCharArray());//KEYSTORE_PASSWORD
+               
+           } catch (IOException e) {
+               logger.error("Cannot load the keystore file:"+ssl_cfg.getKeyStore(),e);
+           } catch (CertificateException e) {
+               logger.error("Cannot get the certificate",e);
+           }  catch (NoSuchAlgorithmException e) {
+               logger.error("Somthing wrong with the SSL algorithm",e);
+           } catch (KeyStoreException e) {
+               logger.error("Cannot initialize keystore file:"+ssl_cfg.getKeyStore(),e);
+           } finally {
+               try {
+                   if(inputStream!=null)inputStream.close();
+               } catch (IOException e) {
+                   logger.error("Cannot close keystore file:"+ssl_cfg.getKeyStore(),e);
+               }
+           }
 
+           try {
+               // Set up key manager factory to use our key store
+               KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+               String psw=ssl_cfg.getCertPassword();
+               kmf.init(ks,psw.toCharArray());//CERT_PASSWORD
+               
+               KeyManager[] keyManagers = kmf.getKeyManagers();
+               
+               // Setting trust store null since we don't need a CA certificate or Mutual Authentication
+               TrustManager[] trustManagers = null;
+               {
+                   trustManagers = new TrustManager[] { new X509TrustManager() {
+                       // TrustManager that trusts all servers
+                       @Override
+                       public void checkClientTrusted(X509Certificate[] arg0,String arg1) throws CertificateException {
+                       }
+          
+                       @Override
+                       public void checkServerTrusted(X509Certificate[] arg0,String arg1) throws CertificateException {
+                       }
+          
+                       @Override
+                       public X509Certificate[] getAcceptedIssuers() {
+                           return null;
+                       }
+                   } };
+          
+               }
+          
+          
+               serverSSLContext = SSLContext.getInstance(ssl_cfg.getTypeSSLContext());//"TLS"
+               //SSLContext.setCipherSuite(serverSSLContext, "ALL", false);
+               serverSSLContext.init(keyManagers, trustManagers, null);
+               ssl_cfg.setSSLContext(serverSSLContext);
+          
+           } catch (Exception e) {
+               logger.error("Failed to initialize the server-side SSLContext",e);
+           }
+           logger.info("Initiating SSLcontext OK");
 
     }
 

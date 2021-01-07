@@ -104,15 +104,20 @@ public class lMessage{
                   for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i));}
                   return buf.toString();
     }
-    public String getTOsInet(){
+    public String getTOsInet(String _domain){
         StringBuilder buf=new StringBuilder();
-        for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(commonIMAP.get().getDefaultDomain());}
+        //for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(commonIMAP.get().getDefaultDomain());}
+        for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(_domain);}
         return buf.toString();
-}
+    }
+    public String   getFromInet     (String _domain){
+    	//return msg_from+"@"+commonIMAP.get().getDefaultDomain();
+    	return msg_from+"@"+_domain;
+    }
+    
     //public int      getMessageNumber(){return msg_num;         }
     public int      getNum          (){return msg_num;         }
     public int      getUID          (){return msg_uid;         }
-    public String   getFromInet     (){return msg_from+"@"+commonIMAP.get().getDefaultDomain();}
     public String   getFrom         (){return msg_from;        }
     public String   getId           (){return msg_id;          }
     public String   getSubject      (){return msg_subject;     }

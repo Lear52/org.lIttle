@@ -63,8 +63,8 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               stat_channel.isFront(true);               
             
               //-------------------------------------------------------------------------------------------------------------------
-              if("*".equals(commonProxy.get().getLocalClientBind()))ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
-              else                                                  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getLocalClientBind(), 0));
+              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind()))ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
+              else                                                  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0));
               //-------------------------------------------------------------------------------------------------------------------
               
               out_channel = ch_state.channel();

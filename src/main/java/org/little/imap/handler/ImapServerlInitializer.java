@@ -24,12 +24,14 @@ public  class ImapServerlInitializer extends ChannelInitializer<SocketChannel> {
 
                      ChannelPipeline pipeline = ch.pipeline();
 
-                     if(commonIMAP.get().isSSL()){
+                     if(commonIMAP.get().getCfgSSL().isSSL()){
                          SslHandler ssl_handler=SSLHandlerProvider0.getSSLHandler();
-                         pipeline.addLast(ssl_handler);
+                         pipeline.addLast("SSLHandel"     ,ssl_handler);
                      }
-                     if(commonIMAP.get().isDumpLog())pipeline.addLast("IMAPLog",new LoggingHandler(LogLevel.DEBUG));
-                     pipeline.addLast("IMAPSession",new SessionInitiationHandler());
+                     if(commonIMAP.get().getCfgServer().isDumpLog()){
+                        pipeline.addLast("IMAPLog"        ,new LoggingHandler(LogLevel.DEBUG));
+                     }
+                     pipeline.addLast("IMAPSession"       ,new SessionInitiationHandler());
                      pipeline.addLast("IMAPCommandDecoder",new ImapCommandDecoder());
                      pipeline.addLast("IMAPCommandHandler",new ImapCommandHandler());
 

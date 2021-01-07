@@ -44,7 +44,7 @@ public class ImapServer  implements Runnable {
 
        @Override
        public void run(){
-              if(commonIMAP.get().isSSL()){
+              if(commonIMAP.get().getCfgSSL().isSSL()){
                  SSLHandlerProvider0.initSSLContext();
               }
               bossGroup   = new NioEventLoopGroup(1);

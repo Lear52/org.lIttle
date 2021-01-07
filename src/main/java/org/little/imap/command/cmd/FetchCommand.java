@@ -370,7 +370,7 @@ public class FetchCommand  extends ImapCommand {
        }
 */
        private String parseMsg(lMessage msg,FetchRequest fetch){
-               String body=lMessage2ELM.parse(msg);
+               String body=lMessage2ELM.parse(msg,commonIMAP.get().getCfgAuth().getDefaultDomain());
                StringBuilder buf=new StringBuilder();
                          
                     if(fetch.uid) {
@@ -468,8 +468,8 @@ public class FetchCommand  extends ImapCommand {
                          
                         StringBuilder buf_header=new StringBuilder(); 
                         buf_header.append("Date: ").append(ImapDate.toDateEnvelope(msg.getCreateDate())).append("\r\n");
-                        buf_header.append("From: ").append(msg.getFromInet()).append("\r\n");
-                        buf_header.append("To: ").append(msg.getTOsInet()).append("\r\n");
+                        buf_header.append("From: ").append(msg.getFromInet(commonIMAP.get().getCfgAuth().getDefaultDomain())).append("\r\n");
+                        buf_header.append("To: ").append(msg.getTOsInet(commonIMAP.get().getCfgAuth().getDefaultDomain())).append("\r\n");
                         buf_header.append("Subject: ").append(msg.getSubject()).append("\r\n");
                         buf_header.append("Message-ID: ").append(msg.getId()).append("\r\n");
                         
@@ -485,8 +485,8 @@ public class FetchCommand  extends ImapCommand {
                          
                         StringBuilder buf_header=new StringBuilder(); 
                         buf_header.append("Date: ").append(ImapDate.toDateEnvelope(msg.getCreateDate())).append("\r\n");
-                        buf_header.append("From: ").append(msg.getFromInet()).append("\r\n");
-                        buf_header.append("To: ").append(msg.getTOsInet()).append("\r\n");
+                        buf_header.append("From: ").append(msg.getFromInet(commonIMAP.get().getCfgAuth().getDefaultDomain())).append("\r\n");
+                        buf_header.append("To: ").append(msg.getTOsInet(commonIMAP.get().getCfgAuth().getDefaultDomain())).append("\r\n");
                         buf_header.append("Subject: ").append(msg.getSubject()).append("\r\n");
                         buf_header.append("Message-ID: ").append(msg.getId()).append("\r\n");
                         
@@ -597,8 +597,8 @@ public class FetchCommand  extends ImapCommand {
            return MimeUtility.unfold(str).replace("\\", "\\\\").replace("\"", "\\\"");
        }
        private static String canonicalAddr(String addr){
-                       if(addr.indexOf("@")==-1)addr+=("@"+commonIMAP.get().getDefaultDomain());
-                       if(addr.indexOf("@")==(addr.length()-1))addr+=(commonIMAP.get().getDefaultDomain());
+                       if(addr.indexOf("@")==-1)addr+=("@"+commonIMAP.get().getCfgAuth().getDefaultDomain());
+                       if(addr.indexOf("@")==(addr.length()-1))addr+=(commonIMAP.get().getCfgAuth().getDefaultDomain());
                return addr;
        }
        private static StringBuilder printAddr(StringBuilder buf,String addr){

@@ -24,7 +24,7 @@ public class HttpAuth  {
        
        
        public static HttpAuth getInstatce() {
-              int _type_auth=commonHTTP.get().getTypeAuthenticateClients();
+              int _type_auth=commonHTTP.get().getCfgAuth().getTypeAuthenticateClients();
                  HttpAuth ret;
                  switch(_type_auth) {
                  case 1: ret=new HttpAuthBasic    (_type_auth);break;
@@ -32,7 +32,7 @@ public class HttpAuth  {
                  case 3: ret=new HttpAuthNegotiate(_type_auth);break;
                  default:ret=new HttpAuthNo       (0);         break;
                  }
-                 ret.setRealm(commonHTTP.get().getRealm());
+                 ret.setRealm(commonHTTP.get().getCfgAuth().getRealm());
                  return ret;
        }
        

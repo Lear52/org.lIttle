@@ -68,20 +68,20 @@ public class runWrapper implements iWrapper{
 
               InetSocketAddress server_address;
               InetSocketAddress client_address;
-              if("*".equals(commonProxy.get().getLocalServerBind())){
+              if("*".equals(commonProxy.get().getCfgServer().getLocalServerBind())){
                   server_address=new InetSocketAddress("0.0.0.0", port);
                   LOG.info("HttpProxyServer bind *");
               }
               else{
-                  server_address=new InetSocketAddress(commonProxy.get().getLocalServerBind(), port);
+                  server_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalServerBind(), port);
                   LOG.info("HttpProxyServer bind "+server_address);
               }
-              if("*".equals(commonProxy.get().getLocalClientBind())){
+              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind())){
                   client_address=null;
                   LOG.info("HttpProxyClient bind *");
               }
               else{
-                  client_address=new InetSocketAddress(commonProxy.get().getLocalClientBind(), 0);
+                  client_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0);
                   LOG.info("HttpProxyClient bind "+client_address);
               }
               bootstrap = DefaultHttpProxyServer.bootstrap()
