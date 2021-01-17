@@ -16,7 +16,6 @@ import org.little.util.LoggerFactory;
 import org.little.util.string.stringCase;
 import org.little.util.string.stringWildCard;
 
-import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
 import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
 
 public class LsubCommand extends ListCommand {

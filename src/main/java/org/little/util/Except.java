@@ -36,7 +36,7 @@ public class Except extends Exception{
        public        Except(Exception e){set(e);}
        
        public Except(Throwable cause){set("",cause);}
-	   public void   set(String m){msg=m;extent_msg=null;getStack();}
+       public void   set(String m){msg=m;extent_msg=null;getStack();}
        public void   set(String m,Throwable e){
                      msg=m;
                      extent_msg=e.getMessage();
@@ -66,7 +66,7 @@ public class Except extends Exception{
        public String getMessage(){ return toString();}
        
        /**
-        * ������������� � ������
+        * 
        */
        public String toString(){
                String s = getClass().getName();
@@ -74,7 +74,7 @@ public class Except extends Exception{
                else                   return msg+" ("+s+") \n"+stack_msg;
        }
        /**
-        * �������� ���� ���� 
+        * 
        */
        public String getStack(){
        

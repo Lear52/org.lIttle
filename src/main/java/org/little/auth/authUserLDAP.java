@@ -1,34 +1,31 @@
 package org.little.auth;
 
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
 
 
 public class authUserLDAP implements authUser {
 
-       //private static final Logger LOG = LoggerFactory.getLogger(authUser.class);
+       private static final Logger logger = LoggerFactory.getLogger(authUserLDAP.class);
     
        private String   realm;
        private String   ldap_url;
        private String   domain;
     
-       public authUserLDAP(){
-              realm="vip.cbr.ru";
-              ldap_url="ldap://rdc22-vip01.vip.cbr.ru:3268";
-              domain="vip.cbr.ru";
-       }
-       public authUserLDAP(String r){
-              ldap_url="ldap://rdc22-vip01.vip.cbr.ru:3268";
-              loadUsers4Realm(r);
+       public authUserLDAP(commonAUTH cfg_auth){
+              realm=cfg_auth.getRealm();
+              ldap_url=cfg_auth.getLdapUrl();
+              domain=cfg_auth.getDefaultDomain();
+              logger.info("create authUserLDAP");
        }
        public String    getRealm(){return realm;}
        public void      setRealm(String r){realm=r;}
        public String    getDomain(){return domain;}
        public void      setDomain(String r){domain=r;}
 
-       private void      loadUsers4Realm(String _realm){
-              setRealm(_realm);
-       }
+       //private void      loadUsers4Realm(String _realm){
+       //       setRealm(_realm);
+       //}
     
        @Override
        public boolean   checkUser(String user,String passwd){

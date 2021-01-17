@@ -9,11 +9,12 @@ import org.little.http.handler.lHttpRequest;
 public class lHttpApp{
 
        public static lHttpRequest create(){
-           if("appkeystore".equals(commonHTTP.get().getAppName()))return  new HttpX509Request();
+
+           if("appkeystore".equals(commonHTTP.get().getAppName())) return  new HttpX509Request();
            else
            if("appcmddionis".equals(commonHTTP.get().getAppName()))return  new HttpCmdRequest();
            else 
-           if("appfile".equals(commonHTTP.get().getAppName()))return  new HttpFileRequest();
+           if("appfile".equals(commonHTTP.get().getAppName()))     return  new HttpFileRequest();
            else 
            return  new lHttpRequest();
        }

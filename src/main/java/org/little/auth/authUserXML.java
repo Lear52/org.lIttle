@@ -13,15 +13,27 @@ import org.w3c.dom.NodeList ;
 public class authUserXML implements authUser {
        private static final Logger  logger = LoggerFactory.getLogger(authUserXML.class);
 
-       private static Document      doc       ;
-       private static NodeList      ulist     ;
+       private Document      doc       ;
+       private NodeList      ulist     ;
 
-       private static String        cfg_filename="user_h.xml";
+       private String        cfg_filename;
+       private String        domain;
 
-       public authUserXML(){
+       public authUserXML(commonAUTH cfg_auth){
+              this.cfg_filename=cfg_auth.getListUserFilename();
+              this.domain=cfg_auth.getDefaultDomain();
               load();
+              logger.info("create authUserXML:"+cfg_filename);
        }
-       private static synchronized void load() {
+       /*
+       public authUserXML(){
+              this.cfg_filename="user_h.xml";
+              this.domain="local";
+              load();
+              logger.info("create authUserXML");
+       }
+       */
+       private synchronized void load() {
                if(doc==null){
                   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                   try {
@@ -52,7 +64,7 @@ public class authUserXML implements authUser {
        }
 
         public String  getFullUserName(String username){
-               return getFullUserName(username,"vip.cbr.ru");
+               return getFullUserName(username,domain);
         }
         public String  getFullUserName(String username,String domain){
                return username+"@"+domain;

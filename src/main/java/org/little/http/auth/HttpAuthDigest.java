@@ -1,13 +1,14 @@
 package org.little.http.auth;
 
-import org.little.util.Logger;
-import org.little.util.LoggerFactory;
-import org.little.util.string.stringTransform;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+
+import org.little.proxy.util.statChannel;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
+import org.little.util.string.stringTransform;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -17,9 +18,11 @@ public class HttpAuthDigest extends HttpAuth {
    
        private static final String DIGEST_REALM = "FESBLoginService";
 
-       @SuppressWarnings("unused")
-       private   HttpAuthDigest() {}
-       protected HttpAuthDigest(int _type_auth) {setTypeAuth(_type_auth);}
+      private   HttpAuthDigest() {super(HttpAuth.DIGEST,null);}
+      
+       protected HttpAuthDigest(int _type_auth,statChannel _stat) {
+    	   super(_type_auth,_stat);
+       }
        
        @Override
        public String getFieldName() {return HttpHeaderNames.AUTHORIZATION.toString();} 
@@ -85,7 +88,7 @@ public class HttpAuthDigest extends HttpAuth {
 
                       }
 
-                      ha1 =list.getDigestUser(username,getRealm());
+                      ha1 =user_list.getDigestUser(username,getRealm());
                       ha2 = stringTransform.getMD5Hash(ha1 + pre_serverResponse); 
 
                       boolean is_auth=ha2.equals(clientResponse);

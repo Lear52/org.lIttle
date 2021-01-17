@@ -63,7 +63,7 @@ public class LoginCommand extends ImapCommand {
 
               //--------------------------------------------------------------------------------------------------------
 
-              boolean checkUser=commonIMAP.get().getAuth().checkUser(userid, password);
+              boolean checkUser=commonIMAP.get().getCfgAuth().getAuthUser().checkUser(userid, password);
 
               logger.trace("IMAP Login:"+userid+" p:"+password+" check:"+checkUser);
 

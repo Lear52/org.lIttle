@@ -1,4 +1,4 @@
-package org.little.proxy.Null.handler;
+package org.little.proxy.NullR.handler;
 
 import java.net.InetSocketAddress;
 
@@ -22,6 +22,7 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 
        private Channel      out_channel;
        private statChannel  stat_channel;
+       
       
        public NullProxyFrontendHandler() {
            stat_channel=null;
@@ -31,9 +32,12 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
        public Channel     getChannel() { return out_channel; }
 
        public statChannel getStatChannel() { return stat_channel; }
-      
+
+     
        @Override
        public void channelActive(ChannelHandlerContext ctx) {
+              ChannelFuture           ch_state;
+              
               String remoteHost;
               int    remotePort;
 
@@ -44,7 +48,6 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               Channel                 in_channel;
               NullProxyBackendHandler back_handler;
               Bootstrap               boot_strap;
-              ChannelFuture           ch_state;
             
               in_channel      = ctx.channel();
 
@@ -63,13 +66,18 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               stat_channel.isFront(true);               
             
               //-------------------------------------------------------------------------------------------------------------------
-              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind()))ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
-              else                                                  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0));
+              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind())) {
+            	  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
+              }
+              else {
+            	  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0));
+              }
               //-------------------------------------------------------------------------------------------------------------------
               
               out_channel = ch_state.channel();
             
               back_handler.setOutChannel(out_channel);
+               
               //-------------------------------------------------------------------------------------------------------------------
               ch_state.addListener(new ChannelFutureListener() {
                                 @Override

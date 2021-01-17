@@ -1,7 +1,8 @@
 package org.little.imap;
 
 import org.little.imap.handler.ImapServerlInitializer;
-import org.little.ssl.SSLHandlerProvider0;
+//import org.little.ssl.SSLHandlerProvider0;
+import org.little.ssl.SSLHandlerProvider;
 import org.little.util.Logger;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -44,9 +45,12 @@ public class ImapServer  implements Runnable {
 
        @Override
        public void run(){
-              if(commonIMAP.get().getCfgSSL().isSSL()){
-                 SSLHandlerProvider0.initSSLContext();
-              }
+              //if(commonIMAP.get().getCfgSSL().isSSL()){
+              //   SSLHandlerProvider0.initSSLContext();
+              //}
+
+              SSLHandlerProvider.initSSLContext(commonIMAP.get().getCfgSSL());
+
               bossGroup   = new NioEventLoopGroup(1);
               workerGroup = new NioEventLoopGroup();
               try {

@@ -13,7 +13,7 @@ import org.little.imap.commonIMAP;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
-import org.little.imap.command.cmd.fetch.FetchElement;
+//import org.little.imap.command.cmd.fetch.FetchElement;
 import org.little.imap.command.cmd.fetch.FetchRequest;
 import org.little.imap.command.cmd.fetch.IdRange;
 import org.little.imap.command.cmd.fetch.ImapDate;

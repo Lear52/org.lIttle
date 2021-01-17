@@ -2,6 +2,7 @@ package org.little.http.auth;
 
 import java.nio.charset.Charset;
 
+import org.little.proxy.util.statChannel;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util._Base64;
@@ -13,9 +14,11 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HttpAuthBasic extends HttpAuth {
        private static final Logger  logger = LoggerFactory.getLogger(HttpAuthBasic.class);
       
-       @SuppressWarnings("unused")
-       private   HttpAuthBasic() {}
-       protected HttpAuthBasic(int _type_auth) {setTypeAuth(_type_auth);}
+       private   HttpAuthBasic() {super(HttpAuth.BASIC,null);}
+       
+       protected HttpAuthBasic(int _type_auth,statChannel _stat) {
+    	   super(_type_auth,_stat);
+       }
         
        @Override
        public String getFieldName() {return HttpHeaderNames.AUTHORIZATION.toString();} 
@@ -55,7 +58,7 @@ public class HttpAuthBasic extends HttpAuth {
               }
               else {
                    boolean is_user;
-                   is_user=list.checkUser(username, password);
+                   is_user=user_list.checkUser(username, password);
                    if(is_user==false) {
                        response.setStatus(HttpResponseStatus.UNAUTHORIZED);
                        response.setUser(null);

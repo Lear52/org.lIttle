@@ -44,7 +44,7 @@ public class runWrapper implements iWrapper{
            commonHTTP.get().init();
            commonHTTP.get().initMBean();
            //---------------------------------------------------------------------------------
-           server   = new lHttpServer(commonHTTP.get().getCfgServer().getPort());             
+           server   = new lHttpServer();             
            LOG.trace("create httpServer port:"+commonHTTP.get().getCfgServer().getPort());
            server.start();
            

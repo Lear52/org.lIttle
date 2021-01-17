@@ -16,7 +16,7 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
-import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
+
 
 /**
  * Handles processeing for the SELECT imap command.

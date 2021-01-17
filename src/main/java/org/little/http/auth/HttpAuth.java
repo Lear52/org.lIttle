@@ -1,10 +1,15 @@
 package org.little.http.auth;
 
+import java.util.List;
+//import java.util.Map.Entry;
+
 import org.little.auth.authUser;
 import org.little.http.commonHTTP;
+import org.little.proxy.util.statChannel;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
@@ -12,30 +17,27 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HttpAuth  {
        private static final Logger  logger = LoggerFactory.getLogger(HttpAuth.class);
 
-       protected authUser         list;
-       protected HttpAuthResponse response;
-       private   int              type_auth;
-       private   String           realm;
+       public  static final  int NOAUTH   =0;
+       public  static final  int BASIC    =1;
+       public  static final  int DIGEST   =2;
+       public  static final  int KERBEROS =3;
+       public  static final  int SPNEGO   =3;
 
-       public HttpAuth() {
-              list=commonHTTP.get().getAuth();
+       protected authUser         user_list   ;
+       protected HttpAuthResponse response    ;
+       private   int              type_auth   ;
+       private   String           realm       ;
+       protected statChannel      channel_info;
+
+       public HttpAuth(int _type_auth,statChannel _stat) {
+              user_list=commonHTTP.get().getCfgAuth().getAuthUser();
               response=null;
+              channel_info=_stat;
+              setTypeAuth(_type_auth);
        }
        
-       
-       public static HttpAuth getInstatce() {
-              int _type_auth=commonHTTP.get().getCfgAuth().getTypeAuthenticateClients();
-                 HttpAuth ret;
-                 switch(_type_auth) {
-                 case 1: ret=new HttpAuthBasic    (_type_auth);break;
-                 case 2: ret=new HttpAuthDigest   (_type_auth);break;
-                 case 3: ret=new HttpAuthNegotiate(_type_auth);break;
-                 default:ret=new HttpAuthNo       (0);         break;
-                 }
-                 ret.setRealm(commonHTTP.get().getCfgAuth().getRealm());
-                 return ret;
-       }
-       
+       public void             setStatChannel(statChannel _stat) {channel_info=_stat;} 
+
        public int              getTypeAuth()             {return type_auth;}
        public void             setTypeAuth(int type_auth){this.type_auth = type_auth;}
        public String           getRealm()                {return realm;}
@@ -56,20 +58,61 @@ public class HttpAuth  {
                + "the credentials required.</p>\n "+getRealm()+" :"  +response_status+ "</body></html>\n";
        }
 
+       public String getTypeAuthentication(){
+              switch(type_auth) {
+              case HttpAuth.BASIC:  return "BASIC";
+              case HttpAuth.DIGEST: return "DIGEST";
+              case HttpAuth.SPNEGO: return "SPNEGO";
+              default:              return "NO";
+              }
+       } 
        
-       public String getFieldName() {return null;} 
+       public String getFieldName() {
+              return null;
+       } 
        
        public HttpAuthResponse authParse(String str_auth,String request_method){
               response=new HttpAuthResponse();
-              logger.trace("auth ret:"+response.getStatus());
+              //logger.trace("auth ret:"+response.getStatus());
               return response;
        }
        
        public HttpAuthResponse authParse(HttpRequest  request){
               String str_auth=null;
               String request_method=request.method().name();
-              if(getFieldName()==null)str_auth=null;
-              else {                  str_auth = request.headers().get(getFieldName());}
+
+               //List<Entry<String, String>> val = request.headers().entries();
+               //if(val==null)logger.trace("headers size is null");
+               //else {
+               //    logger.trace("headers size:"+val.size());
+            //	   for(int i=0;i<val.size();i++){ logger.trace("headers("+i+"):"+val.get(i).getKey()+"="+val.get(i).getValue());}
+             //  }
+              
+              
+              if(getFieldName()==null){
+                 str_auth=null;
+                 logger.trace("unknown typ eautentification auth field is "+getFieldName());
+              }
+              else {                  
+
+                 if(!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) { //HttpHeaderNames.AUTHORIZATION
+                    logger.trace("AuthenticationNegotiateRequired authorization field is null");
+                    str_auth=null;
+                 }
+                 else{
+                    List<String> values        = request.headers().getAll(HttpHeaderNames.AUTHORIZATION);
+                    if(values==null)logger.trace("field size is null");
+                    else{
+                      logger.trace("field size:"+values.size());
+                      //for(int i=0;i<values.size();i++){ logger.trace("field("+i+"):"+values.get(i));}
+                      str_auth = values.iterator().next();
+                    }
+                 }
+                 
+                 //logger.trace("auth field:"+getFieldName());
+                 logger.trace("auth data:"+str_auth);
+              }
+
               return authParse(str_auth,request_method);
        }
 

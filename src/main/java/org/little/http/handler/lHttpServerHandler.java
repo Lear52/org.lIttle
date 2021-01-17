@@ -1,8 +1,13 @@
 package org.little.http.handler;
 
+//import java.util.List;
+//import java.util.Map.Entry;
+
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.util.string.stringCase;
+import org.little.util.string.stringWildCard;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -10,58 +15,62 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 
-
 public class lHttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
        private static final Logger  logger = LoggerFactory.getLogger(lHttpServerHandler.class);
 
-       //private lHttpRequest      req;
-      
        @Override
        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
               lHttpRequest req = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY).get();
-              req.clearDecoder();
+              req.clearContent();/**/ // ?????????
        }
       
-       //public HttpX509ServerHandler(lHttpRequest _req){
-       //      req =_req; 
-       //}
 
        public lHttpServerHandler(){
-              //req =new HttpX509Request(); 
-              logger.info("create HttpX509ServerHandler");
+              logger.info("create new lHttpServerHandler");
        }
 
        @Override
        public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+
               lHttpRequest req = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY).get();
-      
+
+              logger.trace("object:"+ msg.getClass().getName());
+
               if (msg instanceof HttpRequest) {
-                  //HttpRequest      request  = null;
-                  //HttpAuthResponse ret_auth = null;
-                  //request = (HttpRequest) msg;
-                  req.runRequest(ctx,(HttpRequest) msg);
+            	  HttpRequest request=(HttpRequest) msg; 
+                  req.processHttpRequest(ctx,request);
                   logger.trace("runRequest(ctx,request)");
               }
-              if (req.isDecoder()) {
-                 if (msg instanceof HttpContent) {
-                      HttpContent chunk = (HttpContent) msg;
-                      int ret=req.decodeChunk(ctx,chunk);
-                      logger.trace("decodeChunk(chunk) ret:"+ret);
-                 }
+              
+              if (msg instanceof HttpContent) {
+                  HttpContent chunk = (HttpContent) msg;
+                  int ret=req.addContent(ctx,chunk);
+                  logger.trace("addContent(chunk) ret:"+ret);
               } 
+      
+              /*
               else {
                  req.responseOk(ctx);
                  logger.trace("return empty OK");
               }
+              */
        }
     
        @Override
        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-              lHttpRequest req = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY).get();
+
+              logger.error("class:"+cause.getClass()+" cause:"+ cause.getMessage());
+              if(stringWildCard.wildcardMatch(cause.getMessage(), "*certificate_unknown*", stringCase.INSENSITIVE))return ;
+
               Except ex=new Except(cause);
-              logger.error("err:"+ ex);
-              req.clearDecoder();
+              logger.error(" lHttpServerHandler exceptionCaught ex:"+ ex);
+
+              lHttpRequest req = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY).get();
+
+              req.clearContent();/**/ // ?????????
+
               ctx.channel().close();
+              
        }
 
 }

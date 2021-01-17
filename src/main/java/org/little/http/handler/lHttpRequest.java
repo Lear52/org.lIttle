@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 
 import org.little.http.auth.HttpAuth;
 import org.little.http.auth.HttpAuthResponse;
+import org.little.http.auth.commonHttpAuth;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -19,7 +20,7 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpObject;
+//import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
@@ -54,7 +55,7 @@ public class lHttpRequest{
 
        protected lHttpResponse          response;
 
-       protected HttpAuth               auth;
+       protected HttpAuth               http_auth;
        
        protected String                 path;
        protected String                 app;
@@ -66,7 +67,7 @@ public class lHttpRequest{
               clear();
               request       =null;
               cookies       =null;
-              auth          =HttpAuth.getInstatce();
+              http_auth      =commonHttpAuth.getInstatce(null);
               response      =new lHttpResponse();
 
               path          =null;
@@ -91,18 +92,110 @@ public class lHttpRequest{
        public HashMap<String, String> getQuery() {return app_arg;}
        public ArrayList<lHttpBuf>     getBinBuffer() {return bin_buffer;}
        public lHttpResponse           getResponse() {return response;}
-           public void                    setResponse(lHttpResponse response) {this.response = response;}
-           public String                  getUser() {return auth.getResponse().getUser();}
+       public void                    setResponse(lHttpResponse response) {this.response = response;}
+       public String                  getUser() {return http_auth.getResponse().getUser();}
+
+       public void processHttpRequest(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
+           HttpAuthResponse ret_auth = null;
+
+           setHttpReq(request);
+           //--------------------------------------------------------------
+           // 
+           //--------------------------------------------------------------
+           ret_auth = Auth();
+          
+           logger.trace("channelRead0 1 lHttpRequest"+this);
+          
+           if(ret_auth==null) {
+              response.sendAuthRequired(ctx,request,ret_auth);
+              return;
+           }
+           if(ret_auth.isAuth()==false) {
+              response.sendAuthRequired(ctx,request,ret_auth);
+              return;
+           }
+           //--------------------------------------------------------------
+           //
+           //--------------------------------------------------------------
+           //--------------------------------------------------------------------------------------
+           if(HttpMethod.GET.equals(request.method())) {
+              boolean ret=HttpGet(ctx);
+              if(ret==false)response.sendOk(ctx,this," ");
+              return;                          
+           }
+           else
+           if(HttpMethod.POST.equals(request.method()) || HttpMethod.PUT.equals(request.method())) {
+              if(createPostRequestDecoder()==false){
+                 String txt= "createPostRequestDecoder==false";
+                 logger.error(txt);
+                 response.sendError(ctx,this,txt);
+                 return;
+              }
+           }
+           else{
+              response.sendOk(ctx,this," ");
+           }
+
+       }
+       //public boolean isWaitContent(){return decoder!=null;}
+       public int addContent(ChannelHandlerContext ctx,HttpContent chunk){
+           if (decoder == null) return -1;
+           try {
+                 decoder.offer(chunk);
+           } 
+           catch(ErrorDataDecoderException e1) {
+                 e1.printStackTrace();
+                 return -1;
+           }
+           readDataByChunk();
+           if(chunk instanceof LastHttpContent) {
+              logger.trace("LastHttpContent");
+              //
+              boolean ret=false;
+              if(HttpMethod.PUT.equals(request.method()))ret=HttpPut(ctx);
+              if(HttpMethod.POST.equals(request.method()))ret=HttpPost(ctx);
+              if(ret==false) {
+                      response.sendOk(ctx,this," "); 
+              }
+              //
+              clearContent();
+              //  response.saveMsg(ctx,this);
+              return 0;
+           }
+           return 1;
+       }
+       public void clearContent() {
+           request = null;
+           // destroy the decoder to release all resources
+           if(decoder!=null)decoder.destroy();
+           decoder = null;
+       }
+       
+       //public int decodeChunk(HttpObject msg){
+       //    if(msg instanceof HttpContent) {
+       //       HttpContent chunk = (HttpContent) msg;
+       //       return decodeChunk(chunk);
+       //    }
+       //    return 1;
+       //}
+       
+       public boolean HttpGet(ChannelHandlerContext ctx){return false;}
+       public boolean HttpPost(ChannelHandlerContext ctx){return false;}
+       public boolean HttpPut(ChannelHandlerContext ctx){return false;}
+       //-------------------------------------------------------------------------------------------------
+       //-------------------------------------------------------------------------------------------------
+       //-------------------------------------------------------------------------------------------------
 
 
-
-       public HttpAuthResponse  Auth(){
+       private HttpAuthResponse  Auth(){
               logger.trace("begin auth");
               if(request==null){
                  logger.error("request==null");
                  return null;
               }
-              HttpAuthResponse result_auth = auth.authParse(request);
+
+              HttpAuthResponse result_auth = http_auth.authParse(request);
+
               if(result_auth!=null){
                  if(result_auth.isAuth()){
                     logger.trace("auth:"+result_auth.isAuth()+" user:"+result_auth.getUser());
@@ -114,13 +207,9 @@ public class lHttpRequest{
               logger.trace("end auth:"+result_auth.isAuth()+" user:"+result_auth.getUser());
               return result_auth;
        }
-       public boolean HttpGet(ChannelHandlerContext ctx){return false;}
-       public boolean HttpPost(ChannelHandlerContext ctx){return false;}
-       public boolean HttpPut(ChannelHandlerContext ctx){return false;}
-
        protected boolean setHttpReq(HttpRequest _request){
 
-                      clearDecoder();
+                      clearContent();
                       clear();
                       request=_request;
                       keepAlive = HttpUtil.isKeepAlive(request);
@@ -163,9 +252,6 @@ public class lHttpRequest{
                       return true;
        }
        
-
-       protected boolean isDecoder(){return decoder!=null;}
-
        protected boolean createPostRequestDecoder(){
             try {
                 decoder = new HttpPostRequestDecoder(factory, request);
@@ -176,41 +262,6 @@ public class lHttpRequest{
                   return false;
             }
             return true;
-       }
-
-       protected int decodeChunk(HttpObject msg){
-              if(msg instanceof HttpContent) {
-                 HttpContent chunk = (HttpContent) msg;
-                 return decodeChunk(chunk);
-              }
-              return 1;
-       }
-
-       protected int decodeChunk(ChannelHandlerContext ctx,HttpContent chunk){
-              if (decoder == null) return -1;
-              try {
-                    decoder.offer(chunk);
-              } 
-              catch(ErrorDataDecoderException e1) {
-                    e1.printStackTrace();
-                    return -1;
-              }
-              readDataByChunk();
-              if(chunk instanceof LastHttpContent) {
-                 logger.trace("LastHttpContent");
-                 //
-                 boolean ret=false;
-                 if(HttpMethod.PUT.equals(request.method()))ret=HttpPut(ctx);
-                 if(HttpMethod.POST.equals(request.method()))ret=HttpPost(ctx);
-                 if(ret==false) {
-                         response.sendOk(ctx,this," "); 
-                 }
-                 //
-                 clearDecoder();
-                 //  response.saveMsg(ctx,this);
-                 return 0;
-              }
-              return 1;
        }
 
        private void readDataByChunk() {
@@ -235,8 +286,9 @@ public class lHttpRequest{
                      if(partialContent == null) {
                         partialContent = (HttpData) data1;
                         if(partialContent instanceof FileUpload) {
-                        	
+                                
                            FileUpload f=(FileUpload)partialContent;
+                           f.toString();
                            
                         }
                         else
@@ -305,63 +357,11 @@ public class lHttpRequest{
                }
 
        }
-       protected void clearDecoder() {
-              request = null;
-              // destroy the decoder to release all resources
-              if(decoder!=null)decoder.destroy();
-              decoder = null;
-       }
 
-
-       //public String toString(){
-       //      return " ";
+       //-----------------------------------------------------------------------------------------------------------------
+       //private void responseOk(ChannelHandlerContext ctx) throws Exception {
+       //           response.sendOk(ctx,this," ");; 
        //}
-       public void runRequest(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
-                   HttpAuthResponse ret_auth = null;
-
-                   setHttpReq(request);
-                   //--------------------------------------------------------------
-                   // 
-                   //--------------------------------------------------------------
-                   ret_auth = Auth();
-                  
-                   logger.trace("channelRead0 1 HttpX509Request"+this);
-                  
-                   if(ret_auth==null) {
-                      response.sendAuthRequired(ctx,request,ret_auth);
-                      return;
-                   }
-                   if(ret_auth.isAuth()==false) {
-                      response.sendAuthRequired(ctx,request,ret_auth);
-                      return;
-                   }
-                   //--------------------------------------------------------------
-                   //
-                   //--------------------------------------------------------------
-                   //--------------------------------------------------------------------------------------
-                   if(HttpMethod.GET.equals(request.method())) {
-                      boolean ret=HttpGet(ctx);
-                      if(ret==false)response.sendOk(ctx,this," ");
-                      return;                          
-                   }
-                   else
-                   if(HttpMethod.POST.equals(request.method()) || HttpMethod.PUT.equals(request.method())) {
-                      if(createPostRequestDecoder()==false){
-                         String txt= "createPostRequestDecoder==false";
-                         logger.error(txt);
-                         response.sendError(ctx,this,txt);
-                         return;
-                      }
-                   }
-                   else{
-                      response.sendOk(ctx,this," ");
-                   }
-
-       }
-       
-       public void responseOk(ChannelHandlerContext ctx) throws Exception {
-                  response.sendOk(ctx,this," ");; 
-       }
 
 
 

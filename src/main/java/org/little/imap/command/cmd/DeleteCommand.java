@@ -10,7 +10,7 @@ import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
 import org.little.imap.response.EmptyResponse;
 import org.little.imap.response.ImapResponse;
-import org.little.store.lFolder;
+//import org.little.store.lFolder;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 

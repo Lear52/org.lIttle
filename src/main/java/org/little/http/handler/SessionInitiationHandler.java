@@ -15,13 +15,13 @@ public class SessionInitiationHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
-                lHttpRequest            sc             = lHttpApp.create();
+                lHttpRequest            http_request   = lHttpApp.create();
 
                 Attribute<lHttpRequest> sessionStarted = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY);
 
-                sessionStarted.set(sc);
+                sessionStarted.set(http_request);
 
-                logger.trace("channelActive Start new session");
+                logger.trace("HttpServer Start new session:"+ctx.channel().id().asShortText());
 
         }
 

@@ -10,10 +10,10 @@ import org.little.util.LoggerFactory;
 public class rCP_R2H extends rCP_R2L{
 
        private static Logger logger = LoggerFactory.getLogger(rCP_R2H.class);
-       private String http;
+       //private String http;
        public rCP_R2H(rShell sh,String name,int index,String _rfile,String _lfile) {
               super(sh,name,index,_rfile,"");
-              http=_lfile;
+              //http=_lfile;
        }
 
        @Override

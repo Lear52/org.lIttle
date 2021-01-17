@@ -1,7 +1,8 @@
 package org.little.imap.handler;
 
 import org.little.imap.commonIMAP;
-import org.little.ssl.SSLHandlerProvider0;
+import org.little.ssl.SSLHandlerProvider;
+//import org.little.ssl.SSLHandlerProvider0;
 import org.little.util.Logger;
 
 import io.netty.channel.ChannelInitializer;
@@ -24,10 +25,15 @@ public  class ImapServerlInitializer extends ChannelInitializer<SocketChannel> {
 
                      ChannelPipeline pipeline = ch.pipeline();
 
-                     if(commonIMAP.get().getCfgSSL().isSSL()){
-                         SslHandler ssl_handler=SSLHandlerProvider0.getSSLHandler();
+                     //if(commonIMAP.get().getCfgSSL().isSSL()){
+                     //    SslHandler ssl_handler=SSLHandlerProvider0.getSSLHandler();
+                     //    pipeline.addLast("SSLHandel"     ,ssl_handler);
+                     //}
+                     SslHandler ssl_handler=SSLHandlerProvider.getSSLHandler(commonIMAP.get().getCfgSSL());
+                     if(ssl_handler!=null){
                          pipeline.addLast("SSLHandel"     ,ssl_handler);
                      }
+
                      if(commonIMAP.get().getCfgServer().isDumpLog()){
                         pipeline.addLast("IMAPLog"        ,new LoggingHandler(LogLevel.DEBUG));
                      }

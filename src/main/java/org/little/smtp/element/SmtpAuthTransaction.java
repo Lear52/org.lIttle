@@ -1,7 +1,6 @@
 package org.little.smtp.element;
 
 import org.little.auth.authUser;
-import org.little.http.commonHTTP;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util._Base64;
@@ -32,14 +31,14 @@ public class SmtpAuthTransaction {
                  type="PRESET";
                  username="nouser";
                  password="";
-                 auth_user=commonHTTP.get().getAuth();
+                 auth_user=commonSMTP.get().getCfgAuth().getAuthUser();
                  is_auth_user=true;
                }
                else{
                  type="";
                  username=null;
                  password=null;
-                 auth_user=commonHTTP.get().getAuth();
+                 auth_user=commonSMTP.get().getCfgAuth().getAuthUser();
                  is_auth_user=false;
                }
 

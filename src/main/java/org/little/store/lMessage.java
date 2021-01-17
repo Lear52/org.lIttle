@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-import org.little.imap.commonIMAP;
+//import org.little.imap.commonIMAP;
 import org.little.util._Base64;
 
 public class lMessage{

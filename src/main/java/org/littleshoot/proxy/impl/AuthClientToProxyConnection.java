@@ -26,6 +26,9 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
+//import org.little.auth.commonAUTH;
+import org.little.http.auth.HttpAuth;
+import org.little.http.auth.commonHttpAuth;
 import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Except;
@@ -36,6 +39,7 @@ import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.SslEngineSource;
 //import org.little.util.HexDump;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -56,148 +60,150 @@ import jcifs.util.Base64;
  * ÃŒ…  À¿—— ClientToProxyConnection
 */
 public class AuthClientToProxyConnection extends ClientToProxyConnection {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AuthClientToProxyConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthClientToProxyConnection.class);
+    
     /** Factory for GSS-API mechanism. */
     private static final GSSManager     MANAGER          = GSSManager.getInstance();
     /** GSS-API mechanism "1.3.6.1.5.5.2". */
     private static final Oid            SPNEGO_OID       = getOid();
     private static final Lock           LOCK             = new ReentrantLock();
-
-    private        AtomicBoolean        authenticated    ;
-    private        String               username         ; 
-    private        boolean              is_auth_disable  ; 
-    private        String               host_addr_port   ;
-    private        statChannel          channel_info     ;
     
-    private        LoginContext         loginContext     ;         /** Login Context server uses for pre-authentication. */
-    private        GSSCredential        serverCredentials;    /** Credentials server uses for authenticating requests. */
+    private        AtomicBoolean        flag_authenticated;
+    private        String               username          ; 
+    private        boolean              is_auth_disable   ; 
+    private        String               host_addr_port    ;
+
+    private        statChannel          channel_info      ;
+    
+    private        LoginContext         loginContext      ;    /** Login Context server uses for pre-authentication.    */
+    private        GSSCredential        serverCredentials ;    /** Credentials server uses for authenticating requests. */
+
+    private        HttpAuth             http_auth         ;
+    
     @SuppressWarnings("unused")
-	private        KerberosPrincipal    serverPrincipal  ;      /** Server Principal used for pre-authentication. */
+    private        KerberosPrincipal    serverPrincipal   ;      /** Server Principal used for pre-authentication. */
 
     private final BytesReadMonitor bytesReadMonitor = new BytesReadMonitor() {
-        @Override
-        protected void bytesRead(int numberOfBytes) {
-                  if(channel_info==null)return;
-                  channel_info.addIn(numberOfBytes);
-                  //LOG.trace("---------------------- addIn:"+channel_info.getString());
-        }
+            @Override
+            protected void bytesRead(int numberOfBytes) {
+                      if(channel_info==null)return;
+                      channel_info.addIn(numberOfBytes);
+                      //LOG.trace("---------------------- addIn:"+channel_info.getString());
+            }
     };
     private BytesWrittenMonitor bytesWrittenMonitor = new BytesWrittenMonitor() {
-        @Override
-        protected void bytesWritten(int numberOfBytes) {
-                  if(channel_info==null)return;
-                  channel_info.addOut(numberOfBytes);
-                  //LOG.trace("---------------------- addOut:"+channel_info.getString());
-        }
+            @Override
+            protected void bytesWritten(int numberOfBytes) {
+                      if(channel_info==null)return;
+                      channel_info.addOut(numberOfBytes);
+                      //LOG.trace("---------------------- addOut:"+channel_info.getString());
+            }
     };
 
     public AuthClientToProxyConnection(final DefaultHttpProxyServer proxyServer,SslEngineSource sslEngineSource,boolean typeauthenticateClients,ChannelPipeline pipeline,GlobalTrafficShapingHandler globalTrafficShapingHandler){
 
-        super(proxyServer,sslEngineSource,true,pipeline,globalTrafficShapingHandler);
+           super(proxyServer,sslEngineSource,true,pipeline,globalTrafficShapingHandler);
 
-        pipeline.remove("bytesReadMonitor");
-        pipeline.remove("bytesWrittenMonitor");
-        pipeline.remove("requestReadMonitor");
-        pipeline.remove("responseWrittenMonitor");
+           pipeline.remove("bytesReadMonitor");
+           pipeline.remove("bytesWrittenMonitor");
+           pipeline.remove("requestReadMonitor");
+           pipeline.remove("responseWrittenMonitor");
+          
+           pipeline.addFirst("bytesReadMonitor"   , bytesReadMonitor);
+           pipeline.addFirst("bytesWrittenMonitor", bytesWrittenMonitor);
+          
+           clear();
 
-        pipeline.addFirst("bytesReadMonitor", bytesReadMonitor);
-        pipeline.addFirst("bytesWrittenMonitor", bytesWrittenMonitor);
-
-        clear();
-        //username       ="";
-        //is_auth_disable=false;//  
-        //host_addr_port ="0.0.0.0";
-        //channel_info   = null;
-        //SPNEGO_OID     = getOid();
-
-        if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
-           LOG.debug("type_authenticateClients:Kerberos");
-
-           try{
-              // set auth info 
-               CallbackHandler handler = new CallbackHandler() {
-                              public void handle(final Callback[] callback) {
-                                  for (int i=0; i<callback.length; i++) {
-                                      if(callback[i] instanceof NameCallback) {
-                                         NameCallback nameCallback = (NameCallback) callback[i];
-                                         nameCallback.setName(commonProxy.get().getCfgAuth().getLdapUsername());
-                                      } 
-                                      else 
-                                      if(callback[i] instanceof PasswordCallback) {
-                                         PasswordCallback passCallback = (PasswordCallback) callback[i];
-                                         passCallback.setPassword(commonProxy.get().getCfgAuth().getLdapPassword().toCharArray());
-                                      } else {
-                                         LOG.info("Unsupported Callback i=" + i + "; class=" + callback[i].getClass().getName());
-                                      }
-                                  }
-                              }
-               };
-
-               loginContext       = new LoginContext("spnego-server", handler);
-               loginContext.login();
-               Subject subject=loginContext.getSubject();
-               PrivilegedExceptionAction<GSSCredential> action =  new PrivilegedExceptionAction<GSSCredential>() {
-                                                     public GSSCredential run() throws GSSException {
-                                                           return MANAGER.createCredential(null,GSSCredential.INDEFINITE_LIFETIME,SPNEGO_OID,GSSCredential.ACCEPT_ONLY);
-                                                      } 
-              };
-              serverCredentials = Subject.doAs(subject, action);
-              serverPrincipal   = new KerberosPrincipal(serverCredentials.getName().toString());
+           if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()== HttpAuth.SPNEGO){
+              logger.debug("type_authenticateClients:Kerberos");
+              try{
+                 // set auth info 
+                  CallbackHandler handler = new CallbackHandler() {
+                                 public void handle(final Callback[] callback) {
+                                     for (int i=0; i<callback.length; i++) {
+                                         if(callback[i] instanceof NameCallback) {
+                                            NameCallback nameCallback = (NameCallback) callback[i];
+                                            nameCallback.setName(commonProxy.get().getCfgAuth().getLdapUsername());
+                                         } 
+                                         else 
+                                         if(callback[i] instanceof PasswordCallback) {
+                                            PasswordCallback passCallback = (PasswordCallback) callback[i];
+                                            passCallback.setPassword(commonProxy.get().getCfgAuth().getLdapPassword().toCharArray());
+                                         } else {
+                                            logger.info("Unsupported Callback i=" + i + "; class=" + callback[i].getClass().getName());
+                                         }
+                                     }
+                                 }
+                  };
+          
+                  loginContext       = new LoginContext("spnego-server", handler);
+                  loginContext.login();
+                  Subject subject=loginContext.getSubject();
+                  PrivilegedExceptionAction<GSSCredential> action =  new PrivilegedExceptionAction<GSSCredential>() {
+                                                        public GSSCredential run() throws GSSException {
+                                                              return MANAGER.createCredential(null,GSSCredential.INDEFINITE_LIFETIME,SPNEGO_OID,GSSCredential.ACCEPT_ONLY);
+                                                         } 
+                 };
+                 serverCredentials = Subject.doAs(subject, action);
+                 serverPrincipal   = new KerberosPrincipal(serverCredentials.getName().toString());
+              }
+              catch(Exception ex){
+                  Except ex1=new Except(ex.toString(),ex);
+                  logger.error("AuthClientToProxyConnection() type_authenticateClients:kerberos ex:"+ex1);
+              }
            }
-           catch(Exception ex){
-               Except ex1=new Except(ex.toString(),ex);
-               LOG.error("AuthClientToProxyConnection() type_authenticateClients:kerberos  ex:"+ex1);
-               LOG.info("type_authenticateClients:"+commonProxy.get().getCfgAuth().getTypeAuthenticateClients());
-           }
-        }
 
     }
     protected void clear(){
-              authenticated    = new AtomicBoolean();
+              flag_authenticated    = new AtomicBoolean();
 
-              loginContext     =null; 
-              serverCredentials=null; 
-              serverPrincipal  =null; 
+              loginContext     = null; 
+              serverCredentials= null; 
+              serverPrincipal  = null; 
 
-              username        =  "";
-              is_auth_disable=false;//  
-              host_addr_port ="0.0.0.0";
-              channel_info   = null;
-              //SPNEGO_OID     = getOid();
+              username         = "";
+              is_auth_disable  =false;//  
+              host_addr_port   ="0.0.0.0";
+              channel_info     = null;
     }
 
-    static public boolean isTransparent(){
-           return commonProxy.get().isTransparent();
+    static public boolean isTransparent(){return commonProxy.get().isTransparent();}
+    static public int     getPort      (){return commonProxy.get().getCfgServer().getPort(); }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+           super.channelRegistered(ctx);
+           channel_info=commonProxy.get().getChannel().create(channel);
+           channel_info.setUser(username);
+           http_auth   =commonHttpAuth.getInstatce(channel_info);
+
     }
-    static public int getPort(){
-           return commonProxy.get().getCfgServer().getPort();
-    }
+
     @Override
     protected void serverDisconnected(ProxyToServerConnection serverConnection) {
               super.serverDisconnected(serverConnection);
-              LOG.warn("server_ip:"+host_addr_port+" disconnection");
+              logger.warn("server_ip:"+host_addr_port+" disconnection");
     }
     @Override
     protected void serverConnectionSucceeded(ProxyToServerConnection serverConnection,boolean shouldForwardInitialRequest) {
               super.serverConnectionSucceeded(serverConnection,shouldForwardInitialRequest);
-              LOG.warn("server_ip:"+host_addr_port+" connection:OK");
+              logger.warn("server_ip:"+host_addr_port+" connection:OK");
     }
     @Override
     protected boolean serverConnectionFailed(ProxyToServerConnection serverConnection,ConnectionState lastStateBeforeFailure,Throwable cause){
               boolean ret=super.serverConnectionFailed(serverConnection,lastStateBeforeFailure,cause);
-              LOG.error("server_ip:"+host_addr_port+" connection:Failed ret:"+ret);
+              logger.error("server_ip:"+host_addr_port+" connection:Failed ret:"+ret);
               return ret;
     }
     @Override
     protected void disconnected() {
 
-                 commonProxy.get().getChannel().remove(channel_info);
+              commonProxy.get().getChannel().remove(channel_info);
 
-                 if(channel_info!=null)/**/
-                 LOG.info("+++ Disconnected client ip:"+channel_info.getSrc()+" proxy ip:"+channel_info.getDst());
-                 else
-                 LOG.info("+++ Disconnected client ip:unknow proxy ip:unknow channel_info=null");
+              if(channel_info!=null)/**/
+              logger.info("+++ Disconnected client ip:"+channel_info.getSrc()+" proxy ip:"+channel_info.getDst());
+              else
+              logger.info("+++ Disconnected client ip:unknow proxy ip:unknow channel_info=null");
 
               super.disconnected();
     }
@@ -207,9 +213,9 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  commonProxy.get().getChannel().remove(channel_info);
 
                  if(channel_info!=null)/**/
-                 LOG.info("!!! Disconnect client ip:"+channel_info.getSrc()+" proxy ip:"+channel_info.getDst());
+                 logger.info("!!! Disconnect client ip:"+channel_info.getSrc()+" proxy ip:"+channel_info.getDst());
                  else
-                 LOG.info("!!! Disconnect client ip:unknow proxy ip:unknow channel_info=null");
+                 logger.info("!!! Disconnect client ip:unknow proxy ip:unknow channel_info=null");
 
                  return super.disconnect();
 
@@ -275,11 +281,11 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
               //if(h.getStatus().code()==401){/**/
               if(h.status().code()==401){
                  if(channel_info!=null)
-                 LOG.warn("AuthenticationRequired ip:"+channel_info.getSrc()+" server ip:"+host_addr_port+" return:401");
+                 logger.warn("AuthenticationRequired ip:"+channel_info.getSrc()+" server ip:"+host_addr_port+" return:401");
                  //hh.add("Set-Cookie","WebAccessBean_sessionTicket=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/");
                  //hh.add("Set-Cookie","WebAccessBean_sessionTicket_STENDSOK=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/");
                  writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",hh);
-                 authenticated.set(false);
+                 flag_authenticated.set(false);
                  return;
               }
               //-------------------------------------------------------------------------
@@ -287,342 +293,304 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
 
            super.respond(serverConnection,filters,currentHttpRequest,currentHttpResponse,httpObject);
     }
-    private boolean authenticationDigestRequired(HttpRequest request) {//,String cln_addr
-        boolean ret=true;
-        if (authenticated.get()) {
-            ret=false;
-        }
-
-
-        String authHeader1 = request.headers().get(HttpHeaderNames.AUTHORIZATION); //"Authorization"
-
-        //String method = request.getMethod().name();
-        String method = request.method().name();
-
-        if(!request.headers().contains(HttpHeaderNames.AUTHORIZATION)){
-            String nonce = calculateNonce();
-            writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
-            return true;
-        }
-        if (!authHeader1.startsWith("Digest")) {
-            String nonce = calculateNonce();
-            writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
-            return true;
-        }
-        HashMap<String, String> headerValues = parseHeader(authHeader1);
-        String username = headerValues.get("username");
-        LOG.trace("username:"+username);
-
-
-        if(ret==true){
-           String clientResponse = headerValues.get("response");
-           String qop            = headerValues.get("qop");      LOG.trace("qop:"+qop);
-           String nonce          = headerValues.get("nonce");    LOG.trace("nonce:"+nonce);
-           String reqURI         = headerValues.get("uri");      LOG.trace("uri:"+reqURI);
-           String ha2;
-          
-           if (!isBlank(qop) && qop.equals("auth-int")) {
-               String requestBody="";
-               String entityBodyMd5 = DigestUtils.md5Hex(requestBody); 
-               ha2 = DigestUtils.md5Hex(method + ":" + reqURI + ":" + entityBodyMd5);
-           } else {
-               ha2 = DigestUtils.md5Hex(method + ":" + reqURI);
-           }
-           String pre_serverResponse;
-          
-           if (isBlank(qop)) {
-               pre_serverResponse=":" + nonce + ":" + ha2;
-               LOG.trace("qop is blank");
-          
-           } 
-           else {
-               //String domain      = headerValues.get("realm");     //LOG.trace("domain(realm):"      +domain);
-               String nonceCount  = headerValues.get("nc");        //LOG.trace("nonceCount(nc):"     +nonceCount);
-               String clientNonce = headerValues.get("cnonce");    //LOG.trace("clientNonce(cnonce):"+clientNonce);
-               pre_serverResponse = ":" + nonce + ":" + nonceCount + ":" + clientNonce + ":" + qop + ":" + ha2;
-           }
-          
-           if(!commonProxy.get().authenticate(username,pre_serverResponse,clientResponse)){
-               LOG.debug("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username);
-               writeAuthenticationRequired(method,commonProxy.get().getCfgAuth().getRealm(),nonce,null);
-               return true;
-           }
-           ret=false;
-           authenticated.set(true);
-        }
-
-        //String uri = request.getUri(); LOG.trace("URL:"+uri);
-        //username=commonProxy.get().getFullUserName(username);
-
-        //host_addr_port = commonProxy.get().getHosts().getHostPort(username);
-        //request.headers().add("X-Forward-User",username); 
-        //request.headers().remove(Names.HOST);
-        //request.headers().add(Names.HOST,host_addr_port);
-        //request.headers().remove(HttpHeaders.Names.AUTHORIZATION);  //need for broker/**/
-        //channel_info.setUser(username);
-
-        //LOG.info("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+uri + " for user:"+username);
-
-        return ret;//flase
+    private boolean authenticationDigestRequired(HttpRequest request) {
+            boolean ret=true;
+            if (flag_authenticated.get()) {
+                ret=false;
+            }
+           
+            String authHeader1 = request.headers().get(HttpHeaderNames.AUTHORIZATION); //"Authorization"
+           
+            String method = request.method().name();
+           
+            if(!request.headers().contains(HttpHeaderNames.AUTHORIZATION)){
+                String nonce = calculateNonce();
+                writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
+                return true;
+            }
+            if (!authHeader1.startsWith("Digest")) {
+                String nonce = calculateNonce();
+                writeAuthenticationRequired("auth",commonProxy.get().getCfgAuth().getRealm(),nonce,null);
+                return true;
+            }
+            HashMap<String, String> headerValues = parseHeader(authHeader1);
+            String username = headerValues.get("username");
+            logger.trace("username:"+username);
+           
+            if(ret==true){
+               String clientResponse = headerValues.get("response");
+               String qop            = headerValues.get("qop");      logger.trace("qop:"+qop);
+               String nonce          = headerValues.get("nonce");    logger.trace("nonce:"+nonce);
+               String reqURI         = headerValues.get("uri");      logger.trace("uri:"+reqURI);
+               String ha2;
+              
+               if (!isBlank(qop) && qop.equals("auth-int")) {
+                   String requestBody="";
+                   String entityBodyMd5 = DigestUtils.md5Hex(requestBody); 
+                   ha2 = DigestUtils.md5Hex(method + ":" + reqURI + ":" + entityBodyMd5);
+               } else {
+                   ha2 = DigestUtils.md5Hex(method + ":" + reqURI);
+               }
+               String pre_serverResponse;
+              
+               if (isBlank(qop)) {
+                   pre_serverResponse=":" + nonce + ":" + ha2;
+                   logger.trace("qop is blank");
+              
+               } 
+               else {
+                   //String domain      = headerValues.get("realm");     //LOG.trace("domain(realm):"      +domain);
+                   String nonceCount  = headerValues.get("nc");        //LOG.trace("nonceCount(nc):"     +nonceCount);
+                   String clientNonce = headerValues.get("cnonce");    //LOG.trace("clientNonce(cnonce):"+clientNonce);
+                   pre_serverResponse = ":" + nonce + ":" + nonceCount + ":" + clientNonce + ":" + qop + ":" + ha2;
+               }
+              
+               if(!commonProxy.get().authenticate(username,pre_serverResponse,clientResponse)){
+                   logger.debug("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username);
+                   writeAuthenticationRequired(method,commonProxy.get().getCfgAuth().getRealm(),nonce,null);
+                   return true;
+               }
+               ret=false;
+               flag_authenticated.set(true);
+            }
+           
+            return ret;
     }
 
     private boolean authenticationBasicRequired(HttpRequest request) { //,String cln_addr
-        boolean ret=true;
-        if (authenticated.get()) {
-            LOG.debug("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" username:"+username+" is authenticated");
-            ret=false;
-        }
-
-        if (!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) {
-            writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
-            return true;
-        }
-
-        List<String> values          = request.headers().getAll(HttpHeaderNames.AUTHORIZATION);
-        String       fullValue       = values.iterator().next();
-        String       value           = StringUtils.substringAfter(fullValue, "Basic ").trim();
-        //byte[]       decodedValue    = BaseEncoding.base64().decode(value);
-        byte[]       decodedValue    = _Base64.base64ToByteArray(value);
-        String       decodedString   = new String(decodedValue, Charset.forName("UTF-8"));
-        String       username        = StringUtils.substringBefore(decodedString, ":");
-        String       password        = StringUtils.substringAfter(decodedString, ":");
-
-        username=commonProxy.get().getFullUserName(username);
-        if(ret==true){
-           if (!commonProxy.get().authenticate(username, password)) {
-               LOG.warn("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username+" p:"+password);
-               writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
-               return true;
-           }
-           LOG.debug("Got authorization!"+" u:"+username);
-           ret=false;
-           authenticated.set(true);
-        }
-
-        //String uri = request.getUri(); LOG.trace("URL:"+uri);
-        //username=commonProxy.get().getFullUserName(username);
-        //host_addr_port = commonProxy.get().getHosts().getHostPort(username);
-        //request.headers().add("X-Forward-User",username); 
-        //request.headers().remove(Names.HOST);
-        //request.headers().add(Names.HOST,host_addr_port);
-        //request.headers().remove(Names.AUTHORIZATION);
-        //channel_info.setUser(username);
-
-        //LOG.info("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+uri + " for user:"+username);
-
-        return false;
+            boolean ret=true;
+            if (flag_authenticated.get()) {
+                logger.debug("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" username:"+username+" is authenticated");
+                ret=false;
+            }
+           
+            if (!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) {
+                writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
+                return true;
+            }
+           
+            List<String> values          = request.headers().getAll(HttpHeaderNames.AUTHORIZATION);
+            String       fullValue       = values.iterator().next();
+            String       value           = StringUtils.substringAfter(fullValue, "Basic ").trim();
+            //byte[]       decodedValue    = BaseEncoding.base64().decode(value);
+            byte[]       decodedValue    = _Base64.base64ToByteArray(value);
+            String       decodedString   = new String(decodedValue, Charset.forName("UTF-8"));
+            String       username        = StringUtils.substringBefore(decodedString, ":");
+            String       password        = StringUtils.substringAfter(decodedString, ":");
+           
+            username=commonProxy.get().getFullUserName(username);
+            if(ret==true){
+               if (!commonProxy.get().authenticate(username, password)) {
+                   logger.warn("no authorization! for realm:"+commonProxy.get().getCfgAuth().getRealm()+" u:"+username+" p:"+password);
+                   writeAuthenticationRequired("",commonProxy.get().getCfgAuth().getRealm(),"",null);
+                   return true;
+               }
+               logger.debug("Got authorization!"+" u:"+username);
+               ret=false;
+               flag_authenticated.set(true);
+            }
+           
+            return false;
     }
     private boolean authenticationNegotiateRequired(HttpRequest request) {//,String cln_addr
-        String  principal="unknown_principal";
-        boolean ret=true;
-        String  realm=commonProxy.get().getCfgAuth().getRealm();//"vip.cbr.ru";/**/
-
-        if (authenticated.get()) {
-            LOG.debug("AuthenticationNegotiateNOTRequired client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" username:"+username+" is authenticated");
-            ret=false;
-        }
-
-        if (!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) {
-            LOG.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization field is null");
-            writeAuthenticationRequired("",realm,"",null);
-            return true;
-        }
-
-        List<String> values        = request.headers().getAll(HttpHeaderNames.AUTHORIZATION);
-        String       authorization = values.iterator().next();
-
-        if(authorization == null) {
-           LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization header is empty");
-           writeAuthenticationRequired("",realm,"",null);
-           return true;
-        }
-                                     
-        if(ret==true) {
-
-            LOG.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization:"+authorization);
-
-            if(authorization.startsWith("Negotiate")) {
-               String sub_auth=authorization.substring(10);
-               //-----------------------------------------------------------------------------------------
-               {
-               //-----------------------------------------------------------------------------------------
-               LOG.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" client sent to server negotiate token:"+sub_auth);
-
-               //LOG.trace("Authentication:"+sub_auth);
-       
-               byte[] _gss = Base64.decode(sub_auth);
-               if(0 == _gss.length) {
-                  LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" GSS data was NULL.");
-                  writeAuthenticationRequired("",realm,"",null);
-                  return true;
-               }
-
-               //try{ HexDump.dump(_gss); }catch(Exception ex111){}
-
-               {
-                  String hdr="NTLMSSP";
-                  byte [] _ntlmspp={(byte)0x4E,(byte)0x54,(byte)0x4C,(byte)0x4D,(byte)0x53,(byte)0x53,(byte)0x50,(byte)0x0};
-
-                  //try{ HexDump.dump(_ntlmspp); }catch(Exception ex113){}
-
-                  boolean is_ntlmspp=true;
-                  for(int i=0;(i<_ntlmspp.length && i<_gss.length);i++){
-                      if(_ntlmspp[i]!=_gss[i]){
-                         is_ntlmspp=false;
-                         break;
-                  }
-                  }
-                  if(is_ntlmspp){
-                     LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" GSS data begin with :"+hdr);
-                     writeAuthenticationRequired("",realm,"",null);
-                     return true;
-                  }
-               }
-               /*
-               try{      
-                   DerValue d=new DerValue(_gss);
-                   LOG.info("DerValue:"+d.toString());
-               }
-               catch(Exception ex112){ 
-                     LOG.error(" DerValue ex:"+ex112);
-               }
-               */
-               byte[]        token2    = null;
-               //byte[]        token3    = null;
-               GSSContext    context   = null;
-               //GSSCredential delegCred = null;
-               try {
-                   //-----------------------------------------------------------------------------------------------
-                   LOCK.lock();
+            String  principal="unknown_principal";
+            boolean ret=true;
+            String  realm=commonProxy.get().getCfgAuth().getRealm();//"vip.cbr.ru";/**/
+           
+            if (flag_authenticated.get()) {
+                logger.debug("AuthenticationNegotiateNOTRequired client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" username:"+username+" is authenticated");
+                ret=false;
+            }
+           
+            if (!request.headers().contains(HttpHeaderNames.AUTHORIZATION)) {
+                logger.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization field is null");
+                writeAuthenticationRequired("",realm,"",null);
+                return true;
+            }
+           
+            List<String> values        = request.headers().getAll(HttpHeaderNames.AUTHORIZATION);
+            String       authorization = values.iterator().next();
+           
+            if(authorization == null) {
+               logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization header is empty");
+               writeAuthenticationRequired("",realm,"",null);
+               return true;
+            }
+                                         
+            if(ret==true) {
+           
+                logger.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" authorization:"+authorization);
+           
+                if(authorization.startsWith("Negotiate")) {
+                   String sub_auth=authorization.substring(10);
+                   //-----------------------------------------------------------------------------------------
+                   {
+                   //-----------------------------------------------------------------------------------------
+                   logger.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" client sent to server negotiate token:"+sub_auth);
+           
+                   //LOG.trace("Authentication:"+sub_auth);
+           
+                   byte[] _gss = Base64.decode(sub_auth);
+                   if(0 == _gss.length) {
+                      logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" GSS data was NULL.");
+                      writeAuthenticationRequired("",realm,"",null);
+                      return true;
+                   }
+           
+                   //try{ HexDump.dump(_gss); }catch(Exception ex111){}
+           
+                   {
+                      String hdr="NTLMSSP";
+                      byte [] _ntlmspp={(byte)0x4E,(byte)0x54,(byte)0x4C,(byte)0x4D,(byte)0x53,(byte)0x53,(byte)0x50,(byte)0x0};
+           
+                      //try{ HexDump.dump(_ntlmspp); }catch(Exception ex113){}
+           
+                      boolean is_ntlmspp=true;
+                      for(int i=0;(i<_ntlmspp.length && i<_gss.length);i++){
+                          if(_ntlmspp[i]!=_gss[i]){
+                             is_ntlmspp=false;
+                             break;
+                      }
+                      }
+                      if(is_ntlmspp){
+                         logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" GSS data begin with :"+hdr);
+                         writeAuthenticationRequired("",realm,"",null);
+                         return true;
+                      }
+                   }
+                   /*
+                   try{      
+                       DerValue d=new DerValue(_gss);
+                       LOG.info("DerValue:"+d.toString());
+                   }
+                   catch(Exception ex112){ 
+                         LOG.error(" DerValue ex:"+ex112);
+                   }
+                   */
+                   byte[]        token2    = null;
+                   //byte[]        token3    = null;
+                   GSSContext    context   = null;
+                   //GSSCredential delegCred = null;
                    try {
-                       LOG.trace("client_ip:"+channel_info.getSrc()+" crete context");
-                       context = MANAGER.createContext(serverCredentials);
-                   }
-                   catch(Exception ex){
-                       String msg=ex.toString();
-                       Except ex1=new Except(msg,ex);
-                       LOG.error("client_ip:"+channel_info.getSrc()+" error createContext ex:"+ex1);
-                       writeAuthenticationRequired("",realm,"",null);
-                       return true;
-                   }
-                   finally {
-                       LOCK.unlock();
-                   }
-                   //-----------------------------------------------------------------------------------------------
-                   LOCK.lock();
-                   try {
-                       token2 = context.acceptSecContext(_gss, 0, _gss.length);
-                   }
-                   catch(GSSException ex){
-                       String msg=ex.toString()+" | major:"+ex.getMajorString()+" | minor:"+ex.getMinorString();
-                       Except ex1=new Except(msg,ex);
-                       LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error acceptSecContext ex:"+ex1);
-                       writeAuthenticationRequired("",realm,"",null);
-                       return true;
-                   }
-                   finally {
-                       LOCK.unlock();
-                   }
-                   //-----------------------------------------------------------------------------------------------
-                   try {
-                       if (!context.isEstablished()) {
-                            LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context not established");
-                            writeAuthenticationRequired("",realm,"",null);
-                            return true;
-                       }
-                       else{
-                            try {
-                                principal = context.getSrcName().toString();
-                            }
-                            catch(Exception ex){
-                                 Except ex1=new Except(ex.toString(),ex);
-                                 LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error context.getSrcName().toString() ex:"+ex1);
-                                 writeAuthenticationRequired("",realm,"",null);
-                                 return true;
-                            }
-                            finally {
-                              //SpnegoAuthenticator.LOCK.unlock();
-                            }
-                       }
-       
-                       LOG.debug("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" principal:" + principal);
-                       //------------------------------------------------------------------------------
-                       
-                       if(token2!=null){
-                          String _token2=Base64.encode(token2);
-                          LOG.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context.acceptSecContext(_gss, 0, _gss.length) return:" + _token2);
-                       }
-                       /*
-                       else LOG.trace("client_ip:"+cln_addr+" context.acceptSecContext(_gss, 0, _gss.length) return:null");
-       
-                       if(token3!=null){
-                          String _token3=Base64.encode(token3);
-                          LOG.trace("client_ip:"+cln_addr+" context.export() return:" + token3);
-                       }
-                       else LOG.trace("client_ip:"+cln_addr+" context.export() return:null");
-                       */
-                       //------------------------------------------------------------------------------
-                   }
-                   catch(Exception ex){
-                       String msg=ex.toString();
-                       Except ex1=new Except(msg,ex);
-                       LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error get Context ex:"+ex1);
-                       writeAuthenticationRequired("",realm,"",null);
-                       return true;
-                   }
-                   finally {
-       
-                       //SpnegoAuthenticator.LOCK.unlock();
-                   }
-              
-               } 
-               finally {
-                   if (null != context) {
-                       //SpnegoAuthenticator.LOCK.lock();
+                       //-----------------------------------------------------------------------------------------------
+                       LOCK.lock();
                        try {
-                           LOG.info("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context dispose");
-                           context.dispose();
+                           logger.trace("client_ip:"+channel_info.getSrc()+" crete context");
+                           context = MANAGER.createContext(serverCredentials);
                        }
                        catch(Exception ex){
-                             Except ex1=new Except(ex.toString(),ex);
-                             LOG.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error context.dispose() ex:"+ex1);
-                             writeAuthenticationRequired("",realm,"",null);
+                           String msg=ex.toString();
+                           Except ex1=new Except(msg,ex);
+                           logger.error("client_ip:"+channel_info.getSrc()+" error createContext ex:"+ex1);
+                           writeAuthenticationRequired("",realm,"",null);
+                           return true;
                        }
                        finally {
+                           LOCK.unlock();
+                       }
+                       //-----------------------------------------------------------------------------------------------
+                       LOCK.lock();
+                       try {
+                           token2 = context.acceptSecContext(_gss, 0, _gss.length);
+                       }
+                       catch(GSSException ex){
+                           String msg=ex.toString()+" | major:"+ex.getMajorString()+" | minor:"+ex.getMinorString();
+                           Except ex1=new Except(msg,ex);
+                           logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error acceptSecContext ex:"+ex1);
+                           writeAuthenticationRequired("",realm,"",null);
+                           return true;
+                       }
+                       finally {
+                           LOCK.unlock();
+                       }
+                       //-----------------------------------------------------------------------------------------------
+                       try {
+                           if (!context.isEstablished()) {
+                                logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context not established");
+                                writeAuthenticationRequired("",realm,"",null);
+                                return true;
+                           }
+                           else{
+                                try {
+                                    principal = context.getSrcName().toString();
+                                }
+                                catch(Exception ex){
+                                     Except ex1=new Except(ex.toString(),ex);
+                                     logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error context.getSrcName().toString() ex:"+ex1);
+                                     writeAuthenticationRequired("",realm,"",null);
+                                     return true;
+                                }
+                                finally {
+                                  //SpnegoAuthenticator.LOCK.unlock();
+                                }
+                           }
+           
+                           logger.debug("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" principal:" + principal);
+                           //------------------------------------------------------------------------------
+                           
+                           if(token2!=null){
+                              String _token2=Base64.encode(token2);
+                              logger.trace("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context.acceptSecContext(_gss, 0, _gss.length) return:" + _token2);
+                           }
+                           /*
+                           else LOG.trace("client_ip:"+cln_addr+" context.acceptSecContext(_gss, 0, _gss.length) return:null");
+           
+                           if(token3!=null){
+                              String _token3=Base64.encode(token3);
+                              LOG.trace("client_ip:"+cln_addr+" context.export() return:" + token3);
+                           }
+                           else LOG.trace("client_ip:"+cln_addr+" context.export() return:null");
+                           */
+                           //------------------------------------------------------------------------------
+                       }
+                       catch(Exception ex){
+                           String msg=ex.toString();
+                           Except ex1=new Except(msg,ex);
+                           logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error get Context ex:"+ex1);
+                           writeAuthenticationRequired("",realm,"",null);
+                           return true;
+                       }
+                       finally {
+           
                            //SpnegoAuthenticator.LOCK.unlock();
                        }
+                  
+                   } 
+                   finally {
+                       if (null != context) {
+                           //SpnegoAuthenticator.LOCK.lock();
+                           try {
+                               logger.info("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" context dispose");
+                               context.dispose();
+                           }
+                           catch(Exception ex){
+                                 Except ex1=new Except(ex.toString(),ex);
+                                 logger.error("AuthenticationNegotiateRequired client_ip:"+channel_info.getSrc()+" error context.dispose() ex:"+ex1);
+                                 writeAuthenticationRequired("",realm,"",null);
+                           }
+                           finally {
+                               //SpnegoAuthenticator.LOCK.unlock();
+                           }
+                       }
                    }
-               }
-               //-----------------------------------------------------------------------------------------
-               }
-               //-----------------------------------------------------------------------------------------
-               ret=false;
-               authenticated.set(true);
-
-               username=commonProxy.get().getFullUserName(principal);
-
-               LOG.trace("Authorization Negotiate :"+username+" ret:"+ret+"  !!!!!!!!!!!!");
+                   //-----------------------------------------------------------------------------------------
+                   }
+                   //-----------------------------------------------------------------------------------------
+                   ret=false;
+                   flag_authenticated.set(true);
+           
+                   username=commonProxy.get().getFullUserName(principal);
+           
+                   logger.trace("Authorization Negotiate :"+username+" ret:"+ret+"  !!!!!!!!!!!!");
+                }
+                else
+                if(authorization.startsWith("Basic")) {
+                   logger.info("Authorization Negotiate to Basic !!!");
+                   return authenticationBasicRequired(request);//,cln_addr
+                }
             }
-            else
-            if(authorization.startsWith("Basic")) {
-               LOG.info("Authorization Negotiate to Basic !!!");
-               return authenticationBasicRequired(request);//,cln_addr
-            }
-        }
-
-        //String uri = request.getUri(); 
-        //
-
-        //host_addr_port = commonProxy.get().getHosts().getHostPort(username);
-        //request.headers().add("X-Forward-User",username); 
-        //request.headers().remove(Names.HOST);
-        //request.headers().add(Names.HOST,host_addr_port);
-        //request.headers().remove(Names.AUTHORIZATION);
-        //channel_info.setUser(username);
-
-        //LOG.info("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+uri + " for user:"+username);
-
-        return false;
+           
+            return false;
     }
     
     @Override
@@ -634,10 +602,12 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
               String url = request.uri(); 
               request.headers().add("X-OLD-Host",host); 
 
+              /**/
               if(channel_info==null)channel_info=commonProxy.get().getChannel().get(channel);
               if(channel_info==null){
-                 channel_info=commonProxy.get().getChannel().create();
-                 channel_info.setChannel(channel);
+                 channel_info=commonProxy.get().getChannel().create(channel);
+                 //channel_info.setChannel(channel);
+                 http_auth.setStatChannel(channel_info);
                  channel_info.setUser(username);
               }
 
@@ -648,10 +618,10 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  
                  if(u!=null){
                     is_auth_disable=true;
-                    authenticated.set(true);
+                    flag_authenticated.set(true);
                     ret=false;
                     if("".equals(username))username=u;
-                    LOG.trace("getUser4IP -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
+                    logger.trace("getUser4IP -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
                  }
                  else{
                     u=commonProxy.get().getGuest().getUser4URL(url);
@@ -660,48 +630,47 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                        is_auth_disable=true;
                        ret=false;
                        if("".equals(username))username=u;
-                       LOG.trace("getUser4URL -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
+                       logger.trace("getUser4URL -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
                     }
                     else {
-                       LOG.trace("is_auth_disable=false -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
+                       logger.trace("is_auth_disable=false -> client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username);
                        is_auth_disable=false;
                        ret=true;
                     }
                  }
               }
 
-              LOG.trace("authenticated.get()="+authenticated.get() +" is_auth_disable="+is_auth_disable);
+              logger.trace("authenticated.get()="+flag_authenticated.get() +" is_auth_disable="+is_auth_disable);
 
-              if(authenticated.get()==true || is_auth_disable==true) ret=false;
+              if(flag_authenticated.get()==true || is_auth_disable==true) ret=false;
 
-              if(authenticated.get()==false && is_auth_disable==false) {
+              if(flag_authenticated.get()==false && is_auth_disable==false) {
                  //LOG.trace("authenticated.get()==false && is_auth_disable==false");
                  //---------------------------------------------------------------------------------------------------------
-                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==0){
+                 if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==HttpAuth.NOAUTH){
                     ret=false;  
                     //ret=authenticationBasicRequired (request,cln_addr);     
                  }
                  else
-                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==1){
+                 if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==HttpAuth.BASIC){
                     ret=authenticationBasicRequired (request);  
                  }
                  else
-                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==2){
+                 if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==HttpAuth.DIGEST){
                     ret=authenticationDigestRequired(request); 
                  }
                  else
-                 if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
+                 if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==HttpAuth.SPNEGO){
                     ret=authenticationNegotiateRequired(request); 
-                    //LOG.trace("authenticationNegotiateRequired(request) return:"+ret);
                  }
                  //---------------------------------------------------------------------------------------------------------
               }
 
-              LOG.trace("authenticationRequired:"+ret +" client_ip:"+channel_info.getSrc());
+              logger.trace("authenticationRequired:"+ret +" client_ip:"+channel_info.getSrc());
               //else
               if(ret==false){
                  //ret=false;
-                 authenticated.set(true);             
+                 flag_authenticated.set(true);             
 
                  channel_info.setUser(username);
 
@@ -715,7 +684,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  request.headers().add(HttpHeaderNames.HOST,host_addr_port);
                  if(is_auth_disable==false)request.headers().remove(HttpHeaderNames.AUTHORIZATION);
 
-                 LOG.info("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username+" Ok");
+                 logger.info("client_ip:"+channel_info.getSrc()+" server_ip:"+host_addr_port+" URL:"+url + " for user:"+username+" Ok");
 
               }
 
@@ -728,13 +697,13 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
               String             type;
 
 
-              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==1){
+              if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==1){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  header = "Basic realm=\"" + (realm == null ? "Restricted Files" : realm) + "\"";
                  type   = "Basic";
               }
               else
-              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==2){
+              if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==2){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  header = "Digest realm=" + realm + ", ";
                  if (!isBlank(authMethod)) {
@@ -745,7 +714,7 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
                  type   = "Digest";
               }
               else
-              if(commonProxy.get().getCfgAuth().getTypeAuthenticateClients()==3){
+              if(commonProxy.get().getCfgHttpAuth().getTypeAuthenticateHTTPClients()==3){
                  response_status=HttpResponseStatus.UNAUTHORIZED;
                  type    = "Kerberos";
                  //header  = "Negotiate,Basic realm=\""+realm+"\"";
@@ -773,16 +742,16 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
 
                  response.headers().remove("Set-Cookie");
                  for(int i=0;i<l.size();i++){
-                     LOG.trace("i:"+i+" username:"+username+" for client_ip:"+channel_info.getSrc()+" server_ip:"+channel_info.getDst()+" cookie:"+l.get(i));
+                     logger.trace("i:"+i+" username:"+username+" for client_ip:"+channel_info.getSrc()+" server_ip:"+channel_info.getDst()+" cookie:"+l.get(i));
                      response.headers().add("Set-Cookie",l.get(i));
                  }
-                 LOG.info("for return 401 set cookie username:"+username+" for client_ip:"+channel_info.getSrc()+" server_ip:"+channel_info.getDst());
+                 logger.info("for return 401 set cookie username:"+username+" for client_ip:"+channel_info.getSrc()+" server_ip:"+channel_info.getDst());
 
               }
 
               if(true){/**/
                  for(int i=0;i<commonProxy.get().getCookie().size();i++){
-                     LOG.trace("Set-Cookie:"+commonProxy.get().getCookie().get(i));
+                     logger.trace("Set-Cookie:"+commonProxy.get().getCookie().get(i));
                      response.headers().add("Set-Cookie",commonProxy.get().getCookie().get(i));
                  }
                  //response.headers().add("Set-Cookie","WebAccessBean_sessionTicket=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/");
@@ -796,54 +765,54 @@ public class AuthClientToProxyConnection extends ClientToProxyConnection {
 
     }
     private String calculateNonce() {
-        Date             d         = new Date();
-        SimpleDateFormat f         = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
-        String           fmtDate   = f.format(d);
-        Random           rand      = new Random(100000);
-        Integer          randomInt = rand.nextInt();
-
-        return DigestUtils.md5Hex(fmtDate + randomInt.toString());
+            Date             d         = new Date();
+            SimpleDateFormat f         = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
+            String           fmtDate   = f.format(d);
+            Random           rand      = new Random(100000);
+            Integer          randomInt = rand.nextInt();
+           
+            return DigestUtils.md5Hex(fmtDate + randomInt.toString());
     }
 
     private String getOpaque(String domain, String nonce) {
-        return DigestUtils.md5Hex(domain + nonce);
+            return DigestUtils.md5Hex(domain + nonce);
     }
 
     private static boolean isBlank(String cs) {
-        int strLen;
-        if (cs == null || (strLen = cs.length()) == 0) {
-            return true;
-        }
-        for (int i = 0; i < strLen; i++) {
-            if (!Character.isWhitespace(cs.charAt(i))) {
-                return false;
+            int strLen;
+            if (cs == null || (strLen = cs.length()) == 0) {
+                return true;
             }
-        }
-        return true;
+            for (int i = 0; i < strLen; i++) {
+                if (!Character.isWhitespace(cs.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
     }
     protected HashMap<String, String> parseHeader(String headerString) {
-        // seperte out the part of the string which tells you which Auth scheme is it
-        String headerStringWithoutScheme = headerString.substring(headerString.indexOf(" ") + 1).trim();
-        HashMap<String, String> values = new HashMap<String, String>();
-        String keyValueArray[] = headerStringWithoutScheme.split(",");
-        for (String keyval : keyValueArray) {
-            if (keyval.contains("=")) {
-                String key = keyval.substring(0, keyval.indexOf("="));
-                String value = keyval.substring(keyval.indexOf("=") + 1);
-                values.put(key.trim(), value.replaceAll("\"", "").trim());
-            }
-        }
-        return values;
+              // seperte out the part of the string which tells you which Auth scheme is it
+              String headerStringWithoutScheme = headerString.substring(headerString.indexOf(" ") + 1).trim();
+              HashMap<String, String> values = new HashMap<String, String>();
+              String keyValueArray[] = headerStringWithoutScheme.split(",");
+              for (String keyval : keyValueArray) {
+                  if (keyval.contains("=")) {
+                      String key = keyval.substring(0, keyval.indexOf("="));
+                      String value = keyval.substring(keyval.indexOf("=") + 1);
+                      values.put(key.trim(), value.replaceAll("\"", "").trim());
+                  }
+              }
+              return values;
     }
 
     private static Oid getOid() {
-        Oid oid = null;
-        try {
-            oid = new Oid("1.3.6.1.5.5.2");
-        } catch (GSSException gsse) {
-            LOG.error("Unable to create OID 1.3.6.1.5.5.2 !", gsse);
-        }
-        return oid;
+            Oid oid = null;
+            try {
+                oid = new Oid("1.3.6.1.5.5.2");
+            } catch (GSSException gsse) {
+                logger.error("Unable to create OID 1.3.6.1.5.5.2 !", gsse);
+            }
+            return oid;
     }
 
 }

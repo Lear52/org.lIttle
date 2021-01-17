@@ -1,7 +1,6 @@
 package org.little.http.handler;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.FileNameMap;
@@ -209,17 +208,21 @@ public class lHttpResponse {
 
                    String path=decodePath(path0); 
 
-                   logger.trace(path0+" -> "+path);
+                   logger.trace("GET url:" +path0+" file:"+path);
 
                    File file = new File(path);
+                   int file_size=(int)file.length();
+
+                   logger.trace("GET url:" +path0+" file:"+path +" file size:"+file_size);
+
                    if(file.isHidden() || !file.exists()) {
-                      String err="file:"+path+" not exists"; 
+                      String err="GET url:" +path0+" file:"+path+" not exists"; 
                       logger.error(err);
                       sendTxt(ctx,req,err,HttpResponseStatus.NOT_FOUND,true);
                       return ;
                    }
                    if(!file.isFile()) {
-                      String err="file:"+path+" FORBIDDEN"; 
+                      String err="GET url:" +path0+" file:"+path+" FORBIDDEN"; 
                       logger.error(err);
                       sendTxt(ctx,req,err,HttpResponseStatus.FORBIDDEN,true);
                       return ;
@@ -231,15 +234,19 @@ public class lHttpResponse {
                        fileLength = source_file.length();
                    } 
                    catch (Exception ignore) {
-                      String err="file:"+path+" not exists"; 
+                      String err="GET url:" +path0+" file:"+path+" not exists"; 
                       logger.error(err);
                       sendTxt(ctx,req,err,HttpResponseStatus.NOT_FOUND,true);
                       return;
                    }
-  
+                   if(fileLength != file_size) {
+                	   logger.error("fileLength("+fileLength+") != file_size("+file_size+")");
+                   }
+                   
                    HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                    //-----------------------------------------------------------------------------------------------
                    HttpUtil.setContentLength(response, fileLength);
+                   logger.trace("GET url:" +path0+" file:"+path +" fileLength:"+fileLength);
 
                    //MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
                    //String mime_type_file=mimeTypesMap.getContentType(file.getPath());
@@ -270,8 +277,10 @@ public class lHttpResponse {
                    //response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
                    response.headers().set(HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(file.lastModified())));
 
+
                    if (!req.isKeepAlive()) {
                        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                       logger.trace("HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE !!!!!  file:"+path);
                    } 
                    else{ 
                        HttpVersion ver=req.protocolVersion();	
@@ -280,6 +289,7 @@ public class lHttpResponse {
                            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                        }
                    }
+                   response.headers().set("Server", "org.little.http");
                    //logger.trace("set header response");
                    //--------------------------------------------------------------------------------------------------
                    ctx.write(response);
@@ -290,14 +300,15 @@ public class lHttpResponse {
                    
                    try {
                          if (ctx.pipeline().get(SslHandler.class) == null) {
-                           logger.trace("sendFileFuture no SslHandler size:"+fileLength);
+                           logger.trace("sendFileFuture no SslHandler url:" +path0+" file:"+path +" fileLength:"+fileLength);
+                           
                            DefaultFileRegion  _f=new DefaultFileRegion(source_file.getChannel(), 0, fileLength);
                            sendFileFuture    = ctx.write        (_f,ctx.newProgressivePromise());
                            // Write the end marker.
                            lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
                          } 
                          else {
-                             logger.trace("sendFileFuture is SslHandler size:"+fileLength);
+                             logger.trace("sendFileFuture is SslHandler url:" +path0+" file:"+path +" fileLength:"+fileLength);
                              HttpChunkedInput _f=new HttpChunkedInput(new ChunkedFile(source_file, 0, fileLength, 8192));
                              sendFileFuture    = ctx.writeAndFlush(_f,ctx.newProgressivePromise());
                              // HttpChunkedInput will write the end marker (LastHttpContent) for us.
@@ -313,7 +324,7 @@ public class lHttpResponse {
                    }
 
 
-                   logger.trace("start listenet transfer");
+                   logger.trace("start listenet transfer file:"+path0);
 
                    sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
                        @Override
@@ -336,6 +347,7 @@ public class lHttpResponse {
                    if (!req.isKeepAlive()) {
                        // Close the connection when the whole content is written out.
                        lastContentFuture.addListener(ChannelFutureListener.CLOSE);
+                       logger.trace("ChannelFutureListener.CLOSE");
                    }
                    //---------------------------------------------------------------------------------------------------------
                  

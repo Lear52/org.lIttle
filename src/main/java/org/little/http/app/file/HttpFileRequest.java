@@ -2,7 +2,6 @@ package org.little.http.app.file;
 
 import org.little.http.handler.lHttpBuf;
 import org.little.http.handler.lHttpRequest;
-import org.little.store.lMessage;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -12,12 +11,8 @@ import io.netty.channel.ChannelHandlerContext;
 public class HttpFileRequest extends lHttpRequest{
        private static final Logger   logger  = LoggerFactory.getLogger(HttpFileRequest.class);
 
-       //protected String                 store;
-       //protected String                 folder;
-       //protected String                 msg;
        protected String                 cmd;
        protected boolean                is_correct;
-       //protected lMessage               upload_msg;
        protected HttpFileResponse       response;
        
        public HttpFileRequest(){
@@ -27,24 +22,16 @@ public class HttpFileRequest extends lHttpRequest{
        }
 
        private void r_clear(){
-               //store         =null;
-               //folder        =null;
-               //msg           =null;
                cmd           =null;   
                is_correct    =false;
-               //upload_msg    =new lMessage();
        }
        public void clear(){
                super.clear();
                r_clear();
        }
 
-       //public String      getStore       (){return store ;}
-       //public String      getFolder      (){return folder;}
        public String      getCmd         (){return cmd   ;}
        public boolean     isCorrect      (){return is_correct;}
-       //public lMessage    getUploadMsg   (){return upload_msg;}
-       //public String      getMsg         (){return msg   ;}
 
        public boolean HttpGet(ChannelHandlerContext ctx){
               //store=getUser();

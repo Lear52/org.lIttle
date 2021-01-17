@@ -1,5 +1,5 @@
 package org.little.imap.command.cmd.fetch.ex;
-import org.little.imap.command.cmd.fetch.*;
+//import org.little.imap.command.cmd.fetch.*;
 
 class FetchCommandParser {
 

@@ -1,16 +1,19 @@
 package org.little.http.auth;
 
+import org.little.proxy.util.statChannel;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 public class HttpAuthNo extends HttpAuth {
-    private static final Logger  logger = LoggerFactory.getLogger(HttpAuthBasic.class);
+    private static final Logger  logger = LoggerFactory.getLogger(HttpAuthNo.class);
 
-    @SuppressWarnings("unused")
-    private   HttpAuthNo() {}
-    protected HttpAuthNo(int _type_auth) {setTypeAuth(_type_auth);}
+    private   HttpAuthNo() {super(HttpAuth.NOAUTH,null);}
+    
+    protected HttpAuthNo(int _type_auth,statChannel _stat) {
+ 	   super(_type_auth,_stat);
+    }
        
        
     @Override

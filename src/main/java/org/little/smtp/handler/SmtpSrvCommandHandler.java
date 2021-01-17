@@ -65,7 +65,8 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
                
                
        }
-       public void channelReadContext(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf buffer) throws Exception {
+    
+       private void channelReadContext(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf buffer) throws Exception {
 
               if(buffer.readableBytes() >= 1 && buffer.getByte(buffer.readerIndex()) == '.') {
                   if(buffer.readableBytes() > 1) {
@@ -113,11 +114,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
               }
 
        }
-       //public void checkAuth(SmtpSessionContext sessionContext, ArrayList<CharSequence> list_cmd){
-       //       SmtpResponse reply=null;
-       //
-       //}
-       public void channelReadRequest(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf frame) throws Exception {
+       private void channelReadRequest(ChannelHandlerContext ctx,SmtpSessionContext sessionContext, ByteBuf frame) throws Exception {
 
               logger.trace("channelRead size:"+frame.readableBytes());
 
@@ -140,7 +137,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
               //------------------------------------------------------------------------------------------------------- 
               //
               //------------------------------------------------------------------------------------------------------- 
-              SmtpResponse reply=null;
+              SmtpResponse reply        = null;
               SmtpRequest  smtp_request = null;
               //------------------------------------------------------------------------------------------------------- 
               //
@@ -295,7 +292,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
                 
                 
               //------------------------------------------------------------------------------------------
-              if(commonSMTP.get().isProxy()==false){
+              if(commonSMTP.get().isProxy()==false || smtp_request.getCommand() == SmtpCommand.STLS){
                  // process command
                  reply = smtp_request.processCommand(sessionContext, ctx);
 
@@ -330,7 +327,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
          * @param cmd
          */
        private boolean validateCommandOrder(SmtpSessionContext ctx, SmtpRequest req) {
-    	   String cmd=req.getCommand().getName().toString();
+    	       String cmd=req.getCommand().getName().toString();
                if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd))) return true;
 
                if(ctx.lastCmd == null) {

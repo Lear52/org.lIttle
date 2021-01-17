@@ -13,21 +13,28 @@ public class commonAUTH{
 
        private static final Logger logger = LoggerFactory.getLogger(commonAUTH.class);
 
-       private int           type_authenticateClients       ;
+       private int           type_authenticateUser          ;
        private String        ldap_url                       ;
        private String        ldap_ad_username               ;
        private String        ldap_ad_password               ;
        private String        java_security_krb5_conf        ;
        private String        java_security_auth_login_config;
-       private String        realm;
+       private String        realm                          ;
        private String        default_domain                 ;
-       private boolean       auth_requared                  ; 
+       private boolean       auth_requared                  ;
+       private String        listuser_filename              ;
+       private authUser      auth_user                      ;
+       
+       public  static final  int NOAUTH   =0;
+       public  static final  int STUB     =1;
+       public  static final  int LDAP     =2;
+       public  static final  int XML      =3;
+       public  static final  int SPNEGO   =4;
 
-      
        public commonAUTH(){clear();}
 
        public void clear(){
-              type_authenticateClients       =0;
+              type_authenticateUser          =0;
               ldap_url                       ="ldap://rdc22-vip01.vip.cbr.ru:3268";
               ldap_ad_username               ="k1svcfarmadmin";       
               ldap_ad_password               ="3edcVFR$";             
@@ -36,6 +43,8 @@ public class commonAUTH{
               java_security_krb5_conf        ="krb5.conf";
               java_security_auth_login_config="login.conf";
               auth_requared                  =true;
+              listuser_filename              ="user_h.xml";
+              auth_user                      =new authUserEmpty(this);
        }
        public void init(NodeList glist){
               if(glist==null) return;
@@ -54,19 +63,32 @@ public class commonAUTH{
                   else
                   if("default_realm"                  .equals(n.getNodeName())){realm=n.getTextContent();                          logger.info("Default realm:"+realm);                                            }
                   else
-                  if("authenticateClients"            .equals(n.getNodeName())){String s=n.getTextContent(); try{type_authenticateClients=Integer.parseInt(s, 10);}catch(Exception e){ type_authenticateClients=0; logger.error("type_authenticateClients:"+s);} logger.info("type_authenticateClients:"+type_authenticateClients);}
-                  else
                   if("default_domain"                 .equals(n.getNodeName())){default_domain   =n.getTextContent(); logger.info("default_domain:"+default_domain);        }
                   else
                   if("auth_requared"                  .equals(n.getNodeName())){String s=n.getTextContent(); try{auth_requared=Boolean.parseBoolean(s);}catch(Exception e){auth_requared=true;logger.error("auth_requared:"+s);} logger.info("auth_requared:"+auth_requared);}
+                  else
+                  if("authenticateUser"               .equals(n.getNodeName())){String s=n.getTextContent(); try{type_authenticateUser=Integer.parseInt(s, 10);}catch(Exception e){ type_authenticateUser=0; logger.error("authenticateUser:"+s);} logger.info("authenticateUser:"+type_authenticateUser);}
+                  else
+                  if("listuser_filename"              .equals(n.getNodeName())){listuser_filename=n.getTextContent();             logger.info("listuser_filename:"+listuser_filename);}
                   //else
               }
               System.setProperty("java.security.krb5.conf",        getPathKrb5() );
               System.setProperty("java.security.auth.login.config",getPathLogin());
 
+              logger.info("authenticateUser:"+type_authenticateUser);
+              switch(type_authenticateUser) {
+              case NOAUTH: auth_user=new authUserEmpty     (this);break;
+              case STUB  : auth_user=new authUserStub      (this);break;             
+              case LDAP  : auth_user=new authUserLDAP      (this);break;        
+              case XML   : auth_user=new authUserXML       (this);break;                  
+              case SPNEGO: auth_user=new authUserNegotiate (this);break;             
+                                         
+              default:     auth_user=new authUserEmpty     (this);break;
+              }
+              
        }
 
-       public int           getTypeAuthenticateClients(){return type_authenticateClients;       }
+       public int           getTypeAuthenticateUser(){return type_authenticateUser;       }
        public String        getLdapUrl                (){return ldap_url;                       }
        public String        getRealm                  (){return realm;                          }
        public String        getLdapUsername           (){return ldap_ad_username;               }
@@ -75,7 +97,7 @@ public class commonAUTH{
        public String        getPathLogin              (){return java_security_auth_login_config;}
        public String        getDefaultDomain          (){return default_domain;                 }
        public boolean       getAuthRequared           (){return auth_requared;}
-
-
+       public authUser      getAuthUser               (){return auth_user    ;}
+       public String        getListUserFilename       (){return listuser_filename;}
 }
 

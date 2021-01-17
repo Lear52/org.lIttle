@@ -3,6 +3,7 @@ package org.little.smtp;
 import org.little.smtp.handler.SmtpSrvInitializer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.ssl.SSLHandlerProvider;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -53,6 +54,9 @@ public class SmtpServer implements Runnable {
         }
         @Override
         public void run() {
+
+                SSLHandlerProvider.initSSLContext(commonSMTP.get().getCfgSSL());
+
                 workerGroup        = new NioEventLoopGroup(1);
                 bossGroup          = new NioEventLoopGroup();
                 //LoggingHandler log = new LoggingHandler(LogLevel.INFO);

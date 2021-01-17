@@ -37,7 +37,7 @@ public class listChannel {
            }
            return null;
     }
-    public synchronized statChannel create(){
+    private synchronized statChannel create(){
            for(int i=0;i<list.size();i++){
                statChannel _ch=list.get(i);
                if(_ch.isEmpty()){

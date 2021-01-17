@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.little.imap.IMAPTransaction;
 import org.little.imap.SessionContext;
-import org.little.imap.commonIMAP;
+//import org.little.imap.commonIMAP;
 import org.little.imap.command.ImapCommand;
 import org.little.imap.command.ImapCommandParameter;
 import org.little.imap.command.ImapConstants;
@@ -17,7 +17,7 @@ import org.little.util.LoggerFactory;
 
 
 import com.sun.mail.imap.protocol.BASE64MailboxDecoder; // NOSONAR
-import com.sun.mail.imap.protocol.BASE64MailboxEncoder; // NOSONAR
+
 
 
 /**

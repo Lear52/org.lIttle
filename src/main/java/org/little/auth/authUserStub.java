@@ -11,23 +11,37 @@ public class authUserStub implements authUser {
         //private void load() {
         //        logger.trace("load ok");            
         //}
+        private String        domain;
+        
+        public authUserStub(commonAUTH cfg_auth){
+              this.domain=cfg_auth.getDefaultDomain();
+              logger.info("create authUserStub");
+        }
 
         public String  getFullUserName(String username){
-               return getFullUserName(username,"vip.cbr.ru");
+               return getFullUserName(username,domain);
         }
         public String  getFullUserName(String username,String domain){
+               if(username==null)return null;
+               if(username.indexOf('@')>= 0)return username;
                return username+"@"+domain;
         }
         public String  getShortUserName(String username){
+               if(username==null)return null;
+               int p=username.indexOf('@');
+               if(p>= 0){
+                 return username.substring(0,p);
+               }
                return username;
         }
 
-        public boolean isUser(String user) {
+        public boolean isUser(String username) {
+               if(username==null)return false;
                boolean ret=false;
-               if("av".equals(user)) ret=true;
+               if("av".equals(username)) ret=true;
                else
-               if("iap".equals(user)) ret=true;
-               logger.trace("user:"+user+" is correct:"+ret); 
+               if("iap".equals(username)) ret=true;
+               logger.trace("user:"+username+" is correct:"+ret); 
                return ret;
         }
         public boolean checkUser(String user,String passwd) {
