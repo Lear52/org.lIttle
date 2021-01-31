@@ -63,8 +63,12 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
               stat_channel.isFront(true);               
             
               //-------------------------------------------------------------------------------------------------------------------
-              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind()))ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
-              else                                                  ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0));
+              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind())){
+                 ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort));
+              }
+              else{
+                 ch_state = boot_strap.connect(new InetSocketAddress(remoteHost, remotePort),new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0));
+              }
               //-------------------------------------------------------------------------------------------------------------------
               
               out_channel = ch_state.channel();
@@ -77,7 +81,8 @@ public class NullProxyFrontendHandler extends ChannelInboundHandlerAdapter {
                                     if (future.isSuccess()) {
                                         in_channel.read();
                                         LOG.trace("connection complete start to read first data for channel id:"+getId());
-                                    } else {
+                                    } 
+                                    else {
                                         in_channel.close();
                                         LOG.trace("Close the connection id:"+getId());
                                         commonProxy.get().getChannel().remove(stat_channel);stat_channel=null;

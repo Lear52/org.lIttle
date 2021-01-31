@@ -5,8 +5,8 @@ import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.little.auth.authUser;
-import org.little.auth.authUserLDAP;
+//import org.little.auth.authUser;
+//import org.little.auth.authUserLDAP;
 import org.little.auth.commonAUTH;
 import org.little.http.auth.commonHttpAuth;
 import org.little.proxy.util.listChannel;
@@ -46,12 +46,19 @@ public class commonProxy extends common{
        private int            type_proxy                     ;
        private boolean        transparent                    ;
        private int            specified_number_of_threads    ;
+       private int            reverse_port                   ;
+       private String         reverse_host                   ;
 
        private commonSSL      ssl_cfg;
        private commonAUTH     auth_cfg; 
        private commonServer   server_cfg;
        private commonHttpAuth auth_http_cfg; 
-       
+
+       public static final int PROXY_TYPE_NULL=0;
+       public static final int PROXY_TYPE_HTTP=1;
+
+       public static final String S_PROXY_TYPE_NULL="http";
+       public static final String S_PROXY_TYPE_HTTP="null";
        
        public  static commonProxy  get(){ if(cfg==null)cfg=new commonProxy();return cfg;};
        
@@ -72,9 +79,12 @@ public class commonProxy extends common{
               
               setNodeName("littleproxy");
 
-              type_proxy                     =0;
+              type_proxy                     =PROXY_TYPE_NULL;
               transparent                    =false;
               specified_number_of_threads    = 1;
+              reverse_port                   =8081;
+              reverse_host                   ="*";
+
 
               global_list_host               = new listPointHost();
               hostlist                       = new listHost4UserImpl(global_list_host);
@@ -100,20 +110,24 @@ public class commonProxy extends common{
                      else
                      if("type"                           .equals(n.getNodeName())){
                                                          String s=n.getTextContent(); 
-                                                         if("null".equals(s))type_proxy=0; 
-                                                         if("http".equals(s))type_proxy=1; 
+                                                         if(S_PROXY_TYPE_NULL.equals(s))type_proxy=PROXY_TYPE_NULL; 
+                                                         if(S_PROXY_TYPE_HTTP.equals(s))type_proxy=PROXY_TYPE_HTTP; 
                                                          logger.info("Default type proxy:"+s); 
                      }
                      else
                      if("threads"                        .equals(n.getNodeName())){String s=n.getTextContent(); try{specified_number_of_threads=Integer.parseInt(s, 10);}catch(Exception e){ specified_number_of_threads=1; } logger.info("threads:"+specified_number_of_threads);}
+                     else
+                     if("reverse_port"                   .equals(n.getNodeName())){String s=n.getTextContent(); try{reverse_port               =Integer.parseInt(s, 10);}catch(Exception e){ reverse_port=8081; } logger.info("reverse_port:"+reverse_port);}
+                     else
+                     if("reverse_host"                   .equals(n.getNodeName())){reverse_host=n.getTextContent();  logger.info("reverse_host:"+reverse_host);}
+
                  }
               }                               
+              //logger.trace("reverse server:"+getReverseHost()+":"+getReversePort());
        
        }
        @Override
        public void init(){
-       
-              //auth_user=commonProxy.get().getCfgAuth().getAuthUser();
        
               NodeList list=getNode().getChildNodes();     
               for(int i=0;i<list.getLength();i++){
@@ -150,11 +164,13 @@ public class commonProxy extends common{
        public boolean        isTransparent             (){return transparent;                    }
        public int            getNumberThreads          (){return specified_number_of_threads;    }
        public int            getType                   (){return type_proxy;                     }
+       public int            getReversePort            (){return reverse_port;                   }
+       public String         getReverseHost            (){return reverse_host;                   }
        
-       public commonSSL      getCfgSSL      (){return ssl_cfg;      }
-       public commonAUTH     getCfgAuth     (){return auth_cfg;     }
-       public commonServer   getCfgServer   (){return server_cfg;   }
-       public commonHttpAuth getCfgHttpAuth (){return auth_http_cfg;}
+       public commonSSL      getCfgSSL                 (){return ssl_cfg;                        }
+       public commonAUTH     getCfgAuth                (){return auth_cfg;                       }
+       public commonServer   getCfgServer              (){return server_cfg;                     }
+       public commonHttpAuth getCfgHttpAuth            (){return auth_http_cfg;                  }
 
        public boolean authenticate(String userName, String password){
               boolean ret=getCfgAuth().getAuthUser().checkUser(userName,password);

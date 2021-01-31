@@ -1,5 +1,6 @@
 package org.little.proxy.NullR.handler;
 
+import org.little.util.*;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -10,26 +11,28 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class NullProxyHandler extends ChannelInboundHandlerAdapter {
-       private static final Logger      logger = LoggerFactory.getLogger(NullProxyHandler.class);
+public class NullProxyFHandler extends ChannelInboundHandlerAdapter {
+       private static final Logger      logger = LoggerFactory.getLogger(NullProxyFHandler.class);
 
        private Channel      out_channel;
        
       
-       public NullProxyHandler(Channel   out_channel) {
+       public NullProxyFHandler(Channel   out_channel) {
            this.out_channel=out_channel;
        }
        
        @Override
        public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-           logger.trace("channelRead channel:"+ctx.channel().id().asShortText() +" -> "+out_channel.id().asShortText());
+           if(out_channel==null)return;
+           //logger.trace("channelRead channel:"+ctx.channel().id().asShortText() +" -> "+out_channel.id().asShortText());
            if(out_channel.isActive()){
+           if(out_channel.isWritable()){
               //------------------------------------------------------------------------------------------------------------------
               out_channel.writeAndFlush(msg).addListener(new ChannelFutureListener() {
                    @Override
                    public void operationComplete(ChannelFuture future) {
                        if (future.isSuccess()) {
-                           logger.trace("channelwrite channel:"+ctx.channel().id().asShortText() +" -> "+out_channel.id().asShortText());
+                           //logger.trace("channelwrite channel:"+ctx.channel().id().asShortText() +" -> "+out_channel.id().asShortText());
                     	   ctx.channel().read();
                        } else {
                            future.channel().close();
@@ -37,6 +40,7 @@ public class NullProxyHandler extends ChannelInboundHandlerAdapter {
                    }
                });
               //------------------------------------------------------------------------------------------------------------------
+           }
            }
        }
       
@@ -54,8 +58,12 @@ public class NullProxyHandler extends ChannelInboundHandlerAdapter {
       
        @Override
        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-           logger.trace("exception NullProxyFrontendHandler  ex:"+cause);
-           closeOnFlush(ctx.channel());
+              Channel _in_channel = ctx.channel();
+              String _id          =_in_channel.id().asShortText();
+              Except ex=new Except("channel:"+_id,cause);
+              logger.error(" ex:"+ex);
+              //logger.trace("channel:"+_id+" ex:"+cause);
+              closeOnFlush(_in_channel);
        }
       
        /**

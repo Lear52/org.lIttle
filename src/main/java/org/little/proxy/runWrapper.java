@@ -16,25 +16,27 @@ import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
 public class runWrapper implements iWrapper{
 
-    private static final Logger      LOG = LoggerFactory.getLogger(runWrapper.class);
-
-    private NullProxyServer          server;
-    private HttpProxyServerBootstrap bootstrap;
-    private HttpProxyServer          proxyserver;
-    private boolean                  m_mainComplete;
-
-    public runWrapper(){
+       private static final Logger      LOG = LoggerFactory.getLogger(runWrapper.class);
+      
+       private NullProxyServer          server_null_proxy;
+       private HttpProxyServerBootstrap bootstrap_http_proxy;
+       private HttpProxyServer          server_http_proxy;
+       private boolean                  m_mainComplete;
+      
+       public runWrapper(){
               clear();  
-    }
-    public void clear(){
-              bootstrap  =null;  
-              proxyserver=null;
-              server     =null;
-              m_mainComplete=true;
-    }
+       }
 
-    public void run(){
-
+       @Override
+       public void clear(){
+                 bootstrap_http_proxy  =null;  
+                 server_http_proxy=null;
+                 server_null_proxy     =null;
+                 m_mainComplete=true;
+       }
+      
+       @Override
+       public void run(){
            synchronized(this){
                m_mainComplete = true;
                notifyAll();
@@ -50,107 +52,126 @@ public class runWrapper implements iWrapper{
                }
                try{Thread.sleep(1000L); } catch (InterruptedException e){LOG.trace("ex:" + e);}
            }
-    }
+       }
         
-    public int start(String args[]){
+       @Override
+       public int start(String args[]){
 
-           LOG.info("START LITTLE.PROXY "+commonProxy.ver());
-           commonProxy.get().init();
-           commonProxy.get().initMBean();
-           //---------------------------------------------------------------------------------
-           if(commonProxy.get().getType()==1){
-              int               port;             
-              boolean           transparent;
-          
-              Thread mainThread = new Thread(this, "wrapperMainProxy");
-              transparent = AuthClientToProxyConnection.isTransparent();
-              port        = AuthClientToProxyConnection.getPort();
-
-              InetSocketAddress server_address;
-              InetSocketAddress client_address;
-              if("*".equals(commonProxy.get().getCfgServer().getLocalServerBind())){
-                  server_address=new InetSocketAddress("0.0.0.0", port);
-                  LOG.info("HttpProxyServer bind *");
-              }
-              else{
-                  server_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalServerBind(), port);
-                  LOG.info("HttpProxyServer bind "+server_address);
-              }
-              if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind())){
-                  client_address=null;
-                  LOG.info("HttpProxyClient bind *");
-              }
-              else{
-                  client_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0);
-                  LOG.info("HttpProxyClient bind "+client_address);
-              }
-              bootstrap = DefaultHttpProxyServer.bootstrap()
-                         .withTransparent(transparent)
-                         .withAllowLocalOnly(false)
-                         .withAllowRequestToOriginServer(true)
-                         .withServerResolver(new DefaultHostResolver())
-                         .withAuthenticateSslClients(true) 
-                         .withNetworkInterface(client_address)
-                         .withAddress(server_address)
-                         //.withPort(port)
-                         //.withThrottling(readThrottleBytesPerSecond,writeThrottleBytesPerSecond)
-                         //.plusActivityTracker(new ActivityTrackerImpl())/**/
-                         //.withFiltersSource(new BasicHttpFiltersSource())
-
-              ;
-              LOG.trace("create HttpProxyServer");
+              LOG.info("START LITTLE.PROXY "+commonProxy.ver());
+              commonProxy.get().init();
+              commonProxy.get().initMBean();
+              //---------------------------------------------------------------------------------
+              if(commonProxy.get().getType()==commonProxy.PROXY_TYPE_HTTP){
+                 int               port;             
+                 boolean           transparent;
              
-              proxyserver=bootstrap.start();
+                 Thread mainThread = new Thread(this, "wrapperMainProxy");
+                 transparent = AuthClientToProxyConnection.isTransparent();
+                 port        = AuthClientToProxyConnection.getPort();
              
-              LOG.trace("start  HttpProxyServer");
+                 InetSocketAddress server_address;
+                 InetSocketAddress client_address;
+                 if("*".equals(commonProxy.get().getCfgServer().getLocalServerBind())){
+                     server_address=new InetSocketAddress("0.0.0.0", port);
+                     LOG.info("HttpProxyServer bind *");
+                 }
+                 else{
+                     server_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalServerBind(), port);
+                     LOG.info("HttpProxyServer bind "+server_address);
+                 }
+                 if("*".equals(commonProxy.get().getCfgServer().getLocalClientBind())){
+                     client_address=null;
+                     LOG.info("HttpProxyClient bind *");
+                 }
+                 else{
+                     client_address=new InetSocketAddress(commonProxy.get().getCfgServer().getLocalClientBind(), 0);
+                     LOG.info("HttpProxyClient bind "+client_address);
+                 }
+                 bootstrap_http_proxy = DefaultHttpProxyServer.bootstrap()
+                            .withTransparent(transparent)
+                            .withAllowLocalOnly(false)
+                            .withAllowRequestToOriginServer(true)
+                            .withServerResolver(new DefaultHostResolver())
+                            .withAuthenticateSslClients(true) 
+                            .withNetworkInterface(client_address)
+                            .withAddress(server_address)
+                            //.withPort(port)
+                            //.withThrottling(readThrottleBytesPerSecond,writeThrottleBytesPerSecond)
+                            //.plusActivityTracker(new ActivityTrackerImpl())/**/
+                            //.withFiltersSource(new BasicHttpFiltersSource())
              
-              mainThread.start();
-           }                                              
-           else                                               
-           if(commonProxy.get().getType()==0){            
-              server   = new NullProxyServer();             
-              LOG.trace("create NullProxyMain");
-              server.init();
-              server.start();
-              LOG.trace("start NullProxyMain");
-           }
-           //---------------------------------------------------------------------------------
-           new Thread(this).start();
-           LOG.trace("end start(String args[])");
+                 ;
+                 LOG.trace("create HttpProxyServer");
+                
+                 server_http_proxy=bootstrap_http_proxy.start();
+                
+                 LOG.trace("start  HttpProxyServer");
+                
+                 mainThread.start();
+              }                                              
+              else                                               
+              if(commonProxy.get().getType()==commonProxy.PROXY_TYPE_NULL){            
+                 server_null_proxy   = new NullProxyServer();             
+                 LOG.trace("create NullProxyMain");
+                 server_null_proxy.init();
+                 server_null_proxy.start();
+                 LOG.trace("start NullProxyMain");
+              }
+              //---------------------------------------------------------------------------------
+              new Thread(this).start();
+              LOG.trace("end start(String args[])");
+             
+              return 0;
+       }
 
-           return 0;
-    }
+       @Override
+       public int stop(int exitCode){
+              LOG.info("STOP LITTLEPROXY "+commonProxy.ver());
+              m_mainComplete = false;
+      
+              if(server_http_proxy!=null)server_http_proxy.stop();
+              if(bootstrap_http_proxy  !=null)bootstrap_http_proxy.stop();
+              if(server_null_proxy     !=null)server_null_proxy.stop();
+              return exitCode;
+       }
 
-    public int stop(int exitCode){
-           LOG.info("STOP LITTLEPROXY "+commonProxy.ver());
-           m_mainComplete = false;
+       @Override
+       public int restart() {
+              if(commonProxy.get().getType()==commonProxy.PROXY_TYPE_HTTP){
+             
+              }
+              else                                               
+              if(commonProxy.get().getType()==commonProxy.PROXY_TYPE_NULL){
+                  if(server_null_proxy!=null)server_null_proxy.stop();
+                     server_null_proxy   = new NullProxyServer();             
+                  LOG.trace("create NullProxyMain");
+                  server_null_proxy.init();
+                  server_null_proxy.start();
+                  LOG.trace("start NullProxyMain");
+              }        
+              return 0;
+       }
 
-           if(proxyserver!=null)proxyserver.stop();
-           if(bootstrap  !=null)bootstrap.stop();
-           if(server     !=null)server.stop();
-           return exitCode;
-    }
-
-    public static void main(String args[]){
-          
-           commonProxy.get().preinit();
-          
-           String xpath=iWrapper.getFileanme(args);
-           if(xpath==null)return;
-          
-           if(commonProxy.get().loadCFG(xpath)==false){
-              LOG.error("error read config file:"+xpath);
-              return;
-           }
-          
-           LOG.trace("START wrapper");
-          
-           runWrapper w=new runWrapper();
-           w.start(args);
-           w.run();
-           w.stop(0);
-          
-           LOG.trace("EXIT wrapper");
-    }
+       public static void main(String args[]){
+             
+              commonProxy.get().preinit();
+             
+              String xpath=iWrapper.getFileanme(args);
+              if(xpath==null)return;
+             
+              if(commonProxy.get().loadCFG(xpath)==false){
+                 LOG.error("error read config file:"+xpath);
+                 return;
+              }
+             
+              LOG.trace("START wrapper");
+             
+              runWrapper w=new runWrapper();
+              w.start(args);
+              w.run();
+              w.stop(0);
+             
+              LOG.trace("EXIT wrapper");
+       }
 }
 
