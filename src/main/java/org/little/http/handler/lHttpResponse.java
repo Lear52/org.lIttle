@@ -195,11 +195,18 @@ public class lHttpResponse {
               return buf.toString();
        }
        public void getFile(ChannelHandlerContext ctx,lHttpRequest req) {
+                   //logger.trace("set 111 req:"+req);
+
                    String path0=req.getPath();
 
-                   if(path0.equals(""))  path0="/index.html";
-                   if(path0.equals("/")) path0="/index.html";
-                   if(path0.equals("\\"))path0="/index.html";
+                   //logger.trace("set 112 path:"+path0);
+
+                   if(path0==null       )path0="/index.html";
+                   if(""  .equals(path0))path0="/index.html";
+                   if("/" .equals(path0))path0="/index.html";
+                   if("\\".equals(path0))path0="/index.html";
+
+                   //logger.trace("set 113 path:"+path0);
 
                    getFile(ctx,req,path0);
 

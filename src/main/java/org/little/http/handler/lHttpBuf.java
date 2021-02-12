@@ -1,11 +1,8 @@
 package org.little.http.handler;
 
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
 
 
 public class lHttpBuf{
-       //private static final Logger          logger  = LoggerFactory.getLogger(lHttpBuf.class);
 
        protected String                 name;
        protected String                 mime;

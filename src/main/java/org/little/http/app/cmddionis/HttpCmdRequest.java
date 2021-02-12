@@ -1,6 +1,6 @@
 package org.little.http.app.cmddionis;
 
-import org.little.http.handler.lHttpBuf;
+//import org.little.http.handler.lHttpBuf;
 import org.little.http.handler.lHttpRequest;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -8,11 +8,12 @@ import io.netty.channel.ChannelHandlerContext;
 
 
 public class HttpCmdRequest extends lHttpRequest{
-       private static final Logger          logger  = LoggerFactory.getLogger(HttpCmdRequest.class);
+       private static final Logger      logger  = LoggerFactory.getLogger(HttpCmdRequest.class);
 
-       protected String                 cmd;
-       protected boolean                is_correct;
        protected HttpCmdResponse        response;
+       private   String                 rcommand;
+       private   String                 filename;
+       private   String                 type_output;
        
        public HttpCmdRequest(){
                clear();
@@ -20,78 +21,110 @@ public class HttpCmdRequest extends lHttpRequest{
                setResponse(response);
        }
 
-       private void r_clear(){
-               cmd           =null;   
-               is_correct    =false;
-       }
+       @Override
        public void clear(){
                super.clear();
-               r_clear();
        }
 
-       public String      getCmd         (){return cmd   ;}
-       public boolean     isCorrect      (){return is_correct;}
+       public String getCMD(){return rcommand;}
+       public String getFilename(){return filename;}
+       public String getType(){return type_output;}
 
+       @Override
        public boolean HttpGet(ChannelHandlerContext ctx){
+    	      String cmd;
               String user=getUser();
+
               cmd  =getPath();
-                  logger.trace("set 0 cmd:"+cmd+" store:"+user);
+              logger.trace("set 0 cmd:"+cmd+" user:"+user);
            
-              if(cmd.startsWith("/get" )){cmd="get"  ;is_correct=true;}                   
+              if(cmd.startsWith("/get" )){cmd="get"  ;}                   
               else
-              if(cmd.startsWith("/list")){cmd="list" ;is_correct=true;}    
+              if(cmd.startsWith("/send" )){cmd="send"  ;}                   
+              else
+              if(cmd.startsWith("/receive" )){cmd="receive";}                   
+              else
+              if(cmd.startsWith("/list" )){cmd="list";}                   
               else{
-                 cmd="file" ;                                                             
-                 is_correct=true;
+                 cmd="file";
               }
-              is_correct=true;
-              logger.trace("set 1 cmd:"+cmd+ " is_correct:"+is_correct);
-                  
-              //String _folder=getQuery().get("folder");
+              logger.trace("set 1 cmd:"+cmd);
 
 
-              if(cmd.equals("get")){
+              if("get".equals(cmd)){
+
+                  rcommand=getQuery().get("cmd");
+                  type_output=getQuery().get("type");
+                  if(type_output==null)type_output="txt";
+                  if(type_output.startsWith("js" ))type_output="js";
+                  else                             type_output="txt";
+
+                  logger.trace("set 2 cmd:get");
+                  response.runCmd(ctx,this);
+                  return RequestProcessOk;
               }
-              if(cmd.equals("list")){
+              else
+              if("list".equals(cmd)){
+                  type_output=getQuery().get("type");
+                  if(type_output==null)type_output="txt";
+                  if(type_output.startsWith("js" ))type_output="js";
+                  else                             type_output="txt";
+                  logger.trace("set 2 cmd:list");
+                  response.runList(ctx,this);
+                  return RequestProcessOk;
+              }
+              else
+              if("receive".equals(cmd)){
+                  filename=getQuery().get("file");
+                  logger.trace("set 2 cmd:receive");
+                  response.runReceive(ctx,this);
+                  return RequestProcessOk;
+              }
+              else
+              if("file".equals(cmd)){
+                  response.getFile(ctx,this);
+                  return RequestProcessOk;
+              }
+              else
+              {
+                  String txt="unknow cmd:"+cmd; 
+                  logger.trace(txt);
+                  response.sendError(ctx,this,txt);
+                  return RequestProcessBad;
               }
 
-               is_correct=true;
-
-               if("list".equals(getCmd())){
-                   return false;
-                }
-                else
-                if("get".equals(getCmd())){
-                   return false;
-                }
-                else
-                if("file".equals(getCmd())){
-                   response.getFile(ctx,this);
-                   return true;
-                }
-                else
-                {
-                   String txt="unknow cmd:"+getCmd(); 
-                   logger.trace(txt);
-                   response.sendError(ctx,this,txt);
-                   return true;
-                }
-
-               //return true;
        }
-       public boolean HttpUpload(ChannelHandlerContext ctx){
-           
-               lHttpBuf file=this.getBinBuffer().get(0); /**/
-           
-               logger.trace("HttpUpload:"+file.getName());
-
-               return false;
-       }
+       @Override       
        public boolean HttpPost(ChannelHandlerContext ctx){
-              return HttpUpload(ctx);
+    	      String cmd;
+              String user=getUser();
+
+              cmd  =getPath();
+              logger.trace("set 0 cmd:"+cmd+" user:"+user);
+           
+              if(cmd.startsWith("/send" )){cmd="send"  ;}                   
+              if("send".equals(cmd)){
+                  logger.trace("set 2 cmd:send");
+                  response.runSend(ctx,this);
+                  return RequestProcessOk;
+              }
+              return RequestProcessBad;
        }
+       @Override
        public boolean HttpPut(ChannelHandlerContext ctx){
-              return HttpUpload(ctx);
+    	      String cmd;
+              String user=getUser();
+
+              cmd  =getPath();
+              logger.trace("set 0 cmd:"+cmd+" user:"+user);
+           
+              if(cmd.startsWith("/send" )){cmd="send"  ;}                   
+              if("send".equals(cmd)){
+                  logger.trace("set 2 cmd:send");
+                  response.runSend(ctx,this);
+                  return RequestProcessOk;
+              }
+              return RequestProcessBad;
        }
 
 

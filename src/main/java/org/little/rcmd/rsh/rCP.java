@@ -26,6 +26,7 @@ public class rCP extends rShell  implements rCMD {
        protected rCP(String _rfile,String _lfile) {
               set(_rfile,_lfile);
        }
+       /*
        protected rCP(rShell sh,String name,int index,String _rfile,String _lfile) {
               set(_rfile,_lfile);
 
@@ -36,6 +37,22 @@ public class rCP extends rShell  implements rCMD {
               this.name=name;
               this.index=index;
        }
+       */
+       protected rCP(String name,int index,String _rfile,String _lfile) {
+           set(_rfile,_lfile);
+
+           setHost  ("");
+           setUser  ("");
+           setPasswd("");
+
+           this.name=name;
+           this.index=index;
+       }
+
+       @Override
+       public String type() {return getClass().getName();}
+       @Override
+       public String [] print() {return str_null;}
        
        protected String r_command(){ return null; }
        @Override
@@ -78,20 +95,23 @@ public class rCP extends rShell  implements rCMD {
                return false;
        }
        @Override
-       public boolean run(BufferedInputStream bufin) {
-              return run();
+       public boolean run(rShell sh,BufferedInputStream bufin) {
+              return run(sh);
               }
 
        @Override
-       public boolean run() {
-               if(!_open_session())return false; 
-               if(!_open_channel())return false; 
+       public boolean run(rShell sh) {
+              setHost  (sh.getHost());
+              setUser  (sh.getUser());
+              setPasswd(sh.getPasswd());
+    	   
+              if(!_open_session())return false; 
+              if(!_open_channel())return false; 
 
+              boolean ret=_run();
 
-               boolean ret=_run();
-
-               _close();
-               return ret;
+              _close();
+              return ret;
        }
        @Override
        public  boolean open() {

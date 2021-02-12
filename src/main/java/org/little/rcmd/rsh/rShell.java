@@ -1,5 +1,5 @@
 package org.little.rcmd.rsh;
-
+        
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -36,17 +37,18 @@ public class rShell{
                user=null;
                passwd=null;
        }
-       public String       getHost  () {return host;}
-       public String       getUser  () {return user;}
-       public String       getPasswd() {        return passwd;        }
-       public void         setHost  (String host) {this.host = host;}
-       public void         setUser  (String user) {this.user = user;        }
-       public void         setPasswd(String passwd) {this.passwd = passwd;        }
+       public String       getHost  () {return host;  }
+       public String       getUser  () {return user;  }
+       public String       getPasswd() {return passwd;}
+       public void         setHost  (String host)   {this.host = host;    }
+       public void         setUser  (String user)   {this.user = user;    }
+       public void         setPasswd(String passwd) {this.passwd = passwd;}
 
-       public InputStream  getIN    (){return in;  }
+       public InputStream  getIN    (){return in; }
        public OutputStream getOUT   (){return out;}
 
        protected  boolean _open_session() {
+                  logger.trace("begin open session host:"+host+" user:"+user);
                   try{
                       session=jsch.getSession(user, host, 22);
                       session.setPassword(passwd);
@@ -78,15 +80,22 @@ public class rShell{
                       session.connect(30000);  
                   }
                   catch(Exception e){
-                              logger.error("error ex:"+e);
+                        logger.error("error ex:"+e);
                         return false;
                   }
+                  logger.trace("open channel session");
                    
                   return true;
        }
        protected  boolean _open_channel() {
                   try{
                       channel=session.openChannel("shell");
+//System.out.println("channel"+channel.getClass().getName());
+                      { ChannelShell sh=(ChannelShell)channel;
+                        //sh.setPty(boolean enable);
+                        //sh.setPtyType("dumb",80, 2500, 640, 480);
+                        sh.setPtyType("tty",80, 2500, 640, 480);
+                      }
                       out=channel.getOutputStream();
                       in =channel.getInputStream();
                       channel.connect(3*1000);
@@ -95,11 +104,13 @@ public class rShell{
                         logger.error("error open channel ex:"+e);
                         return false;
                   }
+                  logger.trace("open channel shell");
                   return true;
        }
        protected void _close(){
                  channel.disconnect();
                  session.disconnect();
+                 logger.trace("close channel and session");
        }
 
        public  boolean open() {
@@ -110,12 +121,12 @@ public class rShell{
        public void close(){ _close();}
        
        public boolean run()  {
-              BufferedInputStream bufin = new BufferedInputStream(in);
+              BufferedInputStream buf_input = new BufferedInputStream(in);
               int c;
               
               try {
                    StringBuilder buf=new StringBuilder(1024);
-                   while ((c=bufin.read()) >= 0){
+                   while ((c=buf_input.read()) >= 0){
                           if((char)c=='\r' || (char)c=='\n'|| (char)c=='#') {
                              String s=buf.toString();
                              System.out.println(s);

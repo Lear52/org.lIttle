@@ -1,181 +1,232 @@
 package org.little.rcmd.rsh;
-
+       
 import java.io.BufferedInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-public class rCommand implements rCMD {
+public class rCommand  implements rCMD{
        private static Logger logger = LoggerFactory.getLogger(rCommand.class);
 
-       private sequences seq;
-       private String    request;
-       private String    response;
-       private rShell    sh;
-       private int       index;
-       private String    name;
-
-       public rCommand(rShell sh,String name,int index,String request,String response) {
-
-              this.request=request;
-              this.response=response;
-              this.sh=sh;
-              this.name=name;
-              this.index=index;
-
-              seq=new sequences();
-              seq.add("ok"          ,response);
-              seq.add("error"       ,"Error:");
-              seq.add("syntax_error","Syntax error:");
-              seq.add("info"        ,"Info:");
-              seq.add("warn"        ,"Warning:");
-/*
-adm@DionisNX# show crypto disec conn
-[#!]NAME         ID    SRC             DST             SN         LOC   REM   A B
-adm@DionisNX#
-
-adm@DionisNX# show crypto ike conns
-
-adm@DionisNX#
-*/
+       private String          id;
+       private ArrayList<rCMD> list_request;
 
 
+       public rCommand(String _id) {
+              list_request=new ArrayList<rCMD>();
+              this.id=_id;
        }
-       protected boolean sendRequest()  {
-              if(request==null){
-                 logger.trace("request is null");
-                 return true;
-              }
-              try {
-                  if(request.length()>0)sh.getOUT().write(request.getBytes());
-                  else logger.trace("request is 0");
-                  
-                  sh.getOUT().write("\r\n".getBytes());
-                  sh.getOUT().flush();
-              } catch (IOException e) {
-                  logger.error("sendRequest "+toString()+" ex:"+e);
-                  return false;
-              }
+       public rCommand(String _id,String _request,String response,boolean is_print_res) {
+              list_request=new ArrayList<rCMD>();
+              this.id=_id;
+              list_request.add(new rRequest(_id,1,_request,new rResponse(_id,response,is_print_res)));
+       }
 
-              rlog.print("send:"+request+"!\n");
-            
+       public String getID() {return id;}
+ 
+       @Override
+       public String type() {return getClass().getName();}
+
+       @Override
+       public boolean run(rShell sh)  {
+              BufferedInputStream buf_input = new BufferedInputStream(sh.getIN());
+              return run(sh,buf_input);
+       }
+       @Override
+       public boolean run(rShell sh,BufferedInputStream buf_input)  {
+              logger.debug("begin run cmd:"+id);
+
+              for(int i=0;i<list_request.size();i++){
+                  rCMD cmd=list_request.get(i);
+                  if(cmd==null)continue;
+                  boolean ret;
+
+                  ret=cmd.run(sh,buf_input);
+
+                  if(ret==false) {
+                     logger.trace("cmd:"+cmd.toString()+" ret:"+ret);
+                     logger.error("cmd:"+cmd.toString()+" ret:"+ret);
+                     return ret;
+                  }
+              } 
+              logger.debug("end run cmd:"+id);
               return true;
        }
-       protected String getString(BufferedInputStream bufin){
-              StringBuilder buf=new StringBuilder();
-              int c;
-              try {
-                    while((c=bufin.read()) >= 0){
-                          char _c=(char)c;
-                          rlog.print(_c);
-                          if(_c=='\r' || _c=='\n')break;
-                          buf.append(_c);
-                    }
-                            
-              } catch (IOException e) {
-                 logger.error("getString "+toString()+" ex:"+e);
+       @Override
+       public String [] print() {
+              ArrayList<String> buf=new ArrayList<String>();  
+              //StringBuilder buf=new StringBuilder();  
+              for(int i=0;i<list_request.size();i++){
+                  rCMD cmd=list_request.get(i);
+                  if(cmd==null)continue;
+                  String[] s=cmd.print();
+                  if(s==null)continue;
+                  if(s.length<1)continue;
+                  if("".equals(s[0]))continue;
+                  buf.add(s[0]);
+                  //buf.append(cmd.print());
               }
-            
-              return buf.toString();
-        }
+              //return buf.toString();
+              String[] ret=new String[buf.size()];
+              return buf.toArray(ret);
+       }
+          
+       public boolean loadCFG(Node node_cfg) {
+              list_request=makeListCMD(node_cfg,id);
+              if(list_request.size()>0)return true;
+              else return false;
+       }
+       private static ArrayList<rCMD> makeListCMD(Node node_cfg,String id) {
+               ArrayList<rCMD> list_request=new ArrayList<rCMD>();
+               NodeList glist=node_cfg.getChildNodes();     
+               int count=0;
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
  
-        public boolean run()  {
-            BufferedInputStream bufin = new BufferedInputStream(sh.getIN());
-            return run(bufin);
-        }
-        public boolean run(BufferedInputStream bufin)  {
-               
-               sendRequest();
-               
-               int c;
-               if(response==null)return true;
-               try {
-                    while((c=bufin.read()) >= 0){
-                          char _c=(char)c;
-                          byte _b=(byte)c;
-
-                          rlog.print(_c);
-        
-                          sequence s=seq.put(_b);
-                          if(s==null)continue;
-
-                          rlog.print("find response");
-
-                          if("ok".equals(s.getName())){
-                             logger.trace("run:"+toString()+" for:"+s.getName()+" ret:true");
-                             return true;
-                          }
-                          else
-                          if("warn".equals(s.getName())){
-                             logger.trace("run:"+toString()+" for:"+s.getName()+" ret:"+getString(bufin));
-                             continue;
-                          }
-                          else
-                          if("info".equals(s.getName())){
-                             logger.trace("run:"+toString()+" for:"+s.getName()+" ret:"+getString(bufin));
-                             continue;
-                          }
-                          else{ 
-                             logger.trace("run:"+toString()+" for:"+s.getName()+" ret:false");
-
-                             rlog.print(">:"+s.getName()+"\n");
-
-                             String t=getString(bufin);
-
-                             rlog.print("text:"+t+"\n");
-
-                             return false;
-                          }
-                    }
-                            
-               } catch (IOException e) {
-                    logger.error("sendRequest "+toString()+" ex:"+e);
-                    return false;
+                   if("cmd".equals(n.getNodeName())){
+                      // make request
+                      rRequest cmd=makeCmd(n,count++,id);
+                      if(cmd==null)continue;
+                      list_request.add(cmd);
+                   }            
+                   if("get".equals(n.getNodeName())){
+                      // make rcp
+                      rCP cmd=makeR2L(n,count++,id);
+                      if(cmd==null)continue;
+                      list_request.add(cmd);
+                   }            
+                   if("put".equals(n.getNodeName())){
+                      // make rcp
+                      rCP cmd=makeL2R(n,count++,id);
+                      if(cmd==null)continue;
+                      list_request.add(cmd);
+                   }            
                }
-               return true;
-        }
+              
+               return list_request;
+       }
+
+       private static rRequest makeCmd(Node node_cfg,int index,String id) {
+               rRequest  cmd=null;
+               if(node_cfg==null)return null;
+
+               String    request=null;
+               rResponse response=null;
+               NodeList glist=node_cfg.getChildNodes();     
+               if(glist!=null)
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
+
+                   if("req".equalsIgnoreCase(n.getNodeName())){
+                      request=n.getTextContent();
+                   }            
+                   else
+                   if("res".equalsIgnoreCase(n.getNodeName())){
+                      String _id="01";
+                      String res=null;
+                      boolean is_print_res=false;
+                      logger.info("res");
+
+                      if(n.getAttributes().getNamedItem("res")!=null){
+                         res=n.getAttributes().getNamedItem("res").getTextContent();
+                         logger.info("res:"+res);
+                      }
+                      else{
+                         res=n.getTextContent();
+                      }
+                      if(n.getAttributes().getNamedItem("id")!=null){
+                         _id=n.getAttributes().getNamedItem("id").getTextContent();
+                         logger.info("id:"+id);
+                      }
+                      if(n.getAttributes().getNamedItem("print")!=null){
+                         String _is=n.getAttributes().getNamedItem("print").getTextContent();
+                         try{is_print_res=Boolean.parseBoolean(_is);}catch(Exception e){ is_print_res=false;logger.error("is_print_res:"+_is);} 
+                         logger.info("is_print_res:"+is_print_res);
+                      }
+                      response=new rResponse(_id,res,is_print_res);
+
+                      NodeList res_list=n.getChildNodes();     
+                      if(glist!=null)
+                      for(int k=0;k<res_list.getLength();k++){
+                          Node nn=res_list.item(i);
+                          ArrayList<rCMD> _list_request=makeListCMD(node_cfg,id);
+                          response.setCMD(_list_request);
+                      }            
+                  }
+               }
+
+               if(request==null && response==null)return null;
+
+               cmd=new rRequest(id,index,request,response); 
+
+               return cmd;
+       }
         
-        
-        public String toString(){
-               return "rcmd:"+name+" index:"+index+" request:"+request+" "+"response:"+response;
-        }  
 
+       private static rCP makeR2L(Node node_cfg,int index,String id) {
+               rCP  cmd=null;
+               if(node_cfg==null)return null;
 
-        public static void main(String[] arg){
-            boolean ret;
-            rShell sh=new rShell();
-            
-            rCommand cmd0=new rCommand(sh,"",1,null,"# ");
-            rCommand cmd1=new rCommand(sh,"",2,"configure terminal","(config)# ");
-            rCommand cmd2=new rCommand(sh,"",3,"exit",null);
-               
-            if(arg.length>0)sh.setHost(arg[0]);
-            else            sh.setHost("127.0.0.1");
-            
-            if(arg.length>1)sh.setUser(arg[1]);
-            else            sh.setUser("root");
-            
-            if(arg.length>2)sh.setPasswd(arg[2]);
-            else sh.setPasswd("biglear14");
-            
-            ret=sh.open();
-            System.out.println("open connection:"+ret); 
+               String remote=null;
+               String local=null;
+               String smtp=null;
+               String http=null;
+               NodeList glist=node_cfg.getChildNodes();     
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
 
-            BufferedInputStream bufin = new BufferedInputStream(sh.getIN());
+                   if("remote".equals(n.getNodeName())){
+                      remote=n.getTextContent();
+                   }            
+                   else
+                   if("local".equals(n.getNodeName())){
+                       local=n.getTextContent();
+                   }            
+                   else
+                   if("smtp".equals(n.getNodeName())){
+                       smtp=n.getTextContent();
+                   }            
+                   else
+                   if("http".equals(n.getNodeName())){
+                       http=n.getTextContent();
+                   }            
 
-            System.out.println("----------------"); 
-            ret=cmd0.run(bufin);            
-            System.out.println("----------------"+ret); 
-            ret=cmd1.run(bufin);            
-            System.out.println("----------------"+ret); 
-            ret=cmd2.run(bufin);            
-            System.out.println("----------------"+ret); 
+               }
+               if(remote==null)return null;
+               cmd=null;
 
-            sh.close();
-            System.out.println("close connection"); 
-            
-            
-        }
+               if(local!=null)cmd=new rCP_R2L(id,index,remote,local); 
+               if(smtp !=null)cmd=new rCP_R2S(id,index,remote,smtp); 
+               if(http !=null)cmd=new rCP_R2H(id,index,remote,http); 
+               return cmd;
+       }
+       private static rCP makeL2R(Node node_cfg,int index,String id) {
+               rCP  cmd=null;
+               if(node_cfg==null)return null;
+
+               String remote=null;
+               String local=null;
+               NodeList glist=node_cfg.getChildNodes();     
+               for(int i=0;i<glist.getLength();i++){
+                   Node n=glist.item(i);
+
+                   if("remote".equals(n.getNodeName())){
+                      remote=n.getTextContent();
+                   }            
+                   else
+                   if("local".equals(n.getNodeName())){
+                       local=n.getTextContent();
+                   }            
+
+               }
+               if(remote==null && local==null)return null;
+
+               //cmd=new rCP_L2R(sh,name,index,remote,local); 
+               cmd=new rCP_L2R(id,index,remote,local); 
+               return cmd;
+       }
 
 }

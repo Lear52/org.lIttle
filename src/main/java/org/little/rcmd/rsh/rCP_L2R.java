@@ -20,16 +20,23 @@ public class rCP_L2R extends rCP{
        public rCP_L2R(String rfile,String lfile) {
               super(rfile,lfile);
        }
+       /*
        public rCP_L2R(rShell sh,String name,int index,String _rfile,String _lfile) {
               super(sh,name,index,_rfile,_lfile);
+       }
+       */
+       public rCP_L2R(String name,int index,String _rfile,String _lfile) {
+           super(name,index,_rfile,_lfile);
        }
 
        @Override
        protected String r_command(){
                  if(ptimestamp)return "scp -p -t "+rfile;
                  else          return "scp -t "+rfile;
-     }
+      }
 
+       //@Override
+       //public String type() {return getClass().getName();}
 
        @Override
        protected boolean _run() {

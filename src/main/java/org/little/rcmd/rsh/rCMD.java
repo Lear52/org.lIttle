@@ -4,9 +4,11 @@ import java.io.BufferedInputStream;
 
 
 public interface rCMD {
-
-        public boolean run();
-        public boolean run(BufferedInputStream bufin);
+        public static String [] str_null=new String [0];
+        public boolean run(rShell sh);
+        public boolean run(rShell sh,BufferedInputStream buf_input);
+        public String type();
+        public String [] print();
 
 
 }

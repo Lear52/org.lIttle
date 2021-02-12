@@ -58,12 +58,14 @@ public class lHttpServerHandler extends SimpleChannelInboundHandler<HttpObject> 
     
        @Override
        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+              if(cause==null)return;
 
-              logger.error("class:"+cause.getClass()+" cause:"+ cause.getMessage());
-              if(stringWildCard.wildcardMatch(cause.getMessage(), "*certificate_unknown*", stringCase.INSENSITIVE))return ;
-
+              if(cause.getMessage()==null){
+                 logger.error("get exception class:"+cause.getClass()+" cause_message:"+ cause.getMessage());
+                 if(stringWildCard.wildcardMatch(cause.getMessage(), "*certificate_unknown*", stringCase.INSENSITIVE))return ;
+              }
               Except ex=new Except(cause);
-              logger.error(" lHttpServerHandler exceptionCaught ex:"+ ex);
+              logger.error("get exception exceptionCaught ex:"+ ex);
 
               lHttpRequest req = ctx.channel().attr(lHttpRequest.ATTRIBUTE_KEY).get();
 

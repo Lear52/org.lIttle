@@ -62,7 +62,9 @@ public class lHttpRequest{
        protected HashMap<String,String> app_arg;
        protected ArrayList<lHttpBuf>    bin_buffer;
        
-
+       public static final boolean RequestProcessOk=true;
+       public static final boolean RequestProcessBad=false;
+       
        public lHttpRequest(){
               clear();
               request       =null;
@@ -81,19 +83,19 @@ public class lHttpRequest{
               partialContent=null;
        }
 
-       public String      getPath        (){return path;}
-       public String      getApp         (){return app;}
-       public HttpVersion protocolVersion(){if(request==null)return null;else return request.protocolVersion();}
-       public String      getURI         (){if(request==null)return null;else return request.uri();}
-       public boolean     isKeepAlive    (){return keepAlive;}
-       public HttpHeaders getHeaders     (){if(request==null)return null;else return request.headers();}
-       public HttpMethod  getMethod      (){if(request==null)return null;else return request.method();}
+       public String                  getPath        (){return path;}
+       public String                  getApp         (){return app;}
+       public HttpVersion             protocolVersion(){if(request==null)return null;else return request.protocolVersion();}
+       public String                  getURI         (){if(request==null)return null;else return request.uri();}
+       public boolean                 isKeepAlive    (){return keepAlive;}
+       public HttpHeaders             getHeaders     (){if(request==null)return null;else return request.headers();}
+       public HttpMethod              getMethod      (){if(request==null)return null;else return request.method();}
        
-       public HashMap<String, String> getQuery() {return app_arg;}
-       public ArrayList<lHttpBuf>     getBinBuffer() {return bin_buffer;}
-       public lHttpResponse           getResponse() {return response;}
-       public void                    setResponse(lHttpResponse response) {this.response = response;}
-       public String                  getUser() {return http_auth.getResponse().getUser();}
+       public HashMap<String, String> getQuery       () {return app_arg;}
+       public ArrayList<lHttpBuf>     getBinBuffer   () {return bin_buffer;}
+       public lHttpResponse           getResponse    () {return response;}
+       public void                    setResponse    (lHttpResponse response) {this.response = response;}
+       public String                  getUser        () {return http_auth.getResponse().getUser();}
 
        public void processHttpRequest(ChannelHandlerContext ctx, HttpRequest request) throws Exception {
            HttpAuthResponse ret_auth = null;
@@ -104,7 +106,7 @@ public class lHttpRequest{
            //--------------------------------------------------------------
            ret_auth = Auth();
           
-           logger.trace("channelRead0 1 lHttpRequest"+this);
+           logger.trace("processHttpRequest lHttpRequest:"+this + " HttpRequest"+ request);
           
            if(ret_auth==null) {
               response.sendAuthRequired(ctx,request,ret_auth);
@@ -120,12 +122,12 @@ public class lHttpRequest{
            //--------------------------------------------------------------------------------------
            if(HttpMethod.GET.equals(request.method())) {
               boolean ret=HttpGet(ctx);
-              if(ret==false)response.sendOk(ctx,this," ");
+              if(ret==RequestProcessBad)response.sendOk(ctx,this," ");
               return;                          
            }
            else
            if(HttpMethod.POST.equals(request.method()) || HttpMethod.PUT.equals(request.method())) {
-              if(createPostRequestDecoder()==false){
+              if(createPostRequestDecoder()==RequestProcessBad){
                  String txt= "createPostRequestDecoder==false";
                  logger.error(txt);
                  response.sendError(ctx,this,txt);
@@ -159,7 +161,6 @@ public class lHttpRequest{
               }
               //
               clearContent();
-              //  response.saveMsg(ctx,this);
               return 0;
            }
            return 1;
@@ -179,9 +180,9 @@ public class lHttpRequest{
        //    return 1;
        //}
        
-       public boolean HttpGet(ChannelHandlerContext ctx){return false;}
-       public boolean HttpPost(ChannelHandlerContext ctx){return false;}
-       public boolean HttpPut(ChannelHandlerContext ctx){return false;}
+       public boolean HttpGet(ChannelHandlerContext ctx){return RequestProcessBad;}
+       public boolean HttpPost(ChannelHandlerContext ctx){return RequestProcessBad;}
+       public boolean HttpPut(ChannelHandlerContext ctx){return RequestProcessBad;}
        //-------------------------------------------------------------------------------------------------
        //-------------------------------------------------------------------------------------------------
        //-------------------------------------------------------------------------------------------------
@@ -246,10 +247,10 @@ public class lHttpRequest{
                             Except ex=new Except("parse URI",e);
                             logger.error(ex);
                             clear();
-                            return false;
+                            return RequestProcessBad;
                       }
 
-                      return true;
+                      return RequestProcessOk;
        }
        
        protected boolean createPostRequestDecoder(){
@@ -259,9 +260,9 @@ public class lHttpRequest{
             catch (ErrorDataDecoderException e) {
                   Except ex=new Except("create HttpPostRequestDecoder ",e);
                   logger.error(ex);
-                  return false;
+                  return RequestProcessBad;
             }
-            return true;
+            return RequestProcessOk;
        }
 
        private void readDataByChunk() {

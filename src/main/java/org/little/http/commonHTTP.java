@@ -46,8 +46,8 @@ public class commonHTTP extends common{
               auth_http_cfg=new commonHttpAuth();
 
               setNodeName("littlehttp");
-              root_document                  ="";
-              app_name                       ="appkeystore";
+              root_document="";
+              app_name     ="appkeystore";
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){
