@@ -32,37 +32,37 @@ public class stringTransform {
         return getHex(mdig.digest());
        }
 
-       public  static String getMD5Hash(byte []byte_buffer) {
-           MessageDigest md;
-           try{md = MessageDigest.getInstance("MD5");}catch(Exception e){Except ex=new Except(e);logger.error(ex);return null;}
-           md.update(byte_buffer);
-           byte []md5_buffer = md.digest();
-           return getHex(md5_buffer);
+       public static String getMD5Hash(byte []byte_buffer) {
+              MessageDigest md;
+              try{md = MessageDigest.getInstance("MD5");}catch(Exception e){Except ex=new Except(e);logger.error(ex);return null;}
+              md.update(byte_buffer);
+              byte []md5_buffer = md.digest();
+              return getHex(md5_buffer);
        }
        public static String getHEX(String str_buffer) {
               //if(false)return getHex(str_buffer.getBytes());
               //else     
-            	  return getHex(str_buffer.toCharArray());
+              return getHex(str_buffer.toCharArray());
        }
        
        public static String getHex(byte []byte_buffer) {
-           StringBuffer result=new StringBuffer();
-           for (int i=0; i<byte_buffer.length; i++) {
-               result.append(hexChars[byte_buffer[i]>>4 & 0x0F]);
-               result.append(hexChars[byte_buffer[i] & 0x0F]);            
-           }
-           return result.toString();
+              StringBuffer result=new StringBuffer();
+              for (int i=0; i<byte_buffer.length; i++) {
+                  result.append(hexChars[byte_buffer[i]>>4 & 0x0F]);
+                  result.append(hexChars[byte_buffer[i] & 0x0F]);            
+              }
+              return result.toString();
        }
        public static String getHex(char []char_buffer) {
-           StringBuffer result=new StringBuffer();
-           for (int i=0; i<char_buffer.length; i++) {
-               char c=char_buffer[i];
-               int  i_c=Character.digit(c, 16);
-               if(i_c<0)return null;
-               result.append(hexChars[i>>4 & 0x0F]);
-               result.append(hexChars[i    & 0x0F]);            
-           }
-           return result.toString();
+              StringBuffer result=new StringBuffer();
+              for (int i=0; i<char_buffer.length; i++) {
+                  char c=char_buffer[i];
+                  int  i_c=Character.digit(c, 16);
+                  if(i_c<0)return null;
+                  result.append(hexChars[i>>4 & 0x0F]);
+                  result.append(hexChars[i    & 0x0F]);            
+              }
+              return result.toString();
        }
 
        public static String PasswordToLdapMd5(String password){
@@ -90,33 +90,33 @@ public class stringTransform {
        }
 
        public static boolean isEmpty(String cs){
-           int strLen;
-           if (cs == null || (strLen = cs.length()) == 0) {
-               return true;
-           }
-           for (int i = 0; i < strLen; i++) {
-               if (!Character.isWhitespace(cs.charAt(i))) {
-                   return false;
-               }
-           }
-           return true;
+              int strLen;
+              if (cs == null || (strLen = cs.length()) == 0) {
+                  return true;
+              }
+              for (int i = 0; i < strLen; i++) {
+                  if (!Character.isWhitespace(cs.charAt(i))) {
+                      return false;
+                  }
+              }
+              return true;
            
        }
       
        public static String substringBefore(String str, String separator){
-           if(isEmpty(str) || separator == null)return str;
-           if(separator.isEmpty()              )return "";
-           int pos = str.indexOf(separator);
-           if(pos == -1)return str;
-           else         return str.substring(0, pos);
+              if(isEmpty(str) || separator == null)return str;
+              if(separator.isEmpty()              )return "";
+              int pos = str.indexOf(separator);
+              if(pos == -1)return str;
+              else         return str.substring(0, pos);
        }
       
        public static String substringAfter(String str, String separator){
-           if(isEmpty(str)     )return str;
-           if(separator == null)return "";
-           int pos = str.indexOf(separator);
-           if(pos == -1)return "";
-           else         return str.substring(pos + separator.length());
+              if(isEmpty(str)     )return str;
+              if(separator == null)return "";
+              int pos = str.indexOf(separator);
+              if(pos == -1)return "";
+              else         return str.substring(pos + separator.length());
        }
         
 }

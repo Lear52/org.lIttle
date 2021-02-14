@@ -24,33 +24,33 @@ public class NullProxyFBInitializer extends ChannelInitializer<SocketChannel> {
        @Override
        public void initChannel(SocketChannel channel) {
 
-    	   Channel pair_channel=list_pair.getPair4Back(channel);
+              Channel pair_channel=list_pair.getPair4Back(channel);
 
-    	   logger.trace("initChannel BACK  for:"+channel.id().asShortText());
-    	   
-    	   if(pair_channel==null){
-    	      logger.trace("FB pair_channel==null for:"+channel.id().asShortText());
+              logger.trace("initChannel BACK  for:"+channel.id().asShortText());
+              
+              if(pair_channel==null){
+                 logger.trace("FB pair_channel==null for:"+channel.id().asShortText());
               return;
-           }
-    	   else {
-    	      logger.trace("FB channel:"+channel.id().asShortText()+" pair channel:"+pair_channel.id().asShortText());
-           }
-    	   
-           NullProxyFBHandler  back_handel  = new NullProxyFBHandler(pair_channel);
-           NullProxyFFHandler  front_handel = new NullProxyFFHandler(channel);
-
-           ChannelPipeline     pipeline_back  = channel.pipeline();
-           ChannelPipeline     pipeline_front = pair_channel.pipeline();
-
-           if(commonProxy.get().getCfgServer().isDumpLog()){
-              pipeline_back.addLast ("NullLog",new LoggingHandler(LogLevel.DEBUG));
-              pipeline_front.addLast("NullLog",new LoggingHandler(LogLevel.DEBUG));
-           }
-
-           pipeline_back.addLast ("NullHandlerFBBack" ,back_handel);
-           pipeline_front.addLast("NullHandlerFBFront",front_handel);
-
-           logger.trace("initChannel create pipeline BACK");
+              }
+              else {
+                 logger.trace("FB channel:"+channel.id().asShortText()+" pair channel:"+pair_channel.id().asShortText());
+              }
+              
+              NullProxyFBHandler  back_handel  = new NullProxyFBHandler(pair_channel);
+              NullProxyFFHandler  front_handel = new NullProxyFFHandler(channel);
+             
+              ChannelPipeline     pipeline_back  = channel.pipeline();
+              ChannelPipeline     pipeline_front = pair_channel.pipeline();
+             
+              if(commonProxy.get().getCfgServer().isDumpLog()){
+                 pipeline_back.addLast ("NullLog",new LoggingHandler(LogLevel.DEBUG));
+                 pipeline_front.addLast("NullLog",new LoggingHandler(LogLevel.DEBUG));
+              }
+             
+              pipeline_back.addLast ("NullHandlerFBBack" ,back_handel);
+              pipeline_front.addLast("NullHandlerFBFront",front_handel);
+             
+              logger.trace("initChannel create pipeline BACK");
        }
 
 }

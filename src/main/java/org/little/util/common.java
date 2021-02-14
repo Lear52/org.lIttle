@@ -52,13 +52,13 @@ public class common {
 
     public boolean loadCFG(){
           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	  try {
-		DocumentBuilder builder;
-		builder  = factory.newDocumentBuilder();
-		doc      = builder.parse(cfg_filename);
+         try {
+              DocumentBuilder builder;
+              builder  = factory.newDocumentBuilder();
+              doc      = builder.parse(cfg_filename);
                 logger.trace("open doc:"+cfg_filename);
-		//doc.getFirstChild().getNodeValue();
-		node_cfg = doc.getFirstChild();		
+              //doc.getFirstChild().getNodeValue();
+              node_cfg = doc.getFirstChild();              
 
                 logger.trace("compare node name:"+node_cfg.getNodeName()+" with name:"+getOldNodeName()+" or "+getNodeName()+" or "+getDefNodeName());
 
@@ -89,11 +89,11 @@ public class common {
                 node_cfg = null;
                 return false;
           } 
-	  catch (Exception e) {
+         catch (Exception e) {
                  logger.error("Could not load xml config file:"+cfg_filename, e);
                  return false;
-	  }
-	  //return true;
+         }
+         //return true;
     }
 
 

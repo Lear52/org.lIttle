@@ -79,15 +79,13 @@ public class iRun{
               return ;
        }
 
-       public static void run(rAPK apk,String[] arg,int cnt){
+       public static void run(String[] arg,int cnt){
            boolean ret;
            //-------------------------------------------------------------------
-           ret=apk.loadCFG(iRun.xpath);
-           if(ret==false) {
-              System.out.println("apk.loadCFG return:"+ret);     
-              return;     
-           }
-           logger.trace("load config for apk dionis");
+           rAPK[] r_list=commonAPK.get().getAPK();
+           rAPK apk=r_list[0];
+           if(iRun.xuser  !=null){apk.setUser(iRun.xuser);    cnt+=2;}
+           if(iRun.xpasswd!=null){apk.setPasswd(iRun.xpasswd);cnt+=2;}
            //-------------------------------------------------------------------
            {String[] a=apk.listCMD();
             System.out.println("list apk.cmd ------------------------------");           
@@ -113,8 +111,8 @@ public class iRun{
                  StringBuilder buf=new StringBuilder();  
                  if(_ret==null)System.out.println("apk.run ret:null");     
                  else {
-                	 System.out.println("apk.run ret:"+_ret.length);
-                	 for(int i=0;i<_ret.length;i++)buf.append(_ret[i]);
+                    System.out.println("apk.run ret:"+_ret.length);
+                    for(int i=0;i<_ret.length;i++)buf.append(_ret[i]);
                  }
 
                  if(_ret==null)ret=false;
@@ -127,13 +125,16 @@ public class iRun{
        }
 
        public static void main(String[] arg){
-              rAPK apk = new rAPK();
               iRun.getOpt(arg);
               int cnt=2;
-              if(iRun.xuser  !=null){apk.setUser(iRun.xuser);    cnt+=2;}
-              if(iRun.xpasswd!=null){apk.setPasswd(iRun.xpasswd);cnt+=2;}
+              boolean ret=commonAPK.loadCFG(iRun.xpath);
+              if(ret==false) {
+                  System.out.println("apk.loadCFG return:"+ret);     
+                  return;     
+               }
+               logger.trace("load config for apk dionis");
               
-              run(apk,arg,cnt);
+              run(arg,cnt);
             
        }
       

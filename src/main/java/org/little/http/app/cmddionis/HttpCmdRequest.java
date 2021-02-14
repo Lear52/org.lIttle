@@ -12,27 +12,33 @@ public class HttpCmdRequest extends lHttpRequest{
 
        protected HttpCmdResponse        response;
        private   String                 rcommand;
+       private   String                 rapk;
        private   String                 filename;
        private   String                 type_output;
        
        public HttpCmdRequest(){
-               clear();
-               response=new HttpCmdResponse();
-               setResponse(response);
+              clear();
+              response=new HttpCmdResponse();
+              setResponse(response);
        }
 
        @Override
        public void clear(){
-               super.clear();
+              super.clear();
+              rcommand   =null;
+              rapk       =null;    
+              filename   =null;
+              type_output=null;
        }
 
-       public String getCMD(){return rcommand;}
+       public String getAPK     (){return rapk;}
+       public String getCMD     (){return rcommand;}
        public String getFilename(){return filename;}
-       public String getType(){return type_output;}
+       public String getType    (){return type_output;}
 
        @Override
        public boolean HttpGet(ChannelHandlerContext ctx){
-    	      String cmd;
+              String cmd;
               String user=getUser();
 
               cmd  =getPath();
@@ -54,6 +60,7 @@ public class HttpCmdRequest extends lHttpRequest{
               if("get".equals(cmd)){
 
                   rcommand=getQuery().get("cmd");
+                  rapk=getQuery().get("apk");
                   type_output=getQuery().get("type");
                   if(type_output==null)type_output="txt";
                   if(type_output.startsWith("js" ))type_output="js";
@@ -66,6 +73,7 @@ public class HttpCmdRequest extends lHttpRequest{
               else
               if("list".equals(cmd)){
                   type_output=getQuery().get("type");
+                  rapk=getQuery().get("apk");
                   if(type_output==null)type_output="txt";
                   if(type_output.startsWith("js" ))type_output="js";
                   else                             type_output="txt";
@@ -96,7 +104,7 @@ public class HttpCmdRequest extends lHttpRequest{
        }
        @Override       
        public boolean HttpPost(ChannelHandlerContext ctx){
-    	      String cmd;
+              String cmd;
               String user=getUser();
 
               cmd  =getPath();
@@ -104,6 +112,8 @@ public class HttpCmdRequest extends lHttpRequest{
            
               if(cmd.startsWith("/send" )){cmd="send"  ;}                   
               if("send".equals(cmd)){
+                  rcommand=getQuery().get("cmd");
+                  rapk=getQuery().get("apk");
                   logger.trace("set 2 cmd:send");
                   response.runSend(ctx,this);
                   return RequestProcessOk;
@@ -112,7 +122,7 @@ public class HttpCmdRequest extends lHttpRequest{
        }
        @Override
        public boolean HttpPut(ChannelHandlerContext ctx){
-    	      String cmd;
+              String cmd;
               String user=getUser();
 
               cmd  =getPath();
@@ -120,6 +130,8 @@ public class HttpCmdRequest extends lHttpRequest{
            
               if(cmd.startsWith("/send" )){cmd="send"  ;}                   
               if("send".equals(cmd)){
+                  rcommand=getQuery().get("cmd");
+                  rapk=getQuery().get("apk");
                   logger.trace("set 2 cmd:send");
                   response.runSend(ctx,this);
                   return RequestProcessOk;

@@ -347,7 +347,7 @@ public class lMessageX509 {
                       Iterator<PKCS10Attribute>   attr=csr.getAttributes().getAttributes().iterator();
                       int i=0;
                       while(attr.hasNext()){
-                    	  PKCS10Attribute p=attr.next();
+                           PKCS10Attribute p=attr.next();
                           logger.trace("attr["+i+"]="+p.toString());           
                           i++;
                       }

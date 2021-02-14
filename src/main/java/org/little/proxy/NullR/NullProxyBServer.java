@@ -111,8 +111,8 @@ public class NullProxyBServer extends  NullProxy_Server{
               if(old_channel!=null)list_channel.remove(old_channel);
 
               if(getWait()>getMaxWait()) {
-             	   return ; 
-            	   //return null; 
+                 return ; 
+                      //return null; 
               }
 
               try {

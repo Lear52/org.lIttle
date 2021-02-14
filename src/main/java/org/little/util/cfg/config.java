@@ -18,7 +18,7 @@ public class config implements iconfig {
              public  static String getClassName(){return CLASS_NAME;}
              public  static int    getClassId(){return CLASS_ID;}
              private static Logger log=new Logger(CLASS_NAME);
-	//----------------------------------------------------------------------------
+       //----------------------------------------------------------------------------
         //
         //----------------------------------------------------------------------------
         String         topic;
@@ -26,7 +26,7 @@ public class config implements iconfig {
         ResourceBundle rb;
 
 
-	public String getTopic(){if(topic==null)return "";else return topic;};
+       public String getTopic(){if(topic==null)return "";else return topic;};
         /**
          * Открытие темы в файле конфигурации
          * @param sub_cfg - ссылка на общий файл конфигурации
@@ -82,14 +82,14 @@ public class config implements iconfig {
         }
         public long getLong(String item){
                 long r;
-    	        try {
+                try {
                      String s=get(item);r=Long.parseLong(s,10);
                 } catch (Exception e) {r = -1;}
                 return r;
         }
         public int getInt(String item){
                 int r;
-    	        try {
+                try {
                      String s=get(item);r=Integer.parseInt(s,10);
                 } catch (Exception e) {r = -1;}
                 return r;

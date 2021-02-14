@@ -12,7 +12,7 @@ import org.little.util.string.stringDate;
 
 public class lMessage2JSON  {
 
-	   public static String parse(lMessage msg){
+       public static String parse(lMessage msg){
               JSONObject obj=msg2obj(msg);
               StringWriter out = new StringWriter();
               obj.write(out);

@@ -41,8 +41,8 @@ public interface lRoot  {
 
                      System.out.println("folder("+f_list.get(j).getName()+") count msg:"+m_list.size());
                      for(int k=0;k<m_list.size();k++) {
-                    	 System.out.println("folder("+f_list.get(j).getName()+") msg:"+m_list.get(k));
-                    	 
+                         System.out.println("folder("+f_list.get(j).getName()+") msg:"+m_list.get(k));
+                            
                      }
                   }
               }

@@ -143,13 +143,13 @@ public class sendfile {
                   try{debug=Boolean.parseBoolean(_debug);}catch(Exception e){debug=true;}
                } 
                if(cmd.hasOption(OPTION_USER)) {
-            	  username = cmd.getOptionValue(OPTION_USER);
+                  username = cmd.getOptionValue(OPTION_USER);
                } 
                if(cmd.hasOption(OPTION_PSWD)) {
                   password = cmd.getOptionValue(OPTION_PSWD);
                } 
                if(cmd.hasOption(OPTION_FROM)) {
-            	  from = cmd.getOptionValue(OPTION_FROM);
+                  from = cmd.getOptionValue(OPTION_FROM);
                } 
                if(cmd.hasOption(OPTION_TO)) {
                   to1 = cmd.getOptionValue(OPTION_TO);

@@ -37,7 +37,7 @@ public class authUserXML implements authUser {
                if(doc==null){
                   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                   try {
-		       DocumentBuilder builder;
+                       DocumentBuilder builder;
                        builder  = factory.newDocumentBuilder();
                        doc      = builder.parse(cfg_filename);
                        logger.trace("open doc:"+cfg_filename);

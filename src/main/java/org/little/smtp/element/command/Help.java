@@ -21,8 +21,8 @@ public class Help extends SmtpRequest {
         public Help(CharSequence hostname){
                super(SmtpCommand.HELP,hostname);
         }
-    	@Override
-    	public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
+        @Override
+        public SmtpResponse   processCommand(SmtpSessionContext ctxMailSession, ChannelHandlerContext ctxChannel) {
                logger.trace(toString());
 
                SmtpResponse reply = new SmtpResponse(SmtpResponseStatus.R250, "OK");

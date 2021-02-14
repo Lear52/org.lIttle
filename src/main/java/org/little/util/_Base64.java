@@ -19,7 +19,7 @@ public class _Base64 {
         return byteArrayToBase64(str.getBytes(), false);
     }
 
-	/**
+     /**
      * Translates the specified byte array into a Base64 string as per
      * Preferences.put(byte[]).
      */

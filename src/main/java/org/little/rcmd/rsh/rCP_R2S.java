@@ -122,9 +122,9 @@ public class rCP_R2S extends rCP_R2L{
               return ret;
         }
         public boolean sent(ByteArrayOutputStream os){
-    	      SmtpMailXClient cln=new SmtpMailXClient();
-    	      cln.sent(os, rfile);
-              return false;
+               SmtpMailXClient cln=new SmtpMailXClient();
+               cln.sent(os, rfile);
+               return false;
         }
         @Override
         public String toString(){

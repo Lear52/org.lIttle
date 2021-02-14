@@ -21,13 +21,13 @@ public class HttpFileRequest extends lHttpRequest{
 
        @Override
        public void clear(){
-    	      //response=null;   	   
+                 //response=null;             
               super.clear();
        }
 
        @Override
        public boolean HttpGet(ChannelHandlerContext ctx){
-    	      String cmd;
+              String cmd;
               cmd  =getPath();
               logger.trace("set 0 cmd:"+cmd);
            

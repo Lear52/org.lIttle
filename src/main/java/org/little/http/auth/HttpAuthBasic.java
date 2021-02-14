@@ -17,7 +17,7 @@ public class HttpAuthBasic extends HttpAuth {
        private   HttpAuthBasic() {super(HttpAuth.BASIC,null);}
        
        protected HttpAuthBasic(int _type_auth,statChannel _stat) {
-    	   super(_type_auth,_stat);
+                 super(_type_auth,_stat);
        }
         
        @Override

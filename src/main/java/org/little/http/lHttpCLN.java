@@ -19,7 +19,7 @@ import org.apache.http.util.EntityUtils;
 public class lHttpCLN {
 
 
-       private String  url      ;
+       private String  url     ;
        private boolean debug   ;
 
        public lHttpCLN(){
@@ -30,7 +30,7 @@ public class lHttpCLN {
               this.url = url;
        }
        public String get(ByteArrayOutputStream os) throws Exception{
-    	      String filename=null;
+                 String filename=null;
               System.setProperty("java.net.preferIPv4Stack","true");
               HttpClient httpclient = HttpClientBuilder.create().build();
               
@@ -74,19 +74,19 @@ public class lHttpCLN {
                 System.out.println(EntityUtils.toString(response_entity));
               }
               if (response_entity != null) {
-            	  EntityUtils.consume(response_entity);
+                     EntityUtils.consume(response_entity);
               }              
               
               //httpclient.getConnectionManager().shutdown();
               
        }
        public static void main(String[] args) throws Exception {
-    	   lHttpCLN cln=new lHttpCLN();
+              lHttpCLN cln=new lHttpCLN();
            String  f_name;
-    	   cln.setURL("http://sa5lear1.vip.cbr.ru:8080/main/doc/жа/law_cb.pdf");
-    	   ByteArrayOutputStream os=new ByteArrayOutputStream();
-    	   f_name=cln.get(os);
-    	   System.out.println("file:"+f_name);
-    	   
+              cln.setURL("http://sa5lear1.vip.cbr.ru:8080/main/doc/жа/law_cb.pdf");
+              ByteArrayOutputStream os=new ByteArrayOutputStream();
+              f_name=cln.get(os);
+              System.out.println("file:"+f_name);
+              
        }
 }

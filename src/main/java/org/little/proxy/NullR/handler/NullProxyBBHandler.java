@@ -39,7 +39,7 @@ public class NullProxyBBHandler extends ChannelInboundHandlerAdapter{
                    public void operationComplete(ChannelFuture future) {
                        if (future.isSuccess()) {
                            //logger.trace("channelwrite channel:"+ctx.channel().id().asShortText() +" -> "+out_channel.id().asShortText());
-                    	   ctx.channel().read();
+                           ctx.channel().read();
                        } else {
                            future.channel().close();
                        }

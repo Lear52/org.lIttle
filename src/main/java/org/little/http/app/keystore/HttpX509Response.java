@@ -44,7 +44,7 @@ public class HttpX509Response extends lHttpResponse{
               }
               lFolder folder=store.getFolder(req.getFolder());
               if(folder==null){
-            	 String txt= "cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" unknow"; 
+                 String txt= "cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" unknow"; 
                  sendError(ctx,req,txt);
                  return;
               }
@@ -53,7 +53,7 @@ public class HttpX509Response extends lHttpResponse{
       
               lMessage msg=folder.getMsg().get(0);/**/
               if(msg==null){
-            	 String txt= "cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" msg:"+req.getMsg()+" unknown";
+                 String txt= "cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" msg:"+req.getMsg()+" unknown";
                  sendError(ctx,req,txt);
                  return;
               }
@@ -61,11 +61,11 @@ public class HttpX509Response extends lHttpResponse{
               FullHttpResponse response;
               
               if(msg.getBodyBin()!=null){
-                  ByteBuf buf  = Unpooled.copiedBuffer(msg.getBodyBin());
-                  response     = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-                  String  mime = lMessage.getMIME(msg.getFilename());
-                  response.headers().set(HttpHeaderNames.CONTENT_TYPE, mime);
-                  response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
+                 ByteBuf buf  = Unpooled.copiedBuffer(msg.getBodyBin());
+                 response     = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
+                 String  mime = lMessage.getMIME(msg.getFilename());
+                 response.headers().set(HttpHeaderNames.CONTENT_TYPE, mime);
+                 response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
               }
               else
               if(msg.getBodyTxt()!=null){
@@ -76,8 +76,8 @@ public class HttpX509Response extends lHttpResponse{
                  response.headers().setInt(HttpHeaderNames.CONTENT_LENGTH, buf.readableBytes());
               }
               else{
-            	 String txt="cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" empty"; 
-            	 sendOk(ctx,req,txt);
+                    String txt="cmd:"+req.getCmd()+" user:"+req.getStore()+" folder:"+req.getFolder()+" empty"; 
+                    sendOk(ctx,req,txt);
                  return;
               }
       
@@ -153,9 +153,9 @@ public class HttpX509Response extends lHttpResponse{
               else{
                   JSONArray list=new JSONArray();
 
-		// TODO Auto-generated method stub
+              // TODO Auto-generated method stub
                   list.put("av");
-		// TODO Auto-generated method stub
+              // TODO Auto-generated method stub
                   list.put("iap");
 
                   JSONObject root_object=new JSONObject();
@@ -169,13 +169,10 @@ public class HttpX509Response extends lHttpResponse{
 
               if(buf==null)return;
               sendJSON(ctx,req,buf);
-      
        }
        
        public void saveMsg(ChannelHandlerContext ctx,HttpX509Request req) {
-              
-    	      //req.clearDecoder();
-              
+              //req.clearDecoder();
               lMessage  msg=req.getUploadMsg();
               if(msg==null){
                  logger.trace("no msg");

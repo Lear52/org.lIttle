@@ -75,7 +75,7 @@ public class SmtpCommand {
       
        public void encode(ByteBuf buffer) {
               if(name.toString().equals("")==false && name.toString().equals("LASTCONTENT")==false && name.toString().equals("CONTENT")==false) {
-            	  ByteBufUtil.writeAscii(buffer, name);
+                 ByteBufUtil.writeAscii(buffer, name);
               }
        }
       

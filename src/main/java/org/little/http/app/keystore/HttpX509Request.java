@@ -21,9 +21,9 @@ public class HttpX509Request extends lHttpRequest{
        protected HttpX509Response      response;
        
        public HttpX509Request(){
-               clear();
-               response=new HttpX509Response();
-               setResponse(response);
+              clear();
+              response=new HttpX509Response();
+              setResponse(response);
        }
 
        private void r_clear(){
@@ -49,7 +49,7 @@ public class HttpX509Request extends lHttpRequest{
        public boolean HttpGet(ChannelHandlerContext ctx){
               store=getUser();
               cmd  =getPath();
-    	      logger.trace("set 0 cmd:"+cmd+" store:"+store);
+              logger.trace("set 0 cmd:"+cmd+" store:"+store);
            
               if(cmd.startsWith("/get" )){cmd="get"  ;is_correct=true;}                   // get http://x.x.x.x:pppp/get?folder=name&msg=num  - get file(foldername, num_msg)
               else
@@ -68,7 +68,7 @@ public class HttpX509Request extends lHttpRequest{
               }
               is_correct=true;
               logger.trace("set 1 cmd:"+cmd+ " is_correct:"+is_correct);
-    	      
+                 
               String _folder=getQuery().get("folder");
               if(_folder!=null)folder=_folder;
 
@@ -123,35 +123,35 @@ public class HttpX509Request extends lHttpRequest{
        }
        public boolean HttpUpload(ChannelHandlerContext ctx){
            
-    	   lHttpBuf file=this.getBinBuffer().get(0); /**/
+              lHttpBuf file=this.getBinBuffer().get(0); /**/
            
-    	   upload_msg.setFilename(file.getName());
-           upload_msg.setMime    (file.getMime());
-           upload_msg.setSentDate();
-           upload_msg.setFrom(store);
-           String to=getQuery().get("to");
-           String subject=getQuery().get("subject");
+              upload_msg.setFilename(file.getName());
+              upload_msg.setMime    (file.getMime());
+              upload_msg.setSentDate();
+              upload_msg.setFrom(store);
+              String to=getQuery().get("to");
+              String subject=getQuery().get("subject");
+             
+              if(to==null){
+                 logger.error("HttpUpload:"+file.getName()+" to is null user:"+store);
+                 upload_msg.addTO("");          
+              }
+              else upload_msg.addTO(to);
+             
+              if(subject==null)upload_msg.setSubject(subject);else upload_msg.setSubject(subject);
+             
+              upload_msg.setBodyBin(file.getBuf());
+              response.saveMsg(ctx,this);
+                 
+              logger.trace("HttpUpload:"+file.getName()+" to:"+to+" subj:"+subject);
 
-           if(to==null){
-              logger.error("HttpUpload:"+file.getName()+" to is null user:"+store);
-              upload_msg.addTO("");          
-           }
-           else upload_msg.addTO(to);
-
-           if(subject==null)upload_msg.setSubject(subject);else upload_msg.setSubject(subject);
-
-           upload_msg.setBodyBin(file.getBuf());
-           response.saveMsg(ctx,this);
-    	   
-           logger.trace("HttpUpload:"+file.getName()+" to:"+to+" subj:"+subject);
-
-    	   return false;
+              return false;
        }
        public boolean HttpPost(ChannelHandlerContext ctx){
-    	   return HttpUpload(ctx);
-    	   }
+              return HttpUpload(ctx);
+              }
        public boolean HttpPut(ChannelHandlerContext ctx){
-    	   return HttpUpload(ctx);
+              return HttpUpload(ctx);
        }
 
 

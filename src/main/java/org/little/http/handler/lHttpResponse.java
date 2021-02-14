@@ -247,7 +247,7 @@ public class lHttpResponse {
                       return;
                    }
                    if(fileLength != file_size) {
-                	   logger.error("fileLength("+fileLength+") != file_size("+file_size+")");
+                      logger.error("fileLength("+fileLength+") != file_size("+file_size+")");
                    }
                    
                    HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -290,7 +290,7 @@ public class lHttpResponse {
                        logger.trace("HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE !!!!!  file:"+path);
                    } 
                    else{ 
-                       HttpVersion ver=req.protocolVersion();	
+                       HttpVersion ver=req.protocolVersion();       
                        if (ver!=null)
                        if (ver.equals(HttpVersion.HTTP_1_0)) {
                            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);

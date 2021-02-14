@@ -54,16 +54,16 @@ public interface ImapConstants {
        String BADCOMMAND             = "UNKNOWN COMMAND";
 
 
-	public final static String[] capabilities = { 
-			VERSION,
-			"CHILDREN", 	// RFC3348
-			"LITERAL+",		// RFC2088
-			"NAMESPACE",	// RFC2342
-			"QUOTA", 		// RFC2087
-			"SORT",			// RFC5256
-			"THREAD=ORDEREDSUBJECT",// RFC5256
-			"THREAD=REFERENCES", 	// RFC5256
-			"XREVOKE"		// CUSTOM 
-	};
+       public final static String[] capabilities = { 
+                     VERSION,
+                     "CHILDREN",        // RFC3348
+                     "LITERAL+",              // RFC2088
+                     "NAMESPACE",       // RFC2342
+                     "QUOTA",               // RFC2087
+                     "SORT",                     // RFC5256
+                     "THREAD=ORDEREDSUBJECT",// RFC5256
+                     "THREAD=REFERENCES",        // RFC5256
+                     "XREVOKE"              // CUSTOM 
+       };
 
 }

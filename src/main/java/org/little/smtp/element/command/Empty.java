@@ -20,9 +20,9 @@ public class Empty extends SmtpRequest{
                super(SmtpCommand.EMPTY,parameters);
         }
 
-	public Empty(ArrayList<CharSequence> parameters) {
-           super(SmtpCommand.EMPTY,parameters);
-	}
+        public Empty(ArrayList<CharSequence> parameters) {
+               super(SmtpCommand.EMPTY,parameters);
+        }
 
 
 }

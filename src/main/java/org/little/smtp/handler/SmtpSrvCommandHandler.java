@@ -327,7 +327,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
          * @param cmd
          */
        private boolean validateCommandOrder(SmtpSessionContext ctx, SmtpRequest req) {
-    	       String cmd=req.getCommand().getName().toString();
+               String cmd=req.getCommand().getName().toString();
                if(Arrays.stream(ALWAYS_ALLOWED_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd))) return true;
 
                if(ctx.lastCmd == null) {
@@ -356,7 +356,7 @@ public class SmtpSrvCommandHandler extends ChannelInboundHandlerAdapter {
          * @param cmd
          */
        private boolean validateCommand(SmtpRequest req) {
-    	   String cmd=req.getCommand().getName().toString();
+               String cmd=req.getCommand().getName().toString();
                logger.trace("validateCommand cmd:"+cmd);
 
                return Arrays.stream(VALID_COMMANDS).anyMatch(c -> charsequenceComparator.equals(c, cmd));

@@ -1,6 +1,7 @@
 package org.little.rcmd;
 
 import java.util.HashMap;
+//import java.util.Iterator;
 
 import org.little.rcmd.rsh.rCommand;
 import org.little.util.Logger;
@@ -15,62 +16,66 @@ public class commonRCMD{
 
        private static final Logger logger = LoggerFactory.getLogger(commonRCMD.class);
 
+       private String                         apk_id;
        private String                         host;
        private String                         user;
        private String                         passwd;
-       private HashMap<String,rCommand> command; 
+       private HashMap<String,rCommand>       command; 
 
-       //private static commonRCMD              cfg = new commonRCMD();
-       //public  static commonRCMD              get(){ if(cfg==null)cfg=new commonRCMD();return cfg;};
-
-
-       public commonRCMD(){clear();}
+       public commonRCMD(String _apk_id){clear();apk_id=_apk_id;}
+       /*
        public commonRCMD(commonRCMD _cmd){
-
+              apk_id=_cmd.apk_id;  
+              host  =_cmd.host  ;  
+              user  =_cmd.user  ;  
+              passwd=_cmd.passwd;
+              Iterator<rCommand> list = _cmd.command.values().iterator();
+              while(list.hasNext()) {
+                  rCommand r = list.next();
+                  if(r==null)continue;
+                  rCommand new_r=new rCommand(r);
+                  command.put(new_r.getID(),new_r);
+              }
+              
        }
-
+       */
        public void clear(){
               command=new HashMap<String,rCommand>(); 
        }
-       public String                         getHost()   {return host;   }
-       public String                         getUser()   {return user;   }
+       public String                         getID    () {return apk_id; }
+       public String                         getHost  () {return host;   }
+       public String                         getUser  () {return user;   }
        public String                         getPasswd() {return passwd; }
        public HashMap<String,rCommand>       getCMD   () {return command;}
+
+       public void                           setHost  (String h) {host=h;   }
+       public void                           setUser  (String u) {user=u;   }
+       public void                           setPasswd(String p) {passwd=p; }
        
-       public void init(Node node_cfg){
-           if(node_cfg==null)return;
-           logger.info("The configuration node:"+node_cfg.getNodeName());
-           NodeList glist=node_cfg.getChildNodes();     
-           init(glist);
-       }
-       public void init(NodeList glist){
-              if(glist==null) return;
+       public void init(Node node_apk){
+              NodeList glist=node_apk.getChildNodes();
               for(int i=0;i<glist.getLength();i++){
-                  Node n=glist.item(i);
+                  Node  n=glist.item(i);
                   if("host".equals(n.getNodeName())    ){host    =n.getTextContent();  logger.info("host:"+host);     }
                   if("user".equals(n.getNodeName())    ){user    =n.getTextContent();  logger.info("user:"+user);     }
                   if("password".equals(n.getNodeName())){passwd  =n.getTextContent();  logger.info("password:******");}
-                  //else
               }
-              logger.info("The configuration rcmd global");
+              logger.info("The configuration apk set");
        }
-
-       public void loadCMD(Node node_cfg){
-              if(node_cfg!=null){
-                 NodeList glist=node_cfg.getChildNodes();     
-                 for(int i=0;i<glist.getLength();i++){
-                     Node     n        =glist.item(i);
-                     String   name_node=n.getNodeName();
-                     rCommand cmd      =new rCommand(name_node);
-                     if(cmd.loadCFG(n)!=false) command.put(name_node, cmd);
-                 }
-                 if(command.size()==0)command=null;
-              } 
-              if(command==null)logger.info("The configuration rcmd command:null");
-              else             logger.info("The configuration rcmd command:"+command.size());
+       public void initCMD(NodeList glist){
+           for(int i=0;i<glist.getLength();i++){
+               Node     n        =glist.item(i);
+               String   name_node=n.getNodeName();
+               rCommand cmd      =new rCommand(name_node);
+               if(cmd.loadCFG(n)!=false) command.put(name_node, cmd);
+           }
+           if(command.size()==0)command=null;
+        
+        if(command==null)logger.info("The configuration rcmd command:null");
+        else             logger.info("The configuration rcmd command:"+command.size());
+    	   
+    	   
        }
-
-
 
 }
 

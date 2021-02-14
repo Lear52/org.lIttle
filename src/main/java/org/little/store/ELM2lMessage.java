@@ -117,9 +117,9 @@ public class ELM2lMessage{
                } 
                else 
                if (p.isMimeType("multipart/*")) {
-	          Multipart mp = (Multipart)p.getContent();
-	          int count = mp.getCount();
-	          for (int i = 0; i < count; i++)_eml2msg(list,msg,mp.getBodyPart(i));
+                 Multipart mp = (Multipart)p.getContent();
+                 int count = mp.getCount();
+                 for (int i = 0; i < count; i++)_eml2msg(list,msg,mp.getBodyPart(i));
                }
                else 
                if (p.isMimeType("message/rfc822")) {

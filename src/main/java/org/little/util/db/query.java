@@ -26,8 +26,8 @@ import javax.sql.rowset.serial.SerialBlob;
 public class query {
        private final static String CLASS_NAME="org.little.util.db.query";
        private final static int    CLASS_ID  =205;
-             public        static String getClassName(){return CLASS_NAME;}
-             public        static int    getClassId(){return CLASS_ID;}
+       public        static String getClassName(){return CLASS_NAME;}
+       public        static int    getClassId(){return CLASS_ID;}
              //private static Logger log=new Logger(CLASS_NAME);
 
        protected            int               id;
@@ -173,7 +173,7 @@ public class query {
                if(stmt == null) throw new dbExcept("Statement null");
                try {
                        //int ret = 
-                    		   stmt.executeUpdate(q);
+                                     stmt.executeUpdate(q);
                } catch (SQLException e) {
                        dbExcept ex = new dbExcept("Can`t exec query", e);
                        throw ex;
@@ -431,24 +431,23 @@ public class query {
        }
 
        public void setTimestamp(int i, Timestamp timestamp) throws dbExcept {
-
                //if(p_stmt == null) throw new dbExcept("Statement null");
                try {
-                       if(p_stmt == null)p_stmt.setNull(i,java.sql.Types.TIMESTAMP);
-                       else              p_stmt.setTimestamp(i, timestamp);
+                    if(p_stmt == null)p_stmt.setNull(i,java.sql.Types.TIMESTAMP);
+                    else              p_stmt.setTimestamp(i, timestamp);
                } catch (SQLException e) {
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                    dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                    throw ex;
                }
        }
 
        public void setAsciiStream(int i, InputStream inputstream, int j) throws dbExcept {
                if(p_stmt == null) throw new dbExcept("Statement null");
                try {
-                       p_stmt.setAsciiStream(i, inputstream, j);
+                   p_stmt.setAsciiStream(i, inputstream, j);
                } catch (SQLException e) {
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                 dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                 throw ex;
                }
        }
 
@@ -457,10 +456,9 @@ public class query {
                try {
                     p_stmt.setBinaryStream(i, inputstream, j);
                } catch (SQLException e) {
-                    e.printStackTrace();
-
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                    //e.printStackTrace();
+                 dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                 throw ex;
                }
        }
 
@@ -479,8 +477,8 @@ public class query {
                try {
                     p_stmt.setObject(i, obj, j, k);
                } catch (SQLException e) {
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                 dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                 throw ex;
                }
        }
 
@@ -489,8 +487,8 @@ public class query {
                try {
                     p_stmt.setObject(i, obj, j);
                } catch (SQLException e) {
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                 dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                 throw ex;
                }
        }
 
@@ -499,25 +497,25 @@ public class query {
                try {
                     p_stmt.setObject(i, obj);
                } catch (SQLException e) {
-                       dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                       throw ex;
+                 dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                 throw ex;
                }
        }
 
        public void setBLOB1(int i,  byte byte0[]) throws dbExcept {
-       	      ByteArrayInputStream is=new ByteArrayInputStream(byte0);
+              ByteArrayInputStream is=new ByteArrayInputStream(byte0);
               int len=byte0.length;
               setBinaryStream(i,is,len);
        }
        public void setBLOB(int i,  byte byte0[]) throws dbExcept {
-           if(p_stmt == null) throw new dbExcept("Statement null");
-           try {
-                Blob b=new SerialBlob(byte0);
-				p_stmt.setBlob(i, b);
-           } catch (SQLException e) {
-                   dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
-                   throw ex;
-           }
+              if(p_stmt == null) throw new dbExcept("Statement null");
+              try {
+                   Blob b=new SerialBlob(byte0);
+                   p_stmt.setBlob(i, b);
+              } catch (SQLException e) {
+                      dbExcept ex = new dbExcept("Can`t set parametr statement ", e);
+                      throw ex;
+              }
     }
 
 }

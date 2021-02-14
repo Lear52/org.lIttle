@@ -13,7 +13,7 @@ public class stringWildCard{
             return false;
         }
         if ("*".equals(wildcardMatcher)) {
-        	return true;
+           return true;
         }
         if (caseSensitivity == null) {
             caseSensitivity = stringCase.SENSITIVE;

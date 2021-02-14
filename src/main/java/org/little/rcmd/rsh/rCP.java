@@ -104,7 +104,7 @@ public class rCP extends rShell  implements rCMD {
               setHost  (sh.getHost());
               setUser  (sh.getUser());
               setPasswd(sh.getPasswd());
-    	   
+              
               if(!_open_session())return false; 
               if(!_open_channel())return false; 
 

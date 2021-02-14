@@ -52,7 +52,7 @@ public class SSLHandlerProvider {
               SslContext        sslCtx=null;
               SslContextBuilder context_builder =null;
               if(ssl_cfg.isSSL()==false)return null;
-    	      if(ssl_cfg.getUseKeystore()==true)return null;
+              if(ssl_cfg.getUseKeystore()==true)return null;
 
               try {
                  File _certificate=new File(ssl_cfg.getCertificate());
@@ -84,7 +84,7 @@ public class SSLHandlerProvider {
        private static SslHandler getSSLHandlerKeystore(commonSSL ssl_cfg){
               if(ssl_cfg.isSSL()         ==false)return null;
               if(ssl_cfg.getSSLContext() ==null )return null;
-    	      if(ssl_cfg.getUseKeystore()==false)return null;
+              if(ssl_cfg.getUseKeystore()==false)return null;
               
               logger.info("create SSL handler ...");
               //javax.net.ssl.SSLEngine
@@ -105,18 +105,18 @@ public class SSLHandlerProvider {
        }
        public static void initSSLContext (commonSSL ssl_cfg) {
               // javax.net.ssl.SSLContext
-    	      if(ssl_cfg.isSSL()         ==false)return;
-    	      if(ssl_cfg.getUseKeystore()==false)return;
-    	     
+              if(ssl_cfg.isSSL()         ==false)return;
+              if(ssl_cfg.getUseKeystore()==false)return;
+                
               logger.info("Initiating SSLcontext ...");
               //String algorithm = Security.getProperty(ALGORITHM);
               //if (algorithm == null) {
               //    algorithm = ALGORITHM_SUN_X509;
               //}
-    	      SSLContext serverSSLContext   = null;
+              SSLContext serverSSLContext   = null;
               KeyStore    ks = null;
               // load KeyStore           
-    	      InputStream inputStream=null;    
+              InputStream inputStream=null;    
               try {
                   inputStream = new FileInputStream(ssl_cfg.getKeyStore());//KEYSTORE = "certificates.jks"
                   ks = KeyStore.getInstance(ssl_cfg.getKeyStoreType());//KEYSTORE_TYPE = "JKS"

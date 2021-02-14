@@ -21,7 +21,7 @@ public class HttpAuthDigest extends HttpAuth {
       private   HttpAuthDigest() {super(HttpAuth.DIGEST,null);}
       
        protected HttpAuthDigest(int _type_auth,statChannel _stat) {
-    	   super(_type_auth,_stat);
+                 super(_type_auth,_stat);
        }
        
        @Override

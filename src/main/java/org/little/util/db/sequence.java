@@ -9,10 +9,10 @@ import java.sql.SQLException;
 public class sequence {
        private final static String CLASS_NAME="org.little.util.db.sequence";
        private final static int    CLASS_ID  =207;
-             public        static String getClassName(){return CLASS_NAME;}
-             public        static int    getClassId(){return CLASS_ID;}
+       public        static String getClassName(){return CLASS_NAME;}
+       public        static int    getClassId(){return CLASS_ID;}
 
-       private              String id;	
+       private              String id;       
        private              query  q;
        /**
         * @param _id string

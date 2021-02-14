@@ -103,7 +103,7 @@ public class Content extends SmtpRequest {
                return reply;
         }
 
-    	@Override
+        @Override
         public SmtpResponse   filterCommand() {
                SmtpResponse reply=null;
                StringBuilder buf=new StringBuilder(); 

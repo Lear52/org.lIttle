@@ -24,7 +24,38 @@ public class rCommand  implements rCMD{
               this.id=_id;
               list_request.add(new rRequest(_id,1,_request,new rResponse(_id,response,is_print_res)));
        }
+       /*
+       public rCommand(rCommand _rcmd) {
+              list_request=new ArrayList<rCMD>();
+              this.id=_rcmd.id;
+              for(int i=0;i<_rcmd.list_request.size();i++){
+                  rCMD r=_rcmd.list_request.get(i);
+                  if(r instanceof rCommand){
 
+                  }
+                  if(r instanceof rRequest){
+
+                  }
+                  if(r instanceof rResponse){
+
+                  }
+                  if(r instanceof rCP_L2R){
+
+                  }
+                  if(r instanceof rCP_R2H){
+
+                  }
+                  if(r instanceof rCP_R2L){
+
+                  }
+                  if(r instanceof rCP_R2S){
+
+                  }
+
+                  list_request.add(r);
+              }
+       }
+       */
        public String getID() {return id;}
  
        @Override
@@ -128,23 +159,23 @@ public class rCommand  implements rCMD{
                       String _id="01";
                       String res=null;
                       boolean is_print_res=false;
-                      logger.info("res");
+                      //logger.info("res");
 
                       if(n.getAttributes().getNamedItem("res")!=null){
                          res=n.getAttributes().getNamedItem("res").getTextContent();
-                         logger.info("res:"+res);
+                         //logger.info("res:"+res);
                       }
                       else{
                          res=n.getTextContent();
                       }
                       if(n.getAttributes().getNamedItem("id")!=null){
                          _id=n.getAttributes().getNamedItem("id").getTextContent();
-                         logger.info("id:"+id);
+                         //logger.info("id:"+id);
                       }
                       if(n.getAttributes().getNamedItem("print")!=null){
                          String _is=n.getAttributes().getNamedItem("print").getTextContent();
                          try{is_print_res=Boolean.parseBoolean(_is);}catch(Exception e){ is_print_res=false;logger.error("is_print_res:"+_is);} 
-                         logger.info("is_print_res:"+is_print_res);
+                         //logger.info("is_print_res:"+is_print_res);
                       }
                       response=new rResponse(_id,res,is_print_res);
 

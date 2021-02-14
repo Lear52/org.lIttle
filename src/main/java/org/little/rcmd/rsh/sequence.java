@@ -47,9 +47,9 @@ public class sequence{
            byte [] b="234567812345612345667".getBytes();
            sequence s=new sequence("test","01","123");
            for(int i=0;i<b.length;i++) {
-           	if(s.put(b[i])){
+              if(s.put(b[i])){
                    System.out.println(s.getType());
-           	}
+              }
            }
            
        }

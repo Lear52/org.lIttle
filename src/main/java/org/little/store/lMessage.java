@@ -111,8 +111,8 @@ public class lMessage{
         return buf.toString();
     }
     public String   getFromInet     (String _domain){
-    	//return msg_from+"@"+commonIMAP.get().getDefaultDomain();
-    	return msg_from+"@"+_domain;
+           //return msg_from+"@"+commonIMAP.get().getDefaultDomain();
+           return msg_from+"@"+_domain;
     }
     
     //public int      getMessageNumber(){return msg_num;         }

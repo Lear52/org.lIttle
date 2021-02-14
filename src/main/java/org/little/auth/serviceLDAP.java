@@ -140,7 +140,7 @@ public class serviceLDAP {
               return ret;
         }
         protected  void search(String searchBase,String searchFilter){
-	       if(searchFilter==null || searchBase==null){
+              if(searchFilter==null || searchBase==null){
                   log.error("search LDAP is null (searchBase:"+searchBase+" searchFilter:"+searchFilter+")");
                   clear();
                   return ;

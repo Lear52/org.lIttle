@@ -38,7 +38,7 @@ public class sequences{
               s.add("test1","01","123");
               s.add("test2","02","561");
               for(int i=0;i<b.length;i++) {
-              	  if(s.put(b[i])!=null){
+                  if(s.put(b[i])!=null){
                      System.out.println(s.getName());
                   }
               }

@@ -25,18 +25,17 @@ public class SmtpClnRequestEncoder extends MessageToMessageEncoder<Object> {
        //private static final ByteBuf       DOT_CRLF_BUFFER = Unpooled.unreleasableBuffer(Unpooled.directBuffer(3).writeByte('.').writeByte('\r').writeByte('\n'));
       
        //private boolean contentExpected;
-      
 
        public SmtpClnRequestEncoder(){
-    	   //contentExpected=false;
-    	   }
+              //contentExpected=false;
+       }
 
        @Override
        public boolean acceptOutboundMessage(Object msg) throws Exception {
               boolean isContent = false;
-       	      if(msg instanceof SmtpRequest){
+              if(msg instanceof SmtpRequest){
                  isContent = true;
-    	      }
+              }
               logger.trace("msg instanceof SmtpRequest :"+isContent);
               return isContent;
        }

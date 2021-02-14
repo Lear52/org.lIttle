@@ -102,7 +102,7 @@ public class commonSMTP extends common{
       
       
        public String        getTlsKeyFile()        {return "certificates.jks";}
-       public String        getTlsTrustStoreFile() {return null;	}
+       public String        getTlsTrustStoreFile() {return null;    }
        public String        getTlsKeyPassword()    {return "123456";}
        
        public boolean       verifyUser(String username) {return true;}

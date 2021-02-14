@@ -12,7 +12,7 @@ public class HttpAuthNo extends HttpAuth {
     private   HttpAuthNo() {super(HttpAuth.NOAUTH,null);}
     
     protected HttpAuthNo(int _type_auth,statChannel _stat) {
- 	   super(_type_auth,_stat);
+              super(_type_auth,_stat);
     }
        
        

@@ -31,10 +31,10 @@ public class lMessage2ELM{
 
     }
     public  static String parse(lMessage msg,String _domain){
-    	ByteArrayOutputStream out=new ByteArrayOutputStream();
-    	parse(msg,out,_domain);
-    	
-    	return out.toString();
+           ByteArrayOutputStream out=new ByteArrayOutputStream();
+           parse(msg,out,_domain);
+           
+           return out.toString();
     }
     public  static void  parse(lMessage msg,OutputStream out,String _domain){
            MimeMessage eml;
@@ -53,7 +53,7 @@ public class lMessage2ELM{
                
                String[] to=msg.getTO();
                for(int i=0;i<to.length;i++){
-	           eml.addRecipients(Message.RecipientType.TO, to[i]+default_domen);
+                  eml.addRecipients(Message.RecipientType.TO, to[i]+default_domen);
                }
 
                String buffer1=msg.getBodyTxt();
@@ -73,10 +73,10 @@ public class lMessage2ELM{
                Multipart mp = new MimeMultipart();
 
                mp.addBodyPart(mbp1);
-	       mp.addBodyPart(mbp2);
-	      
-	       eml.setContent(mp);
-	       eml.writeTo(out);
+              mp.addBodyPart(mbp2);
+             
+              eml.setContent(mp);
+              eml.writeTo(out);
 
            }
            catch(Exception e){ 

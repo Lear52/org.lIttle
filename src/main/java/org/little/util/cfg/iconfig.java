@@ -7,31 +7,31 @@ import org.little.util.Except;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface iconfig {
-	/**
-	 * Открытие темы в файле конфигурации
-	 * @param sub_cfg - ссылка на общий файл конфигурации
-	 * @param topic префикс темы ([sis.]   sis.basa.)
-	 */
-	public abstract void open(iconfig sub_cfg, String topic);
+       /**
+        * Открытие темы в файле конфигурации
+        * @param sub_cfg - ссылка на общий файл конфигурации
+        * @param topic префикс темы ([sis.]   sis.basa.)
+        */
+       public abstract void open(iconfig sub_cfg, String topic);
 
-	/**
-	 * Открытие файла конфигурации
-	 * @param resourse_file - файл конфигурации
-	 */
-	public abstract void open(String resourse_file) throws Except;
+       /**
+        * Открытие файла конфигурации
+        * @param resourse_file - файл конфигурации
+        */
+       public abstract void open(String resourse_file) throws Except;
 
-	/**
-	 * закрытие файла конфигурации
-	 */
-	public abstract void close();
+       /**
+        * закрытие файла конфигурации
+        */
+       public abstract void close();
 
-	/**
-	 * Получение строки по заголовку
-	 *
-	 * @param item - заголовок строки
-	 */
-	public abstract String get(String item) throws Except;
-	public abstract String getTopic();
-        public abstract long getLong(String item);
-        public abstract int getInt(String item);
+       /**
+        * Получение строки по заголовку
+        *
+        * @param item - заголовок строки
+        */
+       public abstract String get(String item) throws Except;
+       public abstract String getTopic();
+       public abstract long getLong(String item);
+       public abstract int getInt(String item);
 }

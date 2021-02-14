@@ -113,9 +113,12 @@
 		</global_option>
 	</littleimap>
 	<littlecmd>
-		<global_option>
-			<host>192.168.1.1</host>
-		</global_option>
+		<apk>
+                   <node id="ext-nn"><host>10.70.116.148:22</host><user>cisco</user><password>cisco</password></node>
+                   <node id="ext-dk"><host>192.168.1.1:22</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-tu"><host>10.93.130.77:22</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-nu"><host>10.70.116.149:22</host><user>cisco</user><password>cisco</password></node>
+		</apk>
 		<commanddi>
 		      <getgkey>
 		         <cmd><req>crypto access key init floppy0:/start.p15</req><res>[y/n]</res></cmd>

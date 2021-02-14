@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.little.http.commonHTTP;
 import org.little.http.handler.lHttpResponse;
+import org.little.rcmd.commonAPK;
 import org.little.rcmd.rAPK;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -16,36 +17,35 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HttpCmdResponse extends lHttpResponse{
        private static final Logger  logger = LoggerFactory.getLogger(HttpCmdResponse.class);
 
-	public void runCmd(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
-	       String txt="";
-	       boolean ret;
-               String type_req=httpCmdRequest.getType();
-               rAPK apk = new rAPK();
-               ret=apk.loadCFG(commonHTTP.get().getNode());
-               logger.trace("load config for apk dionis ret:"+ret);
+       public void runCmd(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
+              String txt="";
+              boolean ret;
+              String type_req=httpCmdRequest.getType();
 
-               if(ret==false) {
-                  txt="apk.loadCFG return:"+ret;     
-                  logger.error("load config for apk dionis ret:"+ret);
-               }
-               else{
-                   boolean  is_correct=true;
-                   //String[] a=apk.listCMD();
+              String apk_req=httpCmdRequest.getAPK();
+              String c=httpCmdRequest.getCMD();
+              logger.trace("request apk:"+apk_req+" dionis cmd:"+c);
 
-                   //for(int i=0;i<a.length;i++) if(a[i].equals("")){is_correct=true; break;}
+              commonAPK.get().init(commonHTTP.get().getNode());
+              rAPK apk=commonAPK.get().getAPK(apk_req);
+              if(apk==null) {
+                 txt="noname apk dionis:"+apk_req;
+                 logger.error(txt);
+              }
+              else {
+                   boolean  is_correct=apk.checkCMD(c);
 
                    if(is_correct){
                       ret=apk.open();
                       if(ret==false) {
                          txt="apk.open return:"+ret;     
+                         logger.error(txt);
                       }
                       else{
                          logger.trace("open apk dionis");
                          //-------------------------------------------------------------------
                          ret=true;
                         
-                         String c=httpCmdRequest.getCMD();
-                         logger.trace("open apk dionis cmd:"+c);
                          String[] _ret=apk.runCMD(c);
                          
                          if(_ret==null){
@@ -95,69 +95,81 @@ public class HttpCmdResponse extends lHttpResponse{
                else{
                   sendTxt(ctx,httpCmdRequest,txt,HttpResponseStatus.OK,true);
                }
-	}
-	public void runReceive(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
+       }
+       public void runReceive(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
 
 
                    getFile(ctx,httpCmdRequest,httpCmdRequest.getFilename());
 
-        }
-	public void runSend(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
+       }
+       public void runSend(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
 
 
-        }
+       }
 
-	public void runList(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
-	       String  txt="";
-	       boolean ret;
-               rAPK apk = new rAPK();
-               String type_req=httpCmdRequest.getType();
+       public void runList(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
+              String  txt="";
+              boolean ret;
+              String type_req=httpCmdRequest.getType();
 
-               //logger.trace("set 3 cmd:list");
+              commonAPK.get().init(commonHTTP.get().getNode());
 
-               ret=apk.loadCFG(commonHTTP.get().getNode());
-               logger.trace("load config for apk dionis ret:"+ret);
-               if(ret==false) {
-                  txt="apk.loadCFG return:"+ret;     
-                  type_req="txt";
-                  logger.error(txt);
-               }
-               else{
-                   String[] a=apk.listCMD();
+              rAPK[] r_list=commonAPK.get().getAPK();
+              if(r_list!=null){
+                 logger.trace("load config for apk dionis size:"+r_list.length);
+                 if(r_list.length>0){
+                      rAPK apk=r_list[0];
+                      String[] list_cmd=apk.listCMD();
+                
+                      if("js".equals(type_req)){
+                         logger.trace("type:"+type_req);
+                         StringWriter out = new StringWriter();
+                
+                         JSONArray n_list=new JSONArray();
+                         for(int i=0;i<r_list.length;i++){
+                            JSONObject obj=new JSONObject();
+                            logger.trace("id:"+r_list[i].getID()+" host:"+r_list[i].getHost());
+                            obj.put("id"   ,r_list[i].getID());
+                            obj.put("host" ,r_list[i].getHostAddr());
+                            n_list.put(obj);
+                         }
+                
+                         JSONArray c_list=new JSONArray();
+                         for(int i=0;i<list_cmd.length;i++){
+                            JSONObject obj=new JSONObject();
+                            obj.put("id" ,list_cmd[i]);
+                            c_list.put(obj);
+                         }
 
-                   if("js".equals(type_req)){
-                      logger.trace("type:"+type_req);
-                      StringWriter out = new StringWriter();
-                      JSONArray list=new JSONArray();
-                      for(int i=0;i<a.length;i++){
-                         JSONObject obj=new JSONObject();
-                         obj.put("name" ,a[i]);
-                         list.put(obj);
+                         JSONObject root=new JSONObject();
+                         root.put("list_node",n_list);
+                         root.put("size_node",r_list.length);
+
+                         root.put("list_cmd" ,c_list);
+                         root.put("size_cmd" ,list_cmd.length);
+
+                         root.put("name","list cmd dionis");
+                         root.write(out);
+
+                         txt=out.toString();
+                         logger.trace("txt:"+txt);
                       }
-                      JSONObject root=new JSONObject();
-                      root.put("list",list);
-                      root.put("size",a.length);
-                      root.put("name","list cmd dionis");
-                      root.write(out);
-                      txt=out.toString();
-                      logger.trace("txt:"+txt);
-                   }
-                   else{
-                        logger.trace("type:"+type_req);
-                        txt="<pre>list apk.cmd ------------------------------\r\n";           
-                        for(int i=0;i<a.length;i++) txt+=(a[i]+"\r\n");     
-                        txt+="-------------------------------------------</pre>";           
-                        logger.trace("txt:"+txt);
-                   }
-               } 
-
+                      else{
+                           logger.trace("type:"+type_req);
+                           txt="<pre>list apk.cmd ------------------------------\r\n";           
+                           for(int i=0;i<list_cmd.length;i++) txt+=(list_cmd[i]+"\r\n");     
+                           txt+="-------------------------------------------</pre>";           
+                           logger.trace("txt:"+txt);
+                      }
+                  } 
+               }
                if("js".equals(type_req)){
                   sendJSON(ctx,httpCmdRequest,txt);
                }
                else{
                   sendTxt(ctx,httpCmdRequest,txt,HttpResponseStatus.OK,true);
                }
-	}
+       }
 
 }
 

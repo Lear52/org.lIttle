@@ -15,10 +15,10 @@ public class rCP_L2R extends rCP{
 
        private boolean ptimestamp = false;
 
-       public rCP_L2R() {}
+       public  rCP_L2R() {}
 
-       public rCP_L2R(String rfile,String lfile) {
-              super(rfile,lfile);
+       public  rCP_L2R(String rfile,String lfile) {
+               super(rfile,lfile);
        }
        /*
        public rCP_L2R(rShell sh,String name,int index,String _rfile,String _lfile) {
