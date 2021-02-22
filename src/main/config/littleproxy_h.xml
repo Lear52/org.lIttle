@@ -81,7 +81,7 @@
 			<default_domain>vip.cbr.ru</default_domain>
 
 			<root_document>var/htmlfile</root_document>
-			<app_name app1="appkeystore" app2="appcmddionis" app3="appfile">appfile</app_name>
+			<app_name app1="appkeystore" app2="appcmddionis" app3="appfile" app4="redirect">appfile</app_name>
 
                         <ssl>false</ssl>
                         <use_client_mode>false</use_client_mode>
@@ -97,7 +97,8 @@
 
 			<certificate>var/ssl/certificate.pem</certificate>
 			<privatekey>var/ssl/privateKey.key</privatekey>
-
+                        <redirect_host>http://sa5portal.vip.cbr.ru</redirect_host>
+                        <redirect_port>8080</redirect_port>
 		</global_option>
 	</littlehttp>
 	<littlesmtp>
@@ -136,9 +137,27 @@
 	</littleimap>
 	<littlecmd>
 		<global_option>
-			<host>192.168.1.1</host>
 		</global_option>
+		<apk>
+                   <node id="ext-tu"><host>10.93.130.77</host><user>adm</user><password>2wsxXSW@</password></node>
+		</apk>
 		<commanddi>
+		      <open>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>bash</req><res>#</res></cmd>
+		         <cmd><req>export TERM=tty</req><res>#</res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		      </open>
+		      <close>
+		         <cmd><req>exit</req></cmd>
+		      </close>
+
+		      <init>
+		         <cmd><res res="#"></res></cmd>
+		      </init>
 		      <getgkey>
 		         <cmd><req>crypto access key init floppy0:/start.p15</req><res>[y/n]</res></cmd>
 		         <cmd><req>y</req><res>NX#</res></cmd>
@@ -182,6 +201,12 @@
 		      <clear>
 		         <cmd><req>clear alert</req><res>#</res></cmd>
 		      </clear>
+		      <show>
+		         <cmd><req>show</req><res print="true">#</res></cmd>
+		      </show>
+		      <show_conn>
+		         <cmd><req>show crypto ike conns</req><res print="true">#</res></cmd>
+		      </show_conn>
 		</commanddi>
 	</littlecmd>
 </little>

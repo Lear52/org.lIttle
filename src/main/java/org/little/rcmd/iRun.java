@@ -112,7 +112,7 @@ public class iRun{
                  if(_ret==null)System.out.println("apk.run ret:null");     
                  else {
                     System.out.println("apk.run ret:"+_ret.length);
-                    for(int i=0;i<_ret.length;i++)buf.append(_ret[i]);
+                    for(int i=0;i<_ret.length;i++)buf.append(_ret[i]).append('\n');
                  }
 
                  if(_ret==null)ret=false;

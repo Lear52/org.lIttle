@@ -13,7 +13,8 @@ public class rResponse  implements rCMD{
        private boolean               is_print;
        private String                response;
        private String                id;
-       private StringBuffer          txt;
+       //private StringBuffer          txt;
+       private ArrayList<String>     list_txt;
        private ArrayList<rCMD>       list_rcommand;
 
        public static final String    ok          ="ok";
@@ -26,32 +27,35 @@ public class rResponse  implements rCMD{
        
        
        public rResponse(String id,String response) {
-              this.txt=new StringBuffer();
+              //this.txt=new StringBuffer();
               this.response=response;
               this.id=id;
               this.list_rcommand=new ArrayList<rCMD>();
+              this.list_txt=new ArrayList<String>();
               this.is_print=false;
        }
        public rResponse(String id,String response,boolean _is_print) {
-              this.txt=new StringBuffer();
+              //this.txt=new StringBuffer();
               this.response=response;
               this.id=id;
               this.list_rcommand=new ArrayList<rCMD>();
+              this.list_txt=new ArrayList<String>();
               this.is_print=_is_print;
        }
        public String       getID  (){return id;}
        public String       getRes (){return response;}
-       public StringBuffer getBuf (){return txt;}
+
+       public void         appendBuf (String t){
+    	   //txt.append(t).append('\n');
+    	   list_txt.add(t);
+       }
+
        public boolean      isPrint(){return is_print;}
        public void         setCMD(ArrayList<rCMD> l){list_rcommand=l;}
 
        @Override
        public String type() {return getClass().getName();}
-       @Override
-       public boolean run(rShell sh){
-              BufferedInputStream buf_input = new BufferedInputStream(sh.getIN());
-              return run(sh,buf_input);
-       }
+
        @Override
        public boolean run(rShell sh,BufferedInputStream buf_input){
            logger.debug("begin run cmd:"+id);
@@ -75,12 +79,16 @@ public class rResponse  implements rCMD{
        @Override
        public String[] print() {
               if(is_print){
-                 String [] ret=new String [1];
-                 ret[0]=txt.toString();
+                 String [] ret=new String [list_txt.size()];
+                 ret=list_txt.toArray(ret);
                  return ret;
               }
               else return str_null;
        }
+       @Override
+       public byte[] getBuffer() {return null;}
+       @Override
+       public void setBuffer(byte[] buffer) {}
 
 
 }

@@ -2,17 +2,24 @@ package org.little.rcmd.rsh;
 
 
 public class sequence{
-       private byte [] buffer;
+       private char [] s_buffer;
+       private byte [] b_buffer;
        private int     point;
        private boolean equal;
        private String  type;
        private String  id;
 
-       public sequence(String _type,String _id,String s) {
+       public sequence(String _type,String _id,String str_sequence) {
               clear();
 
-              if(s!=null)buffer=s.getBytes();
-              else       buffer=null;
+              if(str_sequence!=null){
+                 s_buffer=str_sequence.toCharArray();
+                 b_buffer=str_sequence.getBytes();
+              }
+              else{
+                   s_buffer=null;
+                   b_buffer=null;
+              }
               type=_type;
               id=_id;
        }
@@ -20,16 +27,17 @@ public class sequence{
                point=0;
                equal=false;
                type="";
-               buffer=null;
+               b_buffer=null;
+               s_buffer=null;
                
        }
-       public boolean put(byte a) {
-              if(buffer==null){clear();return false;}
+       public boolean put(char ch) {
+              if(s_buffer==null){clear();return false;}
               equal=false; 
 
-              if(buffer[point]==a){
+              if(s_buffer[point]==ch){
                  point++;
-                 if(point==buffer.length){
+                 if(point==s_buffer.length){
                       equal=true; 
                       point=0;
                       return true;
@@ -38,13 +46,29 @@ public class sequence{
               else point=0;
               return equal;
        }
+       public boolean put(byte ch) {
+              if(b_buffer==null){clear();return false;}
+              equal=false; 
+
+              if(b_buffer[point]==ch){
+                 point++;
+                 if(point==b_buffer.length){
+                      equal=true; 
+                      point=0;
+                      return true;
+                 }
+              }
+              else point=0;
+              return equal;
+       }
+       public void    reset() {point=0;equal=false;}
        public boolean check() {return equal;}
        public String  getType() {return type;}
        public String  getID() {return id;}
          
        public static void main(String[] arg){
            //boolean ret;
-           byte [] b="234567812345612345667".getBytes();
+           char [] b="234567812345612345667".toCharArray();
            sequence s=new sequence("test","01","123");
            for(int i=0;i<b.length;i++) {
               if(s.put(b[i])){

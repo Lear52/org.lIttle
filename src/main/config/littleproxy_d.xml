@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+	<littlehttp>
+		<global_option>
+			<port>8080</port>
+			<local_bind_server>*</local_bind_server>
+			<local_bind_client>*</local_bind_client>
+                        <dump_log>true</dump_log>
+
+			<authenticateUser noauth="0" stub="1" xml="2"  ldap="3" spnego="4">1</authenticateUser>
+			<authenticateClients noauth="0" basic="1" digest="2" kerberos="3">0</authenticateClients>
+			<ldap_url>ldap://rdc22-vip01.vip.cbr.ru:3268</ldap_url>
+			<ldap_username>k1svcfarmadmin</ldap_username>
+			<ldap_password>3edcVFR$</ldap_password>
+			<java_security_krb5_conf>krb5.conf</java_security_krb5_conf>
+			<java_security_auth_login_config>login.conf</java_security_auth_login_config>
+			<default_realm>vip.cbr.ru</default_realm>
+			<default_domain>vip.cbr.ru</default_domain>
+
+			<root_document>var/htmlcmd</root_document>
+			<app_name app1="appkeystore" app2="appcmddionis" app3="appfile" app4="redirect">appcmddionis</app_name>
+
+                        <ssl>false</ssl>
+                        <use_client_mode>false</use_client_mode>
+                        <need_client_auth>false</need_client_auth>
+                        <type_ssl_context>TLS</type_ssl_context>
+
+                        <use_keystore>true</use_keystore>
+                        <keystore_filename>var/ssl/certificates.jks</keystore_filename>
+                        <keystore_type>JKS</keystore_type>
+                        <keystore_password>123456</keystore_password>
+                        <certificate_password>123456</certificate_password>
+			<key_alias>lear</key_alias>
+
+			<certificate>var/ssl/certificate.pem</certificate>
+			<privatekey>var/ssl/privateKey.key</privatekey>
+
+		</global_option>
+		<apk>
+                   <node id="ext-nn"><host>10.70.116.148</host><user>cisco</user><password>cisco</password></node>
+                   <node id="ext-dk"><host>192.168.1.1</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-tu"><host>10.93.130.77</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-nu"><host>10.70.116.149</host><user>cisco</user><password>cisco</password></node>
+		</apk>
+		<commanddi>
+		      <open>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>bash</req><res>#</res></cmd>
+		         <cmd><req>export TERM=vt100</req><res>#</res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>show crypto ike conns</req><res print="true">#</res></cmd>
+		         <cmd><req>show</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </open>
+		      <dir_flush>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>ls flash0:</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </dir_flush>
+		      <dir_flush1>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>ls flash0:</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </dir_flush1>
+		      <show_ser>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>show crypto pki pkcs10 flash0:/new_test_key/cert-test1.p10</req><res print="true"></res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </show_ser>
+                      
+		</commanddi>
+	</littlehttp>
+
+</little>

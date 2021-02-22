@@ -12,7 +12,7 @@ public class rlog{
        public static void print(String txt){
               buf.append(txt);
               if(txt.indexOf('\n')>=0){
-                 logger.trace(buf.toString());
+                 logger.trace("RLOG:"+buf.toString());
                  buf=new StringBuffer();
               }
 

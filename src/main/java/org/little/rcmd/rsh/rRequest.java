@@ -2,19 +2,21 @@ package org.little.rcmd.rsh;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.util._ByteBuilder;
+
 
 public class rRequest implements rCMD {
        private static Logger logger = LoggerFactory.getLogger(rRequest.class);
 
        private sequences seq;
        private String    request;
-       //private String    response;
        private rResponse response;
        private int       index;
-       private String    name;
+       private String    command_id;
 
        public static final String    response_ok          ="ok";
        public static final String    response_error       ="error";
@@ -25,12 +27,12 @@ public class rRequest implements rCMD {
 
        
        
-       public rRequest(String name,int index,String request,rResponse _response) {
+       public rRequest(String _command_id,int index,String request,rResponse _response) {
 
               this.request=request;
               //this.response=response;
               this.response=_response;
-              this.name=name;
+              this.command_id=_command_id;
               this.index=index;
 
               seq=new sequences();
@@ -55,7 +57,7 @@ adm@DionisNX#
        
        private boolean sendRequest(rShell sh)  {
               if(request==null){
-                 logger.trace("request is null");
+                 logger.trace("comand:"+command_id+" index:"+index+" request is null");
                  return true;
               }
               try {
@@ -68,13 +70,13 @@ adm@DionisNX#
                   logger.error("sendRequest "+toString()+" ex:"+e);
                   return false;
               }
+              logger.trace("comand:"+command_id+"send request:"+request+" index:"+index);
 
-              rlog.print("\nsend request:"+request+"\n");
+              rlog.print("send request:"+request+"");
             
               return true;
        }
        private String getString(BufferedInputStream buf_input){
-              //System.out.println("begin get string");
               StringBuilder buf=new StringBuilder();
               int c;
               try {
@@ -96,20 +98,149 @@ adm@DionisNX#
         public String type() {return getClass().getName();}
 
         @Override
-        public String[] print() {
-               if(response==null) return str_null;
-               return response.print();
+        public String[] print(){if(response==null) return str_null;return response.print();}
+
+        public boolean run(rShell sh,BufferedInputStream buf_input){
+               sendRequest(sh);
+               if(response==null){
+                  logger.trace("no wait response is null");
+                  return true;
+               }
+
+               logger.trace("wait response:"+response.getRes() +" id:"+response.getID());
+
+               int c=0;
+               _ByteBuilder buf_out=new _ByteBuilder(1024);
+               boolean is_print=true;
+               try {
+                   while((c=buf_input.read()) >= 0){
+                          byte _b=(byte)c;
+                          //char _c=(char)c;
+
+                          if(_b=='\r' || _b=='\n') {
+                             if(buf_out.length()==0)continue;
+                             byte [] buf_byte=buf_out.getBytes();
+                             String str_out=new String(buf_byte,Charset.forName("UTF-8"));
+                             response.appendBuf(str_out);
+                             rlog.print(str_out);
+                             buf_out.reset();
+                             continue;
+                          }
+                          
+                          if(_b==27){is_print=false;continue;}
+                          if(is_print==false){
+                             if(_b=='='){is_print=true;continue;}
+                             if(_b=='>'){is_print=true;continue;}
+                             if(_b>='a' && _b<='z'){is_print=true;continue;}
+                             if(_b>='A' && _b<='Z'){is_print=true;continue;}
+                          }
+                          
+                          if(is_print){
+                             buf_out.append(_b);
+                             sequence s=seq.put(_b);
+                             if(s!=null){
+                                //---------------------------------------------------------------------
+                                if(response_ok.equals(s.getType())){
+                                   // received the expected response
+                                   if(buf_out.length()!=0){
+                                      byte [] buf_byte=buf_out.getBytes();
+                                      String str_out=new String(buf_byte,Charset.forName("UTF-8"));
+                                      response.appendBuf(str_out);
+                                      rlog.print(str_out);
+                                   }
+                                   logger.trace("response type:"+s.getType()+" id:"+s.getID()+" Ok");
+                                   return true;
+                                }
+                                else
+                                if(response_warn.equals(s.getType())){
+                                    // received warn response
+                                   String str=getString(buf_input);// get string to end
+                                   logger.trace("run:"+toString()+" for response type:"+s.getType()+" ret:"+str);
+                                   continue;
+                                }
+                                else
+                                if(response_info.equals(s.getType())){
+                                   // received info response
+                                   String str=getString(buf_input);// get string to end
+                                   logger.trace("run:"+toString()+" for response type:"+s.getType()+" ret:"+str);
+                                   continue;
+                                }
+                                else
+                                if(response_error.equals(s.getType())){
+                                   // received error response
+                                   String str=getString(buf_input);// get string to end
+                                   logger.trace("run:"+toString()+" for response type:"+s.getType()+" ret:"+str);
+                                   continue;
+                                }
+                                else
+                                if(response_syntax_error.equals(s.getType())){
+                                   // received syntax error response
+                                   String str=getString(buf_input);// get string to end
+                                   logger.trace("run:"+toString()+" for response type:"+s.getType()+" ret:"+str);
+                                   continue;
+                                }
+                                //---------------------------------------------------------------------
+                             }
+                          }/*end is_print*/
+                   }/*end while*/
+
+               } catch (IOException e) {
+                    if(buf_out.length()!=0){
+                       byte [] buf_byte=buf_out.getBytes();
+                       String str_out=new String(buf_byte,Charset.forName("UTF-8"));
+                       response.appendBuf(str_out);
+                       rlog.print(str_out);
+                    }
+                    logger.error("get response "+toString()+" ex:"+e);
+                    return false;
+               }
+               
+               return true;
         }
-
-
-        @Override
-        public boolean run(rShell sh)  {
-            BufferedInputStream buf_input = new BufferedInputStream(sh.getIN());
-            return run(sh,buf_input);
+        //@Override
+/*
+        public boolean run2(rShell sh,BufferedInputStream buf_input)  {
+               StringBuilder str_out=new StringBuilder();
+               sendRequest(sh);
+               if(response==null)return true;
+//System.out.println("send request");
+               try {
+                    String str_line=null;
+                    while((str_line=getStringLine(buf_input))!=null){
+                          Reader input =new StringReader(str_line);
+                          int c;
+System.out.println("get line:"+str_line);
+                          while((c=input.read()) >= 0){
+                                char _c=(char)c;
+                                
+ System.out.print(_c);
+                         
+                                str_out.append(_c);
+                                sequence s=seq.put(_c);
+                                if(s==null)continue;
+                         
+                                if(response_ok.equals(s.getType())){
+System.out.println("run  cmd:"+s.getType()+" id:"+s.getID()+" Ok");
+                                   // received the expected response
+                                   response.getBuf().append(str_out);
+                                   logger.trace("run  cmd:"+s.getType()+" id:"+s.getID()+" Ok");
+                                   return true;
+                                }
+                          }
+                          str_out.append('\n');
+                          seq.reset();
+                    }
+                            
+               } catch (IOException e) {
+                    logger.error("sendRequest "+toString()+" ex:"+e);
+                    return false;
+               }
+               return true;
         }
-
-        @Override
-        public boolean run(rShell sh,BufferedInputStream buf_input)  {
+*/
+/*
+        //@Override
+        public boolean run1(rShell sh,BufferedInputStream buf_input)  {
                StringBuilder str_out=new StringBuilder();
                sendRequest(sh);
                
@@ -118,11 +249,11 @@ adm@DionisNX#
                try {
                     while((c=buf_input.read()) >= 0){
                           char _c=(char)c;
-                          byte _b=(byte)c;
+                          
 
                           rlog.print(_c);
                           str_out.append(_c);
-                          sequence s=seq.put(_b);
+                          sequence s=seq.put(_c);
                           if(s==null)continue;
 
                           if(response_ok.equals(s.getType())){
@@ -167,16 +298,6 @@ adm@DionisNX#
                              logger.trace("run:"+toString()+" for:"+s.getType()+" ret:"+str);
                              continue;
                           }
-                          /*
-                          else{ 
-                             logger.trace("run:"+toString()+" for:"+s.getName()+" ret:false");
-                             rlog.print(">:"+s.getName()+"\n");
-                             String str=getString(buf_input);// get string to end
-                             rlog.print("text:"+str+"\n");
-
-                             return false;
-                          }
-                          */
                     }
                             
                } catch (IOException e) {
@@ -186,11 +307,21 @@ adm@DionisNX#
                return true;
         }
         
-        
+*/        
         public String toString(){
-               return "rcmd:"+name+" index:"+index+" request:"+request+" "+"response:"+response;
+               return "rcmd:"+command_id+" index:"+index+" request:"+request+" "+"response:"+response;
         }  
 
+        @Override
+ 	public byte[] getBuffer() {
+ 	    // TODO Auto-generated method stub
+ 		      return null;
+ 	}
+ 	@Override
+ 	public void setBuffer(byte[] buffer) {
+ 	    // TODO Auto-generated method stub
+ 		
+        }
 
         public static void main(String[] arg){
             boolean ret;

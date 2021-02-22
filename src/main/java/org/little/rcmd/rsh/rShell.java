@@ -83,7 +83,7 @@ public class rShell{
                         logger.error("error ex:"+e);
                         return false;
                   }
-                  logger.trace("open channel session");
+                  logger.trace("open channel session - Ok");
                    
                   return true;
        }
@@ -104,7 +104,7 @@ public class rShell{
                         logger.error("error open channel ex:"+e);
                         return false;
                   }
-                  logger.trace("open channel shell");
+                  logger.trace("open channel shell - Ok");
                   return true;
        }
        protected void _close(){

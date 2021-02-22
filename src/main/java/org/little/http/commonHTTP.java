@@ -21,12 +21,14 @@ public class commonHTTP extends common{
        private static final Logger logger = LoggerFactory.getLogger(commonHTTP.class);
        private static commonHTTP   cfg = new commonHTTP();
       
-       private String         root_document                  ;
-       private String         app_name                       ;
-       private commonSSL      ssl_cfg;
-       private commonAUTH     auth_cfg; 
-       private commonServer   server_cfg;
+       private String         root_document;
+       private String         app_name     ;
+       private commonSSL      ssl_cfg      ;
+       private commonAUTH     auth_cfg     ; 
+       private commonServer   server_cfg   ;
        private commonHttpAuth auth_http_cfg; 
+       private String         redirect_host;
+       private int            redirect_port;
 
        public  static commonHTTP  get(){ if(cfg==null)cfg=new commonHTTP();return cfg;};
       
@@ -48,6 +50,8 @@ public class commonHTTP extends common{
               setNodeName("littlehttp");
               root_document="";
               app_name     ="appkeystore";
+              redirect_host="localhost";
+              redirect_port=8080;
        }
        private void initGlobal(Node node_cfg){
               if(node_cfg!=null){
@@ -64,7 +68,10 @@ public class commonHTTP extends common{
                      if("root_document"         .equals(n.getNodeName())){root_document=n.getTextContent();logger.info("root_document:"+root_document);}
                      else
                      if("app_name"              .equals(n.getNodeName())){app_name=n.getTextContent();     logger.info("app_name:"+app_name);          }
-                     //else
+                     else
+                     if("redirect_host"         .equals(n.getNodeName())){redirect_host=n.getTextContent();     logger.info("redirect_host:"+redirect_host);}
+                     else
+                     if("redirect_port"         .equals(n.getNodeName())){String s=n.getTextContent(); try{redirect_port=Integer.parseInt(s, 10);}catch(Exception e){ redirect_port=8080;logger.error("redirect_port:"+redirect_port);} logger.info("redirect_port:"+redirect_port); }
                  }
               }                               
        }
@@ -87,6 +94,9 @@ public class commonHTTP extends common{
 
        public String         getRootDocument           (){return root_document;                  }
        public String         getAppName                (){return app_name;                       }
+       public String         getRedirectHost           (){return redirect_host;                  }
+       public int            getRedirectPort           (){return redirect_port;                  }
+
 
        public commonSSL      getCfgSSL     (){return ssl_cfg;   }
        public commonAUTH     getCfgAuth    (){return auth_cfg;  }

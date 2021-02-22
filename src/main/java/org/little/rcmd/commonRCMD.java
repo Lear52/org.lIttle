@@ -53,6 +53,7 @@ public class commonRCMD{
        public void                           setPasswd(String p) {passwd=p; }
        
        public void init(Node node_apk){
+              logger.info("The configuration apk begin");
               NodeList glist=node_apk.getChildNodes();
               for(int i=0;i<glist.getLength();i++){
                   Node  n=glist.item(i);
@@ -66,8 +67,13 @@ public class commonRCMD{
            for(int i=0;i<glist.getLength();i++){
                Node     n        =glist.item(i);
                String   name_node=n.getNodeName();
-               rCommand cmd      =new rCommand(name_node);
-               if(cmd.loadCFG(n)!=false) command.put(name_node, cmd);
+               if(name_node==null)continue;
+               if(n.getChildNodes()==null)continue;
+               logger.trace("load command:"+name_node);
+               rCommand cmd=new rCommand(name_node);
+               if(cmd.loadCFG(n)!=false) {
+            	   command.put(name_node, cmd);
+               }
            }
            if(command.size()==0)command=null;
         

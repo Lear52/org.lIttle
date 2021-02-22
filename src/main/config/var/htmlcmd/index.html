@@ -10,6 +10,99 @@
 
 <script type="text/javascript">
 
+        function _getCMD(_command,_apk,id_div){
+            var req_url='/get?type=js&cmd='+_command+'&apk='+_apk;
+            rec_data=[];
+            jQuery.ajax({
+                   url:  req_url, 
+                   cache: false,
+                   type: "GET",
+                   dataType: "JSON",
+                   contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            
+                   success: function(data1){
+                                          //--------------------------------------------
+                                     var list=data1.list;
+                                     var txt='<table><tr><td>';
+                                     for(var i=0;i<list.length;i++){
+                                         txt+=list[i].txt+'<br>';
+                                     }
+                                     txt+='</td></tr></table>';
+                                     $(id_dev).html(txt);                                               
+                                     txt=null;
+
+                            },
+                   error: function(err){
+                           alert('Ошибка:получения данных по запросу url:'+req_url+'\n Сервер вернул статус:'+err.statusText+'('+err.status+')');          
+
+                   },
+                   timeout: 5000
+            });
+            
+            req=null;
+
+        }
+        function getF(){
+                 var _command='dir_flash';
+                 var _apk='ext-nn';
+                 getCMD(_command,_apk,'#list_flash');
+        }
+        function getCMD(_command,_apk){getCMD(_command,_apk,'#txt_cmd');}
+        function getList(){
+            var req_url='/list?type=js';
+            rec_data=[];
+            jQuery.ajax({
+                   url:  req_url, 
+                   cache: false,
+                   type: "GET",
+                   dataType: "JSON",
+                   contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            
+                   success: function(data1){
+                                          //--------------------------------------------
+                                     var list_cmd =data1.list_cmd;
+                                     var list_node=data1.list_node;
+
+                                     var txt='<table border=1>';
+                                     txt+='<tr><td>#</td>';
+                                     for(var j=0;j<list_node.length;j++){
+                                         var apk=''+list_node[j].id+'';
+                                         var host=''+list_node[j].host+'';
+                                         txt+='<td align=center>'+apk+'<br>'+host+'</td>';
+                                     }
+                                     txt+='</tr>';
+                                     for(var i=0;i<list_cmd.length;i++){
+                                         var cmd=''+list_cmd[i].id+'';
+                                         txt+='<tr align=center><td>'+(i+1)+'</td>';
+
+                                         for(var j=0;j<list_node.length;j++){
+                                             var apk=''+list_node[j].id+'';
+                                             txt+='<td><a href="#" onclick="getCMD(\''+cmd+'\',\''+apk+'\');" >'+cmd+'</a><p>(<a href="/get?cmd='+cmd+'&apk='+apk+'" ><i>'+cmd+'</i></a>)</td>';
+                                         }
+                                         txt+='</tr>';
+                                     }
+
+                                     txt+='</table>';
+                                     $("#list_cmd").html(txt);                                               
+                                     txt=null;
+                                     //oper_data= new Date();
+
+                            },
+                   error: function(err){
+                           alert('Ошибка:получения данных по запросу url:'+req_url+'\n Сервер вернул статус:'+err.statusText+'('+err.status+')');          
+
+                   },
+                   timeout: 5000
+            });
+            
+            req=null;
+
+        }
+        $(document).ready(function() { 
+                             getList();
+                             getF();
+                          });
+
 </script>
 
 </head>
@@ -52,8 +145,22 @@
 
 <hr>
 
-
-
+<p><a href="/list?type=txt">List COMMAND</a>
+<p><a href="/get?type=txt&cmd=open">open COMMAND</a>
+<hr>
+    <table width="100%"><tr><td>
+    <div id="id_list_left">
+       <div id="list_cmd"  ></div>
+    </div>
+    </td><td>
+    <div id="id_list_right">
+       <div id="list_flash"  ></div>
+    </div>
+    </td></tr></table>
+<hr>
+    <div id="id_list_right">
+       <div id="txt_cmd"  ></div>
+    </div>
 
 <hr>
 

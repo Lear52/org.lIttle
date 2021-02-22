@@ -8,24 +8,22 @@ import java.io.InputStream;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         
+/**
+*  class rcopy local file to remove file
+*/
 
-public class rCP_L2R extends rCP{
+public class rCP_Local2Remote extends rCP{
 
-       private static Logger logger = LoggerFactory.getLogger(rCP_L2R.class);
+       private static Logger logger = LoggerFactory.getLogger(rCP_Local2Remote.class);
 
        private boolean ptimestamp = false;
 
-       public  rCP_L2R() {}
+       public  rCP_Local2Remote() {}
 
-       public  rCP_L2R(String rfile,String lfile) {
+       public  rCP_Local2Remote(String rfile,String lfile) {
                super(rfile,lfile);
        }
-       /*
-       public rCP_L2R(rShell sh,String name,int index,String _rfile,String _lfile) {
-              super(sh,name,index,_rfile,_lfile);
-       }
-       */
-       public rCP_L2R(String name,int index,String _rfile,String _lfile) {
+       public rCP_Local2Remote(String name,int index,String _rfile,String _lfile) {
            super(name,index,_rfile,_lfile);
        }
 
@@ -35,8 +33,6 @@ public class rCP_L2R extends rCP{
                  else          return "scp -t "+rfile;
       }
 
-       //@Override
-       //public String type() {return getClass().getName();}
 
        @Override
        protected boolean _run() {
@@ -122,7 +118,7 @@ public class rCP_L2R extends rCP{
         public static void main(String[] arg){
                boolean ret;
 
-               rCP_L2R  cp0=new rCP_L2R("remoute_out.bin","local_out.bin");
+               rCP_Local2Remote  cp0=new rCP_Local2Remote("remoute_out.bin","local_out.bin");
                   
                if(arg.length>0)cp0.setHost(arg[0]);
                else            cp0.setHost("127.0.0.1");

@@ -3,15 +3,18 @@ package org.little.http;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
@@ -30,20 +33,44 @@ public class lHttpCLN {
               this.url = url;
        }
        public String get(ByteArrayOutputStream os) throws Exception{
-                 String filename=null;
-              System.setProperty("java.net.preferIPv4Stack","true");
-              HttpClient httpclient = HttpClientBuilder.create().build();
-              
-              HttpGet http_get = new HttpGet(url);
-              
-              HttpResponse response = httpclient.execute(http_get);
+              String     filename=null;
+              CloseableHttpClient httpclient =null;
+              try {
 
-              System.out.println(response.getStatusLine());
+                   httpclient = HttpClientBuilder.create().build();
+              
+                   HttpGet               http_get = new HttpGet(url);
+                   CloseableHttpResponse response = null;
+                   InputStream is=null;
+                   try {
+                        response = httpclient.execute(http_get);
+                        System.out.println(response.getStatusLine());
+                        is = response.getEntity().getContent();
+                        while(true) {
+                        	byte [] buf=new byte [1024];
+                        	int ret=is.read(buf);
+                        	if(ret<0) {
+                        		
+                        		break;
+                        	}
+                        	os.write(buf, 0, ret);
+                        }
+                        
+                        http_get.abort();
+                   } 
+                   finally {
+                	   if(is!=null)is.close();
+                       response.close();
+                   }
+      
+              } finally {
+                 httpclient.close();
+                 os.close();
+              }
               
               return filename;
        }
        public void sent(ByteArrayOutputStream os,String filename) throws Exception{
-              System.setProperty("java.net.preferIPv4Stack","true");
               ByteArrayInputStream is=new ByteArrayInputStream(os.toByteArray());
               
               if(debug)System.out.println("ok!");
@@ -81,12 +108,23 @@ public class lHttpCLN {
               
        }
        public static void main(String[] args) throws Exception {
+              System.setProperty("java.net.preferIPv4Stack","true");
               lHttpCLN cln=new lHttpCLN();
-           String  f_name;
-              cln.setURL("http://sa5lear1.vip.cbr.ru:8080/main/doc/жа/law_cb.pdf");
+              String  f_name;
+              String  url;
+
+              if(args.length>0)url=args[0];
+              else             url="http://sa5lear1.vip.cbr.ru:8080/main/doc/law_cb.pdf"; 
+
+              System.out.println("executing request :" + url);
+
+              cln.setURL(url);
+
               ByteArrayOutputStream os=new ByteArrayOutputStream();
               f_name=cln.get(os);
+              byte[] out = os.toByteArray();
               System.out.println("file:"+f_name);
+              System.out.write(out);
               
        }
 }

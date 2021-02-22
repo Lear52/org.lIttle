@@ -61,7 +61,7 @@ public class lHttpResponse {
               String msg=res.getBodyMsg();
               if(msg==null)msg=" ";
 
-              ByteBuf buf = Unpooled.copiedBuffer(res.getBodyMsg(), CharsetUtil.UTF_8);
+              ByteBuf buf = Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8);
 
               FullHttpResponse response;
 

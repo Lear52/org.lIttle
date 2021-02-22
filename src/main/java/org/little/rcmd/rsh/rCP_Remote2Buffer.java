@@ -7,20 +7,20 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         
 
-public class rCP_R2H extends rCP_R2L{
+/**
+*  class rcopy remove file to buffer
+*/
+public class rCP_Remote2Buffer extends rCP_Remote2Local{
 
-       private static Logger logger = LoggerFactory.getLogger(rCP_R2H.class);
-       //private String http;
-/*
-       public rCP_R2H(rShell sh,String name,int index,String _rfile,String _lfile) {
-              super(sh,name,index,_rfile,"");
-              //http=_lfile;
-       }
-*/       
-       public rCP_R2H(String name,int index,String _rfile,String _lfile) {
+       private static Logger logger = LoggerFactory.getLogger(rCP_Remote2Buffer.class);
+
+       private byte [] buffer;
+
+       public rCP_Remote2Buffer(String name,int index,String _rfile,String _lfile) {
            super(name,index,_rfile,"");
            //http=_lfile;
-    }
+           buffer=null;
+       }
 
        @Override
        protected String r_command(){return "scp -f "+rfile; }
@@ -121,7 +121,9 @@ public class rCP_R2H extends rCP_R2L{
               return ret;
         }
        public boolean sent(ByteArrayOutputStream os){
-              return false;
+              buffer= os.toByteArray();
+
+              return true;
 
        }
        @Override

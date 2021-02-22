@@ -7,20 +7,22 @@ import org.little.mailx.SmtpMailXClient;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         
+/**
+*  class rcopy remove file to smtp msg
+*/
+public class rCP_Remote2SMTP extends rCP_Remote2Local{
 
-public class rCP_R2S extends rCP_R2L{
-
-       private static Logger logger = LoggerFactory.getLogger(rCP_R2S.class);
+       private static Logger logger = LoggerFactory.getLogger(rCP_Remote2SMTP.class);
        
-       //private String smtp;
+       private String smtp_to;
       /* 
        public rCP_R2S(rShell sh,String name,int index,String _rfile,String _lfile) {
               super(sh,name,index,_rfile,"");
               //smtp=_lfile;
        }*/
-       public rCP_R2S(String name,int index,String _rfile,String _lfile) {
+       public rCP_Remote2SMTP(String name,int index,String _rfile,String _lfile) {
            super(name,index,_rfile,"");
-           //smtp=_lfile;
+           smtp_to=_lfile;
     }
        
        @Override
@@ -123,12 +125,22 @@ public class rCP_R2S extends rCP_R2L{
         }
         public boolean sent(ByteArrayOutputStream os){
                SmtpMailXClient cln=new SmtpMailXClient();
+               cln.setTo(smtp_to);
+               cln.setFrom("av1@vip.cbr.ru");
+               cln.setHost("127.0.0.1");
+               cln.setPort(25);
+               cln.setUserName("av1");
+               cln.setPassword("123");
+               /*
+                   smtp sent (rfile) -> to 
+               */
                cln.sent(os, rfile);
+
                return false;
         }
         @Override
         public String toString(){
-               return "rCP(R2L):"+name+" index:"+index+" local:"+lfile+" "+"remote:"+rfile;
+               return "rCP(R2S):"+name+" index:"+index+" local:"+lfile+" "+"remote:"+rfile;
         }  
 
           

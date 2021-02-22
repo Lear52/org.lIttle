@@ -6,23 +6,21 @@ import java.io.IOException;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         
+/**
+*  class rcopy remove file to local file
+*/
 
-public class rCP_R2L extends rCP{
+public class rCP_Remote2Local extends rCP{
 
-       private static Logger logger = LoggerFactory.getLogger(rCP_R2L.class);
+       private static Logger logger = LoggerFactory.getLogger(rCP_Remote2Local.class);
 
-       public rCP_R2L() {}
-       public rCP_R2L(String rfile,String lfile) {
+       public rCP_Remote2Local() {}
+       public rCP_Remote2Local(String rfile,String lfile) {
               super(rfile,lfile);
        }
-       /*
-       public rCP_R2L(rShell sh,String name,int index,String _rfile,String _lfile) {
-              super(sh,name,index,_rfile,_lfile);
-       }
-       */
-       public rCP_R2L(String name,int index,String _rfile,String _lfile) {
+       public rCP_Remote2Local(String name,int index,String _rfile,String _lfile) {
            super(name,index,_rfile,_lfile);
-    }
+       }
        
        @Override
        protected String r_command(){return "scp -f "+rfile; }
@@ -128,7 +126,7 @@ public class rCP_R2L extends rCP{
         public static void main(String[] arg){
                boolean ret;
 
-               rCP_R2L  cp0=new rCP_R2L("remoute_out.bin","local_out.bin");
+               rCP_Remote2Local  cp0=new rCP_Remote2Local("remoute_out.bin","local_out.bin");
                   
                if(arg.length>0)cp0.setHost(arg[0]);
                else            cp0.setHost("127.0.0.1");
