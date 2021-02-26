@@ -1,7 +1,7 @@
 package org.little.rcmd.rsh;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,6 +17,7 @@ public class rCP_Buffer2Remote extends rCP{
        private static Logger logger = LoggerFactory.getLogger(rCP_Buffer2Remote.class);
 
        private boolean ptimestamp = false;
+       private byte [] buffer;
 
        public  rCP_Buffer2Remote() {}
 
@@ -82,7 +83,7 @@ public class rCP_Buffer2Remote extends rCP{
                       }
                      
                       // send a content of lfile
-                      InputStream fis=new FileInputStream(lfile);
+                      InputStream fis=new ByteArrayInputStream(buffer);
                 
                       byte[] buf=new byte[1024];
                       while(true){
@@ -109,10 +110,14 @@ public class rCP_Buffer2Remote extends rCP{
                  logger.debug("end command:"+name+" index:"+index +" L2R return:"+ret);
                  return ret;
         }
-       @Override
-       public String toString(){
+	@Override
+	public void setBuffer(byte[] _buffer) {
+               buffer=_buffer;
+        }
+        @Override
+        public String toString(){
                return "rCP(L2R):"+name+" index:"+index+" local:"+lfile+" "+"remote:"+rfile;
-       }  
+        }  
 
           
         public static void main(String[] arg){

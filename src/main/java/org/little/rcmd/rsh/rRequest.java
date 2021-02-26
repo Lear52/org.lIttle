@@ -67,7 +67,7 @@ adm@DionisNX#
                   sh.getOUT().write("\r\n".getBytes());
                   sh.getOUT().flush();
               } catch (IOException e) {
-                  logger.error("sendRequest "+toString()+" ex:"+e);
+                  logger.error("comand:"+command_id+" index:"+index+" send request:"+toString()+" ex:"+e);
                   return false;
               }
               logger.trace("comand:"+command_id+"send request:"+request+" index:"+index);
@@ -109,13 +109,19 @@ adm@DionisNX#
 
                logger.trace("wait response:"+response.getRes() +" id:"+response.getID());
 
+//System.out.println("\n------------------------------------");
+
                int c=0;
                _ByteBuilder buf_out=new _ByteBuilder(1024);
                boolean is_print=true;
                try {
                    while((c=buf_input.read()) >= 0){
                           byte _b=(byte)c;
-                          //char _c=(char)c;
+                          char _c=(char)c;
+
+//System.out.print(_c);
+
+                          rlog.print(_c);
 
                           if(_b=='\r' || _b=='\n') {
                              if(buf_out.length()==0)continue;

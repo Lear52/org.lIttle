@@ -13,13 +13,12 @@ import org.little.util.LoggerFactory;
 public class rCP_Remote2Buffer extends rCP_Remote2Local{
 
        private static Logger logger = LoggerFactory.getLogger(rCP_Remote2Buffer.class);
-
        private byte [] buffer;
 
        public rCP_Remote2Buffer(String name,int index,String _rfile,String _lfile) {
            super(name,index,_rfile,"");
-           //http=_lfile;
            buffer=null;
+           //http=_lfile;
        }
 
        @Override
@@ -77,7 +76,7 @@ public class rCP_Remote2Buffer extends rCP_Remote2Local{
                          out.write(buf, 0, 1); 
                          out.flush();
                       
-                         //  read a content of lfile
+                         //  read a content of rfile
                          ByteArrayOutputStream fos = new ByteArrayOutputStream();
                          int foo;
                          while(true){
@@ -92,10 +91,10 @@ public class rCP_Remote2Buffer extends rCP_Remote2Local{
                                filesize-=foo;
                                if(filesize==0L) break;
                          }
-                         fos.close();
-
+                         //buffer=fos.toByteArray();
+                         
                          sent(fos);
-
+                         fos.close();
                          fos=null;
                       
                          if(checkAck(getIN())!=0){
@@ -120,16 +119,20 @@ public class rCP_Remote2Buffer extends rCP_Remote2Local{
 
               return ret;
         }
-       public boolean sent(ByteArrayOutputStream os){
+       
+        public boolean sent(ByteArrayOutputStream os){
               buffer= os.toByteArray();
-
               return true;
+        }
+	@Override
+	public byte[] getBuffer() {
+	      return buffer;
+	}
 
-       }
-       @Override
-       public String toString(){
+        @Override
+        public String toString(){
                return "rCP(R2H):"+name+" index:"+index+" local:"+lfile+" "+"remote:"+rfile;
-       }  
+        }  
 
           
         public static void main(String[] arg){

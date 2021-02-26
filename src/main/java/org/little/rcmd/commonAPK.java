@@ -34,12 +34,13 @@ public class commonAPK{
                      logger.error("The configuration apk element: noname");
                      continue;
                   }
-                  n.getAttributes().getNamedItem("id").getNodeValue().equals(_id_apk);
-                  rAPK rapk=new rAPK(_id_apk);      
-                  rapk.initAPK(n);
-                  rapk.initCMD(node_cmd);
-                  logger.info("The configuration apk element:"+_id_apk);
-                  return rapk;
+                  if(n.getAttributes().getNamedItem("id").getNodeValue().equals(_id_apk)){
+                     rAPK rapk=new rAPK(_id_apk);      
+                     rapk.initAPK(n);
+                     rapk.initCMD(node_cmd);
+                     logger.info("The configuration apk element:"+_id_apk);
+                     return rapk;
+                  }
              }
              return null;
        }

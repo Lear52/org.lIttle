@@ -53,19 +53,19 @@ public class HttpCmdRequest extends lHttpRequest{
               else{
                  cmd="file";
               }
-              logger.trace("set 1 cmd:"+cmd);
+              //logger.trace("set 1 cmd:"+cmd);
 
 
               if("get".equals(cmd)){
 
-                  rcommand=getQuery().get("cmd");
-                  rapk=getQuery().get("apk");
-                  type_output=getQuery().get("type");
+                  rcommand    =getQuery().get("cmd");
+                  rapk        =getQuery().get("apk");
+                  type_output =getQuery().get("type");
                   if(type_output==null)type_output="txt";
                   if(type_output.startsWith("js" ))type_output="js";
                   else                             type_output="txt";
 
-                  logger.trace("set 2 cmd:get");
+                  //logger.trace("set 2 cmd:get");
                   response.runCmd(ctx,this);
                   return RequestProcessOk;
               }
@@ -76,14 +76,13 @@ public class HttpCmdRequest extends lHttpRequest{
                   if(type_output==null)type_output="txt";
                   if(type_output.startsWith("js" ))type_output="js";
                   else                             type_output="txt";
-                  logger.trace("set 2 cmd:list");
                   response.runList(ctx,this);
                   return RequestProcessOk;
               }
               else
               if("receive".equals(cmd)){
+                  rapk=getQuery().get("apk");
                   filename=getQuery().get("file");
-                  logger.trace("set 2 cmd:receive");
                   response.runReceive(ctx,this);
                   return RequestProcessOk;
               }

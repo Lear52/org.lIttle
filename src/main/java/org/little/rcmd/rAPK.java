@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
+import org.little.rcmd.rsh.rCMD;
 import org.little.rcmd.rsh.rCommand;
 import org.little.rcmd.rsh.rShell;
 import org.little.util.Logger;
@@ -96,6 +96,9 @@ public class rAPK {
               return true;
        }
 
+       public boolean runCMD(rCMD cmd) {
+              return cmd.run(sh,buf_input);
+       }
        public String[] runCMD(String name) {
               //logger.trace("cmd:"+name);
               rCommand cmd = cfg.getCMD().get(name);
@@ -104,7 +107,7 @@ public class rAPK {
                  return null;
               }
               logger.trace("run cmd:"+name);
-              boolean ret=cmd.run(sh,buf_input);
+              boolean ret=runCMD(cmd);
               if(ret==false)return null;
               return cmd.print();
        }

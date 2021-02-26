@@ -1,6 +1,7 @@
 package org.little.http.app.cmddionis;
 
 import java.io.StringWriter;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,6 +9,8 @@ import org.little.http.commonHTTP;
 import org.little.http.handler.lHttpResponse;
 import org.little.rcmd.commonAPK;
 import org.little.rcmd.rAPK;
+import org.little.rcmd.rsh.rCP;
+import org.little.rcmd.rsh.rCP_Remote2Buffer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -22,7 +25,7 @@ public class HttpCmdResponse extends lHttpResponse{
               String type_req    =httpCmdRequest.getType();
               String req_apk_node=httpCmdRequest.getAPK();
               String req_cmd_id   =httpCmdRequest.getCMD();
-              logger.trace("request apk:"+req_apk_node+" dionis cmd:"+req_cmd_id);
+              logger.trace("request apk:"+req_apk_node+" dionis command:"+req_cmd_id);
 
               
               commonAPK.get().init(commonHTTP.get().getNode());
@@ -37,7 +40,7 @@ public class HttpCmdResponse extends lHttpResponse{
               try{
                    boolean  is_correct=apk.checkCMD(req_cmd_id);
                    if(is_correct==false){
-                       txt_response="node apk dionis"+req_apk_node+" unknow command"+req_cmd_id;     
+                       txt_response="node apk dionis"+req_apk_node+" unknow command:"+req_cmd_id;     
                        logger.error(txt_response);
                    }
                    else{
@@ -70,9 +73,33 @@ public class HttpCmdResponse extends lHttpResponse{
 
        }
        public void runReceive(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {
+              String txt_response="";
+              byte[] filebuffer=null;
+              String req_apk_node=httpCmdRequest.getAPK();
+              String req_cmd_id  =httpCmdRequest.getCMD();
+              String filename    =httpCmdRequest.getFilename();
+              logger.trace("request apk:"+req_apk_node+" dionis cmd:"+req_cmd_id);
 
+                   
+              commonAPK.get().init(commonHTTP.get().getNode());
+                   
+              rAPK apk=commonAPK.get().getAPK(req_apk_node);
 
-                   getFile(ctx,httpCmdRequest,httpCmdRequest.getFilename());
+              if(apk==null) {
+                 txt_response="no find node name apk dionis:"+req_apk_node;
+                 logger.error(txt_response);
+              }
+              else 
+              try{
+             	   rCP cmd=new rCP_Remote2Buffer("HTTP",1,filename,"");
+             	   boolean ret=apk.runCMD(cmd);
+             	  filebuffer=cmd.getBuffer();
+              }
+              finally{
+                     apk.close();  
+              }
+              boolean is_attach=true;
+              getFile(ctx,httpCmdRequest,filename,filebuffer,new Date(),is_attach);
 
        }
        public void runSend(ChannelHandlerContext ctx, HttpCmdRequest httpCmdRequest) {

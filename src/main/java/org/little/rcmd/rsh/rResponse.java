@@ -28,26 +28,26 @@ public class rResponse  implements rCMD{
        
        public rResponse(String id,String response) {
               //this.txt=new StringBuffer();
-              this.response=response;
-              this.id=id;
+              this.response     =response;
+              this.id           =id;
               this.list_rcommand=new ArrayList<rCMD>();
-              this.list_txt=new ArrayList<String>();
-              this.is_print=false;
+              this.list_txt     =new ArrayList<String>();
+              this.is_print     =false;
        }
        public rResponse(String id,String response,boolean _is_print) {
               //this.txt=new StringBuffer();
-              this.response=response;
-              this.id=id;
+              this.response     =response;
+              this.id           =id;
               this.list_rcommand=new ArrayList<rCMD>();
-              this.list_txt=new ArrayList<String>();
-              this.is_print=_is_print;
+              this.list_txt     =new ArrayList<String>();
+              this.is_print     =_is_print;
        }
        public String       getID  (){return id;}
        public String       getRes (){return response;}
 
        public void         appendBuf (String t){
-    	   //txt.append(t).append('\n');
-    	   list_txt.add(t);
+    	      //txt.append(t).append('\n');
+              list_txt.add(t);
        }
 
        public boolean      isPrint(){return is_print;}
@@ -58,23 +58,23 @@ public class rResponse  implements rCMD{
 
        @Override
        public boolean run(rShell sh,BufferedInputStream buf_input){
-           logger.debug("begin run cmd:"+id);
-
-           for(int i=0;i<list_rcommand.size();i++){
-               rCMD cmd=list_rcommand.get(i);
-               if(cmd==null)continue;
-               boolean ret;
-
-               ret=cmd.run(sh,buf_input);
-
-               if(ret==false) {
-                  logger.trace("cmd:"+cmd.toString()+" ret:"+ret);
-                  logger.error("cmd:"+cmd.toString()+" ret:"+ret);
-                  return ret;
-               }
-           } 
-           logger.debug("end run cmd:"+id);
-           return true;
+              logger.debug("begin run cmd:"+id);
+             
+              for(int i=0;i<list_rcommand.size();i++){
+                  rCMD cmd=list_rcommand.get(i);
+                  if(cmd==null)continue;
+                  boolean ret;
+             
+                  ret=cmd.run(sh,buf_input);
+             
+                  if(ret==false) {
+                     logger.trace("cmd:"+cmd.toString()+" ret:"+ret);
+                     logger.error("cmd:"+cmd.toString()+" ret:"+ret);
+                     return ret;
+                  }
+              } 
+              logger.debug("end run cmd:"+id);
+              return true;
        }
        @Override
        public String[] print() {

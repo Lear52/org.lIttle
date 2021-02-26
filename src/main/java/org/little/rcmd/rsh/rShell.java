@@ -90,11 +90,11 @@ public class rShell{
        protected  boolean _open_channel() {
                   try{
                       channel=session.openChannel("shell");
-//System.out.println("channel"+channel.getClass().getName());
                       { ChannelShell sh=(ChannelShell)channel;
                         //sh.setPty(boolean enable);
+                        //sh.setPtyType("tty",80, 2500, 640, 480);
                         //sh.setPtyType("dumb",80, 2500, 640, 480);
-                        sh.setPtyType("tty",80, 2500, 640, 480);
+                        sh.setPtyType("vt100",80, 2500, 640, 480);
                       }
                       out=channel.getOutputStream();
                       in =channel.getInputStream();
@@ -108,8 +108,8 @@ public class rShell{
                   return true;
        }
        protected void _close(){
-                 channel.disconnect();
-                 session.disconnect();
+                 if(channel!=null){channel.disconnect();channel=null;}
+                 if(session!=null){session.disconnect();session=null;}
                  logger.trace("close channel and session");
        }
 

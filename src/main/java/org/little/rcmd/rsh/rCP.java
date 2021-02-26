@@ -158,16 +158,15 @@ public class rCP extends rShell  implements rCMD {
                 }
                 return b;
         }
-	   @Override
-	   public byte[] getBuffer() {
+	@Override
+	public byte[] getBuffer() {
 		      // TODO Auto-generated method stub
 		      return null;
-	   }
-	   @Override
-	   public void setBuffer(byte[] buffer) {
+	}
+	@Override
+	public void setBuffer(byte[] buffer) {
 		      // TODO Auto-generated method stub
-		
-       }
+        }
 
           
 }

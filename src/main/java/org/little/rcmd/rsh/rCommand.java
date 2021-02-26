@@ -72,14 +72,14 @@ public class rCommand  implements rCMD{
               return buf.toArray(ret);
        }
           
-       public boolean loadCFG(Node node_cfg) {
+       public synchronized boolean loadCFG(Node node_cfg) {
               list_request=rCommand.makeListCMD(node_cfg,command_id);
               if(list_request.size()>0)return true;
               else return false;
        }
-       private static ArrayList<rCMD> makeListCMD(Node node_cfg,String _id_command_id) {
+       private synchronized static ArrayList<rCMD> makeListCMD(Node node_cfg,String _id_command_id) {
                ArrayList<rCMD> list_request=new ArrayList<rCMD>();
-               NodeList glist=node_cfg.getChildNodes();     
+               NodeList        glist       =node_cfg.getChildNodes();     
                //logger.trace("makeListCMD:"+node_cfg.getNodeName());
                int count=0;
                for(int i=0;i<glist.getLength();i++){
@@ -108,7 +108,7 @@ public class rCommand  implements rCMD{
                return list_request;
        }
 
-       private static rRequest makeCmd(Node node_cfg,int index,String _command_id) {
+       private synchronized static rRequest makeCmd(Node node_cfg,int index,String _command_id) {
                rRequest  cmd=null;
                if(node_cfg==null)return null;
 
@@ -167,7 +167,7 @@ public class rCommand  implements rCMD{
 
                if(txt_request==null && response==null) {
                    logger.error("command:"+_command_id+" txt_request==null and response==null");
-            	   return null;
+                       return null;
                }
                String prn_request=txt_request;
                if(prn_request==null)prn_request=" is null"; 
@@ -179,7 +179,7 @@ public class rCommand  implements rCMD{
        }
         
 
-       private static rCP makeRemote2Local(Node node_cfg,int index,String _command_id) {
+       private synchronized static rCP makeRemote2Local(Node node_cfg,int index,String _command_id) {
                rCP  cmd=null;
                if(node_cfg==null)return null;
 
@@ -216,7 +216,7 @@ public class rCommand  implements rCMD{
                if(http !=null)cmd=new rCP_Remote2Buffer(_command_id,index,remote,http); 
                return cmd;
        }
-       private static rCP makeLocal2Remote(Node node_cfg,int index,String _command_id) {
+       private synchronized static rCP makeLocal2Remote(Node node_cfg,int index,String _command_id) {
                rCP  cmd=null;
                if(node_cfg==null)return null;
 
@@ -241,15 +241,14 @@ public class rCommand  implements rCMD{
                cmd=new rCP_Local2Remote(_command_id,index,remote,local); 
                return cmd;
        }
-	   @Override
-	   public byte[] getBuffer() {
-		      // TODO Auto-generated method stub
-		      return null;
-	   }
-	   @Override
-	   public void setBuffer(byte[] buffer) {
-		      // TODO Auto-generated method stub
-		
+       @Override
+       public byte[] getBuffer() {
+              // TODO Auto-generated method stub
+              return null;
+       }
+       @Override
+       public void setBuffer(byte[] buffer) {
+              // TODO Auto-generated method stub
        }
 
 }

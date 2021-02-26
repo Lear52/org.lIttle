@@ -34,6 +34,8 @@ public class HttpFileRequest extends lHttpRequest{
               if(cmd.startsWith("/post")){cmd="post" ; }                  // http://x.x.x.x:pppp/post                         - put file
               else                      
               if(cmd.startsWith("/env" )){cmd="env"  ; }                  // http://x.x.x.x:pppp/env                          - get test (print enviroment)
+              else
+              if(cmd.startsWith("/test" )){cmd="test"  ; }                  // http://x.x.x.x:pppp/env                          - get test (print enviroment)
               else{
                  cmd="file" ;                                             // http://x.x.x.x:pppp/filename.html                - get http file 
               }
@@ -49,6 +51,15 @@ public class HttpFileRequest extends lHttpRequest{
 
                    return RequestProcessOk;
               }
+              if("test".equals(cmd)){
+                  logger.trace("set 11 cmd:"+cmd+" response:"+response);
+
+                  response.getTest1(ctx,this);
+
+                  logger.trace("set 12 cmd:"+cmd);
+
+                  return RequestProcessOk;
+             }
 
               return RequestProcessBad;// no process
        }
