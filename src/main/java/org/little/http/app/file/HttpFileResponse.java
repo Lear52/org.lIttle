@@ -58,7 +58,7 @@ public class HttpFileResponse extends lHttpResponse{
        //}
        public void getTest1(ChannelHandlerContext ctx,lHttpRequest req){
                byte [] filebuffer=d.getBytes();
-               getFile(ctx,req,"test.log",filebuffer,new Date());
+               getFile(ctx,req,"test.log",filebuffer,new Date(), false);
 
        }
 
