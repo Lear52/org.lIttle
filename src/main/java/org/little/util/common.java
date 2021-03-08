@@ -47,6 +47,7 @@ public class common {
                         logger.trace("Set java property:java.net.preferIPv4Stack=true"); 
     }
     public void         init(){}
+    public void         init(Node _node_cfg){node_cfg=_node_cfg;}
     public void         reinit(){ }
     public void         initMBean(){ }
 

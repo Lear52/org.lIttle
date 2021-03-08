@@ -69,7 +69,7 @@ public class commonHTTP extends common{
                      else
                      if("app_name"              .equals(n.getNodeName())){app_name=n.getTextContent();     logger.info("app_name:"+app_name);          }
                      else
-                     if("redirect_host"         .equals(n.getNodeName())){redirect_host=n.getTextContent();     logger.info("redirect_host:"+redirect_host);}
+                     if("redirect_host"         .equals(n.getNodeName())){redirect_host=n.getTextContent();logger.info("redirect_host:"+redirect_host);}
                      else
                      if("redirect_port"         .equals(n.getNodeName())){String s=n.getTextContent(); try{redirect_port=Integer.parseInt(s, 10);}catch(Exception e){ redirect_port=8080;logger.error("redirect_port:"+redirect_port);} logger.info("redirect_port:"+redirect_port); }
                  }
@@ -77,8 +77,13 @@ public class commonHTTP extends common{
        }
        @Override
        public void init(){
+              init(getNode());
+       }
+       @Override
+       public void init(Node _node_cfg){
+              super.init(_node_cfg);
       
-              NodeList list=getNode().getChildNodes();     
+              NodeList list=_node_cfg.getChildNodes();     
               for(int i=0;i<list.getLength();i++){
                   Node n=list.item(i);
                   if("global_option".equals(n.getNodeName())){initGlobal    (n); continue;}

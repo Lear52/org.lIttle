@@ -18,7 +18,7 @@ import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.little.http.commonHTTP;
-import org.little.proxy.commonProxy;
+//import org.little.proxy.commonProxy;
 import org.little.proxy.util.statChannel;
 import org.little.util.Except;
 import org.little.util.Logger;
@@ -71,12 +71,12 @@ public class HttpAuthNegotiate extends HttpAuth {
                                       for (int i=0; i<callback.length; i++) {
                                           if(callback[i] instanceof NameCallback) {
                                              NameCallback nameCallback = (NameCallback) callback[i];
-                                             nameCallback.setName(commonProxy.get().getCfgAuth().getLdapUsername());
+                                             nameCallback.setName(commonHTTP.get().getCfgAuth().getLdapUsername());
                                           } 
                                           else 
                                           if(callback[i] instanceof PasswordCallback) {
                                              PasswordCallback passCallback = (PasswordCallback) callback[i];
-                                             passCallback.setPassword(commonProxy.get().getCfgAuth().getLdapPassword().toCharArray());
+                                             passCallback.setPassword(commonHTTP.get().getCfgAuth().getLdapPassword().toCharArray());
                                           } else {
                                                   logger.info("Unsupported Callback i=" + i + "; class=" + callback[i].getClass().getName());
                                           }
@@ -118,7 +118,7 @@ public class HttpAuthNegotiate extends HttpAuth {
                  return response;
               }
               String  principal="unknown_principal";
-              //String  realm=commonProxy.get().getRealm();//"vip.cbr.ru";/**/
+              //String  realm=commonHTTP.get().getRealm();//"vip.cbr.ru";/**/
               
               if(authorization.startsWith("Negotiate")) {
                   String sub_auth=authorization.substring(10);

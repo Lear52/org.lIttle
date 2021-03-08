@@ -5,7 +5,8 @@ import java.net.InetSocketAddress;
 import org.little.proxy.Null.NullProxyServer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.wrapper.iWrapper;
+import org.little.http.commonHTTP;
+import org.little.util.run.iWrapper;
 import org.littleshoot.proxy.DefaultHostResolver;
 import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.HttpProxyServerBootstrap;
@@ -59,7 +60,9 @@ public class runWrapper implements iWrapper{
 
               LOG.info("START LITTLE.PROXY "+commonProxy.ver());
               commonProxy.get().init();
+              commonHTTP.get().init(commonProxy.get().getNode());
               commonProxy.get().initMBean();
+              commonHTTP.get().initMBean();
               //---------------------------------------------------------------------------------
               if(commonProxy.get().getType()==commonProxy.PROXY_TYPE_HTTP){
                  int               port;             

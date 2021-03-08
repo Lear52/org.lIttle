@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,6 +18,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 
 public class lHttpCLN {
@@ -29,11 +32,49 @@ public class lHttpCLN {
               debug   = true;
               url       ="http://localhost:8080/upload.php";
        }
+       public lHttpCLN(String _url){
+              debug   = false;
+              url     =_url;
+       }
        public void setURL(String url) {
               this.url = url;
        }
        public String get(ByteArrayOutputStream os) throws Exception{
-              String     filename=null;
+              CloseableHttpClient httpclient =null;
+              try {
+                   httpclient = HttpClientBuilder.create().build();
+                   HttpGet               http_get = new HttpGet(url);
+                   CloseableHttpResponse response = null;
+                   InputStream is=null;
+                   try {
+                        response = httpclient.execute(http_get);
+                        is = response.getEntity().getContent();
+                        while(true) {
+                                byte [] buf=new byte [1024];
+                                int ret=is.read(buf);
+                                if(ret<0) {
+                                        break;
+                                }
+                                os.write(buf, 0, ret);
+                        }
+                        http_get.abort();
+                   } 
+                   finally {
+                       if(is!=null)is.close();
+                       response.close();
+                   }
+      
+              } finally {
+                 httpclient.close();
+
+                 os.close();
+              }
+              return null;
+
+       }
+       public JSONObject getJSON() throws Exception{
+              ByteArrayOutputStream os=new ByteArrayOutputStream();
+              JSONObject  json_root=null;
               CloseableHttpClient httpclient =null;
               try {
 
@@ -44,31 +85,39 @@ public class lHttpCLN {
                    InputStream is=null;
                    try {
                         response = httpclient.execute(http_get);
-                        System.out.println(response.getStatusLine());
+                        //System.out.println(response.getStatusLine());
                         is = response.getEntity().getContent();
                         while(true) {
-                        	byte [] buf=new byte [1024];
-                        	int ret=is.read(buf);
-                        	if(ret<0) {
-                        		
-                        		break;
-                        	}
-                        	os.write(buf, 0, ret);
+                                byte [] buf=new byte [1024];
+                                int ret=is.read(buf);
+                                if(ret<0) {
+                                        
+                                        break;
+                                }
+                                os.write(buf, 0, ret);
                         }
                         
                         http_get.abort();
                    } 
                    finally {
-                	   if(is!=null)is.close();
+                       if(is!=null)is.close();
                        response.close();
                    }
       
               } finally {
                  httpclient.close();
+                 OutputStreamWriter s_os=new OutputStreamWriter(os,"UTF8");
+                 String s_buf=s_os.toString();
+                 //byte[] out = os.toByteArray();
+                 try {
+                     JSONTokener tokener=new JSONTokener(s_buf);
+                     json_root=new JSONObject(tokener);
+                 }
+                 catch(Exception e){} 
                  os.close();
               }
               
-              return filename;
+              return json_root;
        }
        public void sent(ByteArrayOutputStream os,String filename) throws Exception{
               ByteArrayInputStream is=new ByteArrayInputStream(os.toByteArray());

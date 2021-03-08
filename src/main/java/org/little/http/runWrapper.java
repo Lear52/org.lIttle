@@ -2,7 +2,7 @@ package org.little.http;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.wrapper.iWrapper;
+import org.little.util.run.iWrapper;
 
 public class runWrapper implements iWrapper{
 

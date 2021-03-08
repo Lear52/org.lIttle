@@ -73,8 +73,13 @@ public class commonSMTP extends common{
        }
        @Override
        public void init(){
+              init(getNode());
+       }
+       @Override
+       public void init(Node _node_cfg){
+              super.init(_node_cfg);
       
-              NodeList list=getNode().getChildNodes();     
+              NodeList list=_node_cfg.getChildNodes();     
               for(int i=0;i<list.getLength();i++){
                   Node n=list.item(i);
                   if("global_option".equals(n.getNodeName())){initGlobal    (n); continue;}

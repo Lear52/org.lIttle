@@ -17,7 +17,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.little.util.Logger;
 
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.handler.ssl.SslContext;
