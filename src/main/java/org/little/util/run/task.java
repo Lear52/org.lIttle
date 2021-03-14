@@ -43,19 +43,18 @@ public class task   implements Runnable{
                period             = 0;
        }
 
+       public task() {
+           clear();
+           setDelay(60);
+       }
        public task(int delay) {
               clear();
-              startExecutionTime=System.currentTimeMillis();
-              nextExecutionTime=startExecutionTime;
-              setPeriod(delay);
-
+              setDelay(delay);
        }
 
        public task(int start,int delay) {
               clear();
-              startExecutionTime=System.currentTimeMillis()+start*1000L;
-              nextExecutionTime=startExecutionTime;
-              setPeriod(delay);
+              setDelay(start,delay);
        }
 
 
@@ -112,6 +111,18 @@ public class task   implements Runnable{
 
        public String getIdentification() {return ""+id;}
 
+       public void setDelay(int delay) { 
+              startExecutionTime=System.currentTimeMillis();
+              nextExecutionTime=startExecutionTime;
+              setPeriod(delay);
+       }
+       public void setDelay(int start,int delay) { 
+           startExecutionTime=System.currentTimeMillis()+start*1000L;
+           nextExecutionTime=startExecutionTime;
+           setPeriod(delay);
+       }
+
+       
 }
 
 

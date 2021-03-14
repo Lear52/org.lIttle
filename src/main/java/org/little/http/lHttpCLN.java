@@ -1,13 +1,19 @@
 package org.little.http;
 
+import org.little.util.Except;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -23,6 +29,7 @@ import org.json.JSONTokener;
 
 
 public class lHttpCLN {
+       private static final Logger logger = LoggerFactory.getLogger(lHttpCLN.class);
 
 
        private String  url     ;
@@ -48,6 +55,10 @@ public class lHttpCLN {
                    InputStream is=null;
                    try {
                         response = httpclient.execute(http_get);
+                        HttpEntity ent = response.getEntity();
+                        if(ent==null) {
+                            return null;	
+                        }
                         is = response.getEntity().getContent();
                         while(true) {
                                 byte [] buf=new byte [1024];
@@ -73,49 +84,103 @@ public class lHttpCLN {
 
        }
        public JSONObject getJSON() throws Exception{
-              ByteArrayOutputStream os=new ByteArrayOutputStream();
-              JSONObject  json_root=null;
-              CloseableHttpClient httpclient =null;
-              try {
+              ByteArrayOutputStream os        =new ByteArrayOutputStream();
+              JSONObject            json_root =null;
+              CloseableHttpClient   httpclient=null;
 
+              logger.trace("begin get json");
+
+              try {
                    httpclient = HttpClientBuilder.create().build();
-              
                    HttpGet               http_get = new HttpGet(url);
                    CloseableHttpResponse response = null;
-                   InputStream is=null;
+                   InputStream           is=null;
+
+                   logger.trace("get httpclient");
+
                    try {
                         response = httpclient.execute(http_get);
-                        //System.out.println(response.getStatusLine());
-                        is = response.getEntity().getContent();
+                        if(response==null){
+                           return null;
+                        }
+                        int status = response.getStatusLine().getStatusCode();
+                        if (status < 200 || status > 300) {
+                            logger.error("httpclient execute code:"+status);
+                        	return null;
+                        }
+                        logger.trace("httpclient execute code:"+status);
+                        HttpEntity ent = response.getEntity();
+                        if(ent==null) {
+                           return null;	
+                        }
+                        is = ent.getContent();
                         while(true) {
-                                byte [] buf=new byte [1024];
+                                byte [] buf=new byte [10240];
                                 int ret=is.read(buf);
-                                if(ret<0) {
-                                        
-                                        break;
-                                }
+                                if(ret<0) {break;}
                                 os.write(buf, 0, ret);
                         }
-                        
-                        http_get.abort();
                    } 
                    finally {
+                       http_get.abort();
                        if(is!=null)is.close();
-                       response.close();
+                       try {
+                           if(response!=null)response.close();
+                       }
+                       catch(Exception e1){
+                             logger.trace("ex: "+new Except("httpclient.close",e1));
+                             return null;
+                       }
                    }
       
-              } finally {
-                 httpclient.close();
-                 OutputStreamWriter s_os=new OutputStreamWriter(os,"UTF8");
-                 String s_buf=s_os.toString();
-                 //byte[] out = os.toByteArray();
-                 try {
-                     JSONTokener tokener=new JSONTokener(s_buf);
-                     json_root=new JSONObject(tokener);
-                 }
-                 catch(Exception e){} 
-                 os.close();
               }
+              catch(Exception e){
+                 logger.trace("ex: "+new Except("get json httpclient",e));
+                 return null;
+              } 
+              finally {
+                 try {
+                     if(httpclient!=null)httpclient.close();
+                 }
+                 catch(Exception e1){
+                    logger.trace("ex: "+new Except("httpclient.close",e1));
+                    return null;
+                 }
+              }
+
+              logger.trace("httpclient close");
+              byte [] b_buf=os.toByteArray();
+              if(b_buf==null){
+                  logger.error("httpclient get is null");
+                  return null;
+              }
+              if(b_buf.length<3){
+                  logger.error("httpclient get is null");
+                  return null;
+              }
+              
+              String s_buf=new String(os.toByteArray(),Charset.forName("UTF-8")); 
+
+              logger.trace("httpclient get:"+s_buf);
+              if(s_buf==null){
+                 logger.error("httpclient get is null");
+                 return null;
+              }
+              //byte[] out = os.toByteArray();
+              try {
+                  JSONTokener tokener=new JSONTokener(s_buf);
+
+                  json_root=new JSONObject(tokener);
+              }
+              catch(Exception e){
+                 logger.error("ex:"+new Except("JSONTokener",e));
+                 return null;
+              } 
+              logger.trace("get json object");
+              os.close();
+              
+
+              logger.trace("end get json:"+json_root);
               
               return json_root;
        }
@@ -156,7 +221,7 @@ public class lHttpCLN {
               //httpclient.getConnectionManager().shutdown();
               
        }
-       public static void main(String[] args) throws Exception {
+       public static void main1(String[] args) throws Exception {
               System.setProperty("java.net.preferIPv4Stack","true");
               lHttpCLN cln=new lHttpCLN();
               String  f_name;
@@ -175,5 +240,24 @@ public class lHttpCLN {
               System.out.println("file:"+f_name);
               System.out.write(out);
               
+       }
+       public static void main(String[] args) throws Exception {
+              System.setProperty("java.net.preferIPv4Stack","true");
+              String url_state="http://127.0.0.1:8080/control/cmd/2list";
+              lHttpCLN cln=new lHttpCLN(url_state);
+
+              logger.trace("new lHttpCLN("+url_state+")");
+
+              JSONObject root=null;
+              try{
+                  root=cln.getJSON();
+              } 
+              catch (Exception ex) {
+                    logger.error("ex:"+new Except("cln.getJSON("+url_state+")",ex));
+                    return;
+              }
+
+              logger.trace("getJSON("+url_state+") json:"+root);
+
        }
 }
