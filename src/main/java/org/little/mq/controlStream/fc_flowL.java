@@ -9,12 +9,14 @@ import org.w3c.dom.NodeList;
 
 public class fc_flowL  extends fc_flow{
        private static final Logger logger = LoggerFactory.getLogger(fc_flowL.class);
-       private Object lock;
+       private Object  lock;
+       private fc_mngr mngr;
 
-       public fc_flowL() {
+       public fc_flowL(fc_mngr _mngr) {
               clear();
               lock=new Object();
               flow_contrl=new fc_control();              
+              mngr=_mngr;
        }
        @Override
        public JSONObject getStat() {
@@ -41,13 +43,37 @@ public class fc_flowL  extends fc_flow{
        @Override
        public void work() {
               synchronized (lock){
-                   isAlarm(false);
                    for(int i=0;i<q_list.size();i++) {
                        fc_Q q=q_list.get(i);
                        q.work();
-                       isAlarm(isAlarm()||q.isAlarm());
                    }
+
                    flow_contrl.work();
+
+                   if(isAlarm()){
+                      int len=0;
+                      for(int i=0;i<q_list.size();i++) {
+                          fc_Q q=q_list.get(i);
+                          len+=q.getDeepQ();
+                      }
+                      if(len==0){
+                         isAlarm(false);
+                         if(mngr.isControlStream())flow_contrl.setFlag(fc_control.RUN);
+                      }
+                   }
+                   else{
+                      boolean is_alarm=false;
+                      for(int i=0;i<q_list.size();i++) {
+                          fc_Q q=q_list.get(i);
+                          if(q.isAlarm()){is_alarm=true;break;}
+                      }
+                      isAlarm(is_alarm);
+
+                      if(is_alarm && mngr.isControlStream()){
+                         flow_contrl.setFlag(fc_control.STOP);
+                      }
+                   }
+                   
               }
 
        }

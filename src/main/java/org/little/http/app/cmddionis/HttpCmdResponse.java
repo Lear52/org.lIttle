@@ -93,6 +93,7 @@ public class HttpCmdResponse extends lHttpResponse{
               try{
              	   rCP cmd=new rCP_Remote2Buffer("HTTP",1,filename,"");
              	   boolean ret=apk.runCMD(cmd);
+                   logger.trace("apk.runCMD("+cmd+") ret:"+ret);
              	  filebuffer=cmd.getBuffer();
               }
               finally{

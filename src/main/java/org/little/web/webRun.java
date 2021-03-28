@@ -63,6 +63,10 @@ public class webRun extends HttpServlet {
                return "Base servlet";
         }
 
+        public String getParametr(String param) {
+               return getInitParameter(param);
+        }
+
         public void prerun(HttpServletRequest request, HttpServletResponse response) {
                 try {
                     request.setCharacterEncoding("UTF-8");
@@ -86,7 +90,7 @@ public class webRun extends HttpServlet {
                 try {
                      RequestDispatcher d         = null;
                      ServletContext servlet_cntx = null;
-                     ServletConfig servlet_cfg   = null;
+                     ServletConfig  servlet_cfg  = null;
 
                      servlet_cfg  = getServletConfig();
 

@@ -63,13 +63,13 @@ public class kMessage{
                    ;
     }
     public String  printx509() {return  
-                    "\n"+x509_type       
-                   +"\n"+x509_type_file  
-                   +"\n"+x509_begin_date 
-                   +"\n"+x509_end_date   
-                   +"\n"+x509_serial     
-                   +"\n"+x509_subject    
-                   +"\n"+x509_issuer 
+                    "\nx509_type      :"+x509_type       
+                   +"\nx509_type_file :"+x509_type_file  
+                   +"\nx509_begin_date:"+x509_begin_date 
+                   +"\nx509_end_date  :"+x509_end_date   
+                   +"\nx509_serial    :"+x509_serial     
+                   +"\nx509_subject   :"+x509_subject    
+                   +"\nx509_issuer    :"+x509_issuer 
                    +"\n"
                    ;
     }

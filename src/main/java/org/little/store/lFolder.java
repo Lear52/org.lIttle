@@ -2,6 +2,8 @@ package org.little.store;
 
 import java.util.ArrayList;
 
+import org.little.lmsg.lMessage;
+
 
 public interface  lFolder{
 

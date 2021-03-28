@@ -2,8 +2,8 @@ package org.little.store.dbstore;
 
 import java.util.ArrayList;
 
+import org.little.lmsg.lMessage;
 import org.little.store.lFolder;
-import org.little.store.lMessage;
 import org.little.store.lStore;
 
 

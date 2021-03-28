@@ -8,8 +8,8 @@ import java.io.FileOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.little.lmsg.lMessage;
 import org.little.store.lFolder;
-import org.little.store.lMessage;
 import org.little.util.Except;
 import org.little.util._Base64;
 import org.little.util.string.stringDate;

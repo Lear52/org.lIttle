@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+import org.little.lmsg.lMessage;
 import org.little.store.lFolder;
-import org.little.store.lMessage;
 import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;

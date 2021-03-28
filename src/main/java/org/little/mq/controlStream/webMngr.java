@@ -35,8 +35,11 @@ public class webMngr extends webThread{
               mngr=new fc_mngr();
 
               String xpath=this.getServletContext().getRealPath("");
+
+              String _xpath=getParametr("config");
               //xpath+=File.separator;
-              xpath+="littleproxy_mq.xml";
+              //xpath+="littleproxy_mq.xml";
+              xpath+=_xpath;
 
               if(mngr.loadCFG(xpath)==false){
                  logger.error("error read config file:"+xpath);
@@ -44,10 +47,12 @@ public class webMngr extends webThread{
               }
               logger.info("START LITTLE.CONTROLSTREAM "+Version.getVer()+"("+Version.getDate()+")");
               mngr.init();
+              mngr.setDelay(1);
               ArrayList<task> _task=mngr.getListTask();
+              runner.add(mngr);
               for(int i=0;i<_task.size();i++){
                   task t=_task.get(i);
-                  t.setDelay(10);
+                  t.setDelay(mngr.getTimeout());
                   runner.add(t);
               }
 

@@ -3,7 +3,7 @@ package org.little.rcmd.rsh;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.little.mailx.SmtpMailXClient;
+import org.little.mail.mailx.SmtpMailXClient;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
         

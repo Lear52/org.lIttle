@@ -46,6 +46,10 @@ public class webThread extends HttpServlet{
                return "Base servlet scheduler";
         }
 
+        public String getParametr(String param) {
+               return getInitParameter(param);
+        }
+
         @Override
         public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
                try {

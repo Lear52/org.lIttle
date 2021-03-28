@@ -12,16 +12,16 @@ public class wrapperCSKI implements WrapperListener{
     private static final Logger      logger = LoggerFactory.getLogger(wrapperCSKI.class);
 
     private org.little.http.runWrapper   serverHTTP;
-    private org.little.smtp.runWrapper   serverSMTP;
-    private org.little.imap.runWrapper   serverIMAP;
+    private org.little.mail.smtp.runWrapper   serverSMTP;
+    private org.little.mail.imap.runWrapper   serverIMAP;
 
 
     protected      wrapperCSKI(String args[]){
                    serverHTTP=new org.little.http.runWrapper();
                    logger.trace("create org.little.http");
-                   serverSMTP=new org.little.smtp.runWrapper();
+                   serverSMTP=new org.little.mail.smtp.runWrapper();
                    logger.trace("create org.little.smtp");
-                   serverIMAP=new org.little.imap.runWrapper();
+                   serverIMAP=new org.little.mail.imap.runWrapper();
                    logger.trace("create org.little.imap");
                    WrapperManager.start(this, args);
     }
@@ -64,8 +64,8 @@ public class wrapperCSKI implements WrapperListener{
            logger.trace("start CSKI");
 
            org.little.http.commonHTTP.get().preinit();
-           org.little.smtp.commonSMTP.get().preinit();
-           org.little.imap.commonIMAP.get().preinit();
+           org.little.mail.smtp.commonSMTP.get().preinit();
+           org.little.mail.imap.commonIMAP.get().preinit();
 
            logger.trace("preinit CSKI");
 
@@ -76,11 +76,11 @@ public class wrapperCSKI implements WrapperListener{
               logger.error("error read http config file:"+xpath);
               return;
            }
-           if(org.little.smtp.commonSMTP.get().loadCFG(xpath)==false){
+           if(org.little.mail.smtp.commonSMTP.get().loadCFG(xpath)==false){
               logger.error("error read smtp config file:"+xpath);
               return;
            }
-           if(org.little.imap.commonIMAP.get().loadCFG(xpath)==false){
+           if(org.little.mail.imap.commonIMAP.get().loadCFG(xpath)==false){
               logger.error("error read imap config file:"+xpath);
               return;
            }

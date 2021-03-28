@@ -25,8 +25,8 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
 
 
 
@@ -260,6 +260,7 @@ public class kMessageX509 {
                InputStream in=null;
                X509CRL crl=null; 
                try{
+                  logger.trace("start parseX509CRLDER2MSG");
                   try{
                       CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
                       in=new ByteArrayInputStream(buf);
@@ -272,18 +273,32 @@ public class kMessageX509 {
                          }
                          return null;
                   }
+                  logger.trace("certFactory.generateCRL(in)");
+                  String n_str="";
                   try{
                       Iterator<? extends X509CRLEntry> crl_number=crl.getRevokedCertificates().iterator();
-                      String n_str="";
+                      int count=0;
                       while(crl_number.hasNext()){
                             X509CRLEntry p=crl_number.next();
                             n_str+=p.getSerialNumber().toString()+";";           
+                            count++;
                       }
+                      logger.trace("getSerialNumber:"+count);
+                  }
+                  catch(Exception e){
+                        if(debug) {
+                           Except ex=new Except(e);
+                           logger.error("DER NO! ex:"+ex);
+                        }
+                        //return null;
+                  }
+                  try{
                               
-                      String     issuer;
-                      issuer  = crl.getIssuerX500Principal().toString();
-                      issuer  = crl.getIssuerDN().toString().toString();
-                      String    subject=issuer;
+                      String     issuer0;
+                      String     issuer1;
+                      issuer0  = crl.getIssuerX500Principal().toString();
+                      issuer1  = crl.getIssuerDN().toString().toString();
+                      String    subject=issuer1;
                                      
                       Date       start  =crl.getThisUpdate();
                       Date       end    =crl.getNextUpdate();   
@@ -294,7 +309,7 @@ public class kMessageX509 {
                       msg.setX509EndDate  (end       );
                       msg.setX509Serial   (n_str     );
                       msg.setX509Subject  (subject   ); 
-                      msg.setX509Issuer   (issuer    );
+                      msg.setX509Issuer   (issuer0   );
                   }
                   catch(Exception e){
                         if(debug) {
@@ -303,6 +318,7 @@ public class kMessageX509 {
                         }
                         return null;
                   }
+
                }     
                finally {
                    if(in!=null)try {in.close();     } catch (Exception e){}
@@ -395,10 +411,19 @@ public class kMessageX509 {
                byte[]   bin_buffer=msg.getBodyBin();
                kMessage ret=null;
                ret=parsePEM2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CERDER2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CRLDER2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CSRDER2MSG(msg,bin_buffer);
-              
+               logger.trace("parsePEM2MSG ret:"+ret);
+               if(ret==null){
+                  ret=parseX509CERDER2MSG(msg,bin_buffer);
+                  logger.trace("parseX509CERDER2MSG ret:"+ret);
+               }
+               if(ret==null){
+                  ret=parseX509CRLDER2MSG(msg,bin_buffer);
+                  logger.trace("parseX509CRLDER2MSG ret:"+ret);
+               }
+               if(ret==null){
+                  ret=parseX509CSRDER2MSG(msg,bin_buffer);
+                  logger.trace("parseX509CSRDER2MSG ret:"+ret);
+               }
                return ret;
        }
 
@@ -406,6 +431,7 @@ public class kMessageX509 {
               FileInputStream in;
               kMessage msg=new kMessage();
 
+              logger.trace("start print key ");
               byte[] buf=null;
               try{
                   in=new FileInputStream(args[0]);
@@ -415,10 +441,11 @@ public class kMessageX509 {
                      logger.error("ex:"+e);
                      return ;
               }
-              msg.setBodyBin(buf);;
+              logger.trace("load key length:"+buf.length);
+              msg.setBodyBin(buf);
               msg=parse(msg);
               //---------------------------------------------------------------------------------------------------
-              System.out.println("msg:"+msg);
+              System.out.println("msg:"+msg.printx509());
 
        }
 

@@ -117,7 +117,8 @@ public class mq_queue {
                    }
               } 
               catch (MQException e) {
-                    mqExcept new_ex=new mqExcept("open queue:"+qname+" manager;"+qmname+" opt:"+def.getOptOO(open_mode)+ " reasonCode:"+e.reasonCode+" error:"+def.getRC(e.reasonCode),e);
+                    try {if(qmname==null)qmname=parent.getQM().getName();}catch (MQException e1) {}
+                    mqExcept new_ex=new mqExcept("open queue:"+qname+" manager:"+qmname+" opt:"+def.getOptOO(open_mode)+ " reasonCode:"+e.reasonCode+" error:"+def.getRC(e.reasonCode),e);
                     clear();
                     throw    new_ex;
               }

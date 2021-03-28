@@ -6,25 +6,15 @@ package org.little.key;
  * @version 1.5
  */
 public class Except extends Exception{
-       final private static String CLASS_NAME="org.little.key.Except";
-       final private static int    CLASS_ID  =104;
-       final private static long   serialVersionUID = 19690401L+CLASS_ID;
-             public  static String getClassName(){return CLASS_NAME;}
-             public  static int    getClassId(){return CLASS_ID;}
-//-----------------------------------------------------------------------------
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1969040120210320L;
+	//-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-       /**
-        * 
-        */
        String msg;
-       /**
-        * parent.getMessage()/
-       */
        String extent_msg;
-       /**
-        * 
-       */
        String stack_msg;
        
        public        Except(){msg=new String("");stack_msg=new String("");}
@@ -107,16 +97,11 @@ public class Except extends Exception{
               return buf.toString();
        
        }
-       /**
-        * �������� ���� ����������
-       */
 
        public static String getStack(Throwable e){
        
               StackTraceElement [] st = e.getStackTrace();
               StringBuffer      buf=new StringBuffer(10240);
-       
-              //if(buf==null)return null;
        
               for(int i=0;i<st.length;i++){
                   buf.append(st[i].toString());
@@ -130,8 +115,6 @@ public class Except extends Exception{
               StackTraceElement [] st = e.getStackTrace();
               StringBuffer      buf=new StringBuffer(10240);
        
-              //if(buf==null)return null;
-       
               for(int i=0;i<st.length;i++){
                   buf.append(st[i].toString());
                   buf.append("\n");
@@ -144,7 +127,6 @@ public class Except extends Exception{
               StackTraceElement [] st = e.getStackTrace();
               StringBuffer      buf=new StringBuffer(10240);
        
-              //if(buf==null)return null;
               buf.append(e.toString());
               buf.append("\n");
        
@@ -155,11 +137,6 @@ public class Except extends Exception{
               return buf.toString();
        
        }
-       
-       
- //-----------------------------------------------------------------------------
- //
- //-----------------------------------------------------------------------------
 }
  
  

@@ -269,7 +269,7 @@ public class lHttpResponse {
                    //--------------------------------------------------------------------------------------------------
                    ctx.write(response);
                    //logger.trace("send header response");
-                   RandomAccessFile source_file;
+                   //RandomAccessFile source_file;
                    // Write the content.
                    ChannelFuture sendFileFuture;
                    ChannelFuture lastContentFuture;

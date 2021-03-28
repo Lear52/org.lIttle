@@ -42,7 +42,7 @@ public class commonServer{
                      if("dump_log"                       .equals(n.getNodeName())){String s=n.getTextContent(); try{is_dump_log=Boolean.parseBoolean(s);                }catch(Exception e){ is_dump_log=false;logger.error("dump_log:"+s);} logger.info("dump_log:"+is_dump_log);}
                }
                if(stringTransform.isEmpty(local_bind_server))local_bind_server="*";
-               if(stringTransform.isEmpty(local_bind_client))local_bind_server="*";
+               if(stringTransform.isEmpty(local_bind_client))local_bind_client="*";
 
        }
 

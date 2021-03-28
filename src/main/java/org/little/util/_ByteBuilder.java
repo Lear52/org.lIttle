@@ -71,7 +71,7 @@ public class _ByteBuilder{
       
        public int read(java.io.InputStream s)   throws java.io.IOException{
                int len=s.available();
-               if(len<=0)return 0;
+               if(len<=0)return -1;/**/ //0
                _addsize(len);
                int ret=s.read(value, count, len);
                if(ret>0)count+=ret;
@@ -81,7 +81,7 @@ public class _ByteBuilder{
        public static byte[] toByte(final java.io.InputStream in) throws java.io.IOException{
               _ByteBuilder buf=new _ByteBuilder(10240);
               int ret=0;
-              do{ ret=buf.read(in);}while(ret>0);
+              do{ ret=buf.read(in);}while(ret>=0);/**/// >0
               return buf.getBytes();
        }
       

@@ -9,10 +9,13 @@ import org.little.util.LoggerFactory;
 public class fc_control {
        private static final Logger logger = LoggerFactory.getLogger(fc_control.class);
 
-       private String mq_mngr;
-       private String mq_queue;
-       private boolean is_manual;
-       private boolean is_set_flag;
+       private String        mq_mngr;
+       private String        mq_queue;
+       private boolean       is_manual;
+       private boolean       is_set_flag;
+
+       public static boolean STOP=true;
+       public static boolean RUN=false;
 
        public fc_control(){
               clear();

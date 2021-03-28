@@ -51,7 +51,7 @@ public class fc_groupR  extends task implements fc_group{
        @Override
        public void               setName(String name) {this.name = name;}
        @Override
-       public boolean getState(){return state;}
+       public boolean            getState(){return state;}
 
        @Override
        public void work(){
@@ -203,3 +203,4 @@ public class fc_groupR  extends task implements fc_group{
 
 
 }
+

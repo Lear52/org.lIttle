@@ -18,9 +18,11 @@ public class fc_groupL extends task implements fc_group{
        private String             id;
        private String             name;
        private boolean            state;
+       private fc_mngr            mngr;
 
-       public fc_groupL(){
+       public fc_groupL(fc_mngr _mngr){
               clear();
+              mngr=_mngr;
        }
 
        @Override
@@ -97,9 +99,9 @@ public class fc_groupL extends task implements fc_group{
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
                   if("flow".equals(n.getNodeName()) ){           
-                         fc_flow flow=new fc_flowL();
-                         flow.init(n);
-                         flow_list.add(flow);
+                     fc_flow flow=new fc_flowL(mngr);
+                     flow.init(n);
+                     flow_list.add(flow);
                   }
               }
               
