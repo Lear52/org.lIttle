@@ -1,4 +1,4 @@
-package org.little.store.fsstore;
+package org.little.lmsg.store.fsstore;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.Random;
 
 import org.little.lmsg.lMessage;
-import org.little.store.lFolder;
-import org.little.store.lUID;
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.string._stringQSort;

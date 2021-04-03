@@ -1,10 +1,10 @@
-package org.little.store.fsstore;
+package org.little.lmsg.store.fsstore;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import org.little.store.lRoot;
-import org.little.store.lStore;
+import org.little.lmsg.store.lRoot;
+import org.little.lmsg.store.lStore;
 import org.little.util.string._stringQSort;
 
 

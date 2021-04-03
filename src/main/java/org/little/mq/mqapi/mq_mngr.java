@@ -5,7 +5,6 @@ import static com.ibm.mq.MQC.MQ_QMGR_ASSOCIATION_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import org.little.util.Logger;
 

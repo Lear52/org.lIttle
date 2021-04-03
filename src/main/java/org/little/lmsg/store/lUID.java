@@ -1,4 +1,4 @@
-package org.little.store;
+package org.little.lmsg.store;
 
 public class lUID {
        //private static int count=(int)((System.currentTimeMillis()-(((24L*3600L)*365L)*50L)*1000L)/1000L);

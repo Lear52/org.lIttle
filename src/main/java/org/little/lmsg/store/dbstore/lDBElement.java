@@ -1,4 +1,4 @@
-package org.little.store.dbstore;
+package org.little.lmsg.store.dbstore;
 
 public interface  lDBElement{
 

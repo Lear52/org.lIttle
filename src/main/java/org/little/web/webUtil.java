@@ -1,12 +1,6 @@
 package org.little.web;
 
-import org.little.util.Except;
-import org.little.util.Logger;
-import org.little.util.LoggerFactory;
-
 public class webUtil{
-       final private static int    CLASS_ID  =405;
-             public  static int    getClassId(){return CLASS_ID;}
        /**
         * Returns a string that is equivalent to the input string, but with
         * special characters converted to HTML escape sequences.

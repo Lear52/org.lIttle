@@ -1,19 +1,10 @@
-package org.little.store.dbstore;
+package org.little.lmsg.store.dbstore;
 
 import java.util.ArrayList;
 
-import org.little.store.lFolder;
-import org.little.store.lRoot;
-import org.little.store.lStore;
-/*
-CREATE TABLE L_STORE(
-ID   NUMBER,
-NAME VARCHAR(128)
-);
-
-
-
-*/
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lRoot;
+import org.little.lmsg.store.lStore;
 
 
 public class lDBStore   implements lStore, lDBElement  {

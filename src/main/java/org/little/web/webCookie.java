@@ -8,12 +8,8 @@ import  javax.servlet.http.HttpServletRequest;
 import  javax.servlet.http.HttpServletResponse;
 
 import org.little.util.Except;
-import org.little.util.Logger;
-import org.little.util.LoggerFactory;
 
 class  webCookie{
-       final private static int    CLASS_ID  =401;
-             public  static int    getClassId(){return CLASS_ID;}
 
        protected static final int    SESSION_ID_BYTES = 64;
        protected static final String DEFAULT_ALGORITHM = "MD5";

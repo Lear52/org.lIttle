@@ -23,16 +23,16 @@ public class connection_pool {
         //-----------------------------------------------------------------------------
         //
         //-----------------------------------------------------------------------------
-        private static Object lock = new Object();
+        private Object lock = new Object();
 
         private final  static  int max_timeout = 15 * 60 * 1000;//15 �����
 
-        private static boolean       is_load = false;
+        private boolean       is_load = false;
 
-        private static String        db_drv;
-        private static String        db_url;
-        private static String        username;
-        private static String        passwd;
+        private String        db_drv;
+        private String        db_url;
+        private String        username;
+        private String        passwd;
 
         private Vector<query>        connections;
         //ArrayList connections;
@@ -40,6 +40,7 @@ public class connection_pool {
         //-----------------------------------------------------------------------------
         //
         //-----------------------------------------------------------------------------
+        /*
         private static connection_pool   db_pool;
         
         public static connection_pool getDB() {
@@ -53,7 +54,7 @@ public class connection_pool {
             try {db_pool.closeAll();} catch (dbExcept e) {}
             db_pool=null;
         }
-        
+        */
         /** 
          * 
          */
@@ -97,7 +98,7 @@ public class connection_pool {
         /** 
          * 
          */
-        public static void init(String _db_drv,String _db_url,String _username,String  _passwd){
+        public void init(String _db_drv,String _db_url,String _username,String  _passwd){
 
                 log.trace("connection_pool.init() is_load:"+is_load);
 
@@ -339,6 +340,7 @@ public class connection_pool {
         //-----------------------------------------------------------------------------
         //
         //-----------------------------------------------------------------------------
+        /*
         public static void main(String[] args) throws  dbExcept {
                connection_pool b=null;
                query           q=null;
@@ -376,6 +378,6 @@ public class connection_pool {
                System.out.println("DB:ok!");
 
         }
-
+        */
 
 }

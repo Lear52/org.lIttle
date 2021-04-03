@@ -159,7 +159,8 @@ public class FetchCommand  extends ImapCommand {
                      //-------------------------------------------------------------------------------
                      try {                          
                            stringParser parser=new stringParser(vol_param,"<>[]");
-                           String param_body=parser.get();
+                           //String param_body=
+                        		   parser.get();
                            body_section=parser.get();
                            size_section=parser.get();
                            logger.trace("parth:"+body_section);
@@ -208,7 +209,8 @@ public class FetchCommand  extends ImapCommand {
                      
                      try {                          
                            stringParser parser=new stringParser(vol_param,"<>[]");
-                           String param_body=parser.get();
+                           //String param_body=
+                        		   parser.get();
                            body_section=parser.get();
                            size_section=parser.get();
                            logger.trace("parth:"+body_section);

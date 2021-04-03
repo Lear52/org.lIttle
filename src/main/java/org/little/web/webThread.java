@@ -8,19 +8,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.run.scheduler;
-import org.little.util.run.task;
 
 /**
  * @author av
  */
 
 public class webThread extends HttpServlet{
-       final private static int    CLASS_ID  =404;
-             public  static int    getClassId(){return CLASS_ID;}
+       private static final long serialVersionUID = -660122190631811408L;
        private static final Logger logger = LoggerFactory.getLogger(webThread.class);
 
         //     Создание нового пула потоков 

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -21,8 +20,7 @@ import org.little.util.LoggerFactory;
  *  
  */
 public class webRun extends HttpServlet {
-       final private static int    CLASS_ID  =403;
-             public  static int    getClassId(){return CLASS_ID;}
+       private static final long serialVersionUID = -5619572247552463407L;
        private static final Logger logger = LoggerFactory.getLogger(webRun.class);
 
         

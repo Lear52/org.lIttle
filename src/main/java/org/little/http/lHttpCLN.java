@@ -159,10 +159,11 @@ public class lHttpCLN {
               String s_buf=new String(os.toByteArray(),Charset.forName("UTF-8")); 
 
               logger.trace("httpclient get:"+s_buf);
-              if(s_buf==null){
-                 logger.error("httpclient get is null");
-                 return null;
-              }
+
+              //if(s_buf==null){
+              //   logger.error("httpclient get is null");
+              //   return null;
+              //}
               //byte[] out = os.toByteArray();
               try {
                   JSONTokener tokener=new JSONTokener(s_buf);

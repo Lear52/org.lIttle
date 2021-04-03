@@ -1,4 +1,4 @@
-package org.little.store;
+package org.little.lmsg.store;
 
 import java.util.ArrayList;
 

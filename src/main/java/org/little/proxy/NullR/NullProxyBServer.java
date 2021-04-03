@@ -9,12 +9,10 @@ import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -69,13 +67,14 @@ public class NullProxyBServer extends  NullProxy_Server{
                   client_boot_strap1.option (ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000);//30000
                   client_boot_strap1.option (ChannelOption.SO_KEEPALIVE, true);
 
-                  if(true){
+                  //if(true){
                      client_boot_strap1.option (ChannelOption.SO_SNDBUF, 1024 * 32768);
                      client_boot_strap1.option (ChannelOption.SO_RCVBUF, 1024 * 32768);
-                  }else{
-                     client_boot_strap1.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(4096));
-                     client_boot_strap1.option(ChannelOption.ALLOCATOR       , PooledByteBufAllocator.DEFAULT);
-                  }  
+                  //}
+                  //else{
+                  //   client_boot_strap1.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(4096));
+                  //   client_boot_strap1.option(ChannelOption.ALLOCATOR       , PooledByteBufAllocator.DEFAULT);
+                  //}  
 
                   int    reversePort=commonProxy.get().getReversePort();
                   String reverseHost=commonProxy.get().getReverseHost();

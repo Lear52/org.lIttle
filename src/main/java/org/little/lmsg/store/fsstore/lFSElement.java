@@ -1,4 +1,4 @@
-package org.little.store.fsstore;
+package org.little.lmsg.store.fsstore;
 
 import java.io.File;
 

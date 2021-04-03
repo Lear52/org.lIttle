@@ -9,10 +9,10 @@ import org.little.http.handler.lHttpResponse;
 import org.little.lmsg.lMessage;
 import org.little.lmsg.lMessage2JSON;
 import org.little.lmsg.lMessageX509;
-import org.little.store.lFolder;
-import org.little.store.lRoot;
-import org.little.store.lStore;
-import org.little.store.lUID;
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lRoot;
+import org.little.lmsg.store.lStore;
+import org.little.lmsg.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 

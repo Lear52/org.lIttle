@@ -8,6 +8,8 @@ import java.util.List;
 import org.little.lmsg.ELM2lMessage;
 import org.little.lmsg.lMessage;
 import org.little.lmsg.lMessageX509;
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lUID;
 import org.little.mail.imap.IMAPTransaction;
 import org.little.mail.imap.SessionContext;
 import org.little.mail.imap.command.ImapCommand;
@@ -15,8 +17,6 @@ import org.little.mail.imap.command.ImapCommandParameter;
 import org.little.mail.imap.command.ImapConstants;
 import org.little.mail.imap.response.EmptyResponse;
 import org.little.mail.imap.response.ImapResponse;
-import org.little.store.lFolder;
-import org.little.store.lUID;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
@@ -74,6 +74,7 @@ public class AppendCommand  extends ImapCommand {
                  n++;
               }
 
+              if(flag!=null) {}
               if(size!=null) {try{_size=Integer.parseInt(size);}catch(Exception e) {_size=0;}}
 
               if(_size==0){

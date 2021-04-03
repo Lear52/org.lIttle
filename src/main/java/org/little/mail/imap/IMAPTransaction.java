@@ -2,13 +2,13 @@ package org.little.mail.imap;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.store.lStore;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.little.lmsg.lMessage;
-import org.little.store.lFolder;
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lStore;
 
 /**
  * models an ongoing mail transaction

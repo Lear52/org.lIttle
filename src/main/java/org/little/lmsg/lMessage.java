@@ -116,42 +116,50 @@ public class lMessage{
     }
     
     //public int      getMessageNumber(){return msg_num;         }
-    public int      getNum          (){return msg_num;         }
-    public int      getUID          (){return msg_uid;         }
-    public String   getFrom         (){return msg_from;        }
-    public String   getId           (){return msg_id;          }
-    public String   getSubject      (){return msg_subject;     }
-    public String   getFilename     (){return msg_filename;    }
-    public Date     getCreateDate   (){return msg_create_date; }
-    public Date     getSentDate     (){return msg_sent_date;   }
-    public Date     getReceiveDate  (){return msg_receive_date;}
-    public Date     getDelDate      (){return msg_del_date;    }
-    public Date     getAnswerDate   (){return msg_answer_date; }
-    public String   getMime         (){return msg_mime;        }
-    public int      getSize         (){return msg_size;        }
+    public int           getNum          (){return msg_num;         }
+    public int           getUID          (){return msg_uid;         }
+    public String        getFrom         (){return msg_from;        }
+    public String        getId           (){return msg_id;          }
+    public String        getSubject      (){return msg_subject;     }
+    public String        getFilename     (){return msg_filename;    }
+    public Date          getCreateDate   (){return msg_create_date; }
+    public Date          getSentDate     (){return msg_sent_date;   }
+    public Date          getReceiveDate  (){return msg_receive_date;}
+    public Date          getDelDate      (){return msg_del_date;    }
+    public Date          getAnswerDate   (){return msg_answer_date; }
+    public java.sql.Date _getCreateDate   (){return new java.sql.Date(msg_create_date.getTime()); }
+    public java.sql.Date _getSentDate     (){return new java.sql.Date(msg_sent_date.getTime());   }
+    public java.sql.Date _getReceiveDate  (){return new java.sql.Date(msg_receive_date.getTime());}
+    public java.sql.Date _getDelDate      (){return new java.sql.Date(msg_del_date.getTime());    }
+    public java.sql.Date _getAnswerDate   (){return new java.sql.Date(msg_answer_date.getTime()); }
 
-    public String   getX509Type     (){return x509_type        ;}    
-    public String   getX509TypeFile (){return x509_type_file   ;}    
-    public Date     getX509BeginDate(){return x509_begin_date  ;}
-    public Date     getX509EndDate  (){return x509_end_date    ;}
-    public String   getX509Serial   (){return x509_serial      ;}  
-    public String   getX509Subject  (){return x509_subject     ;} 
-    public String   getX509Issuer   (){return x509_issuer      ;}  
-
-    public String   getBodyTxt      (){return body_txt;         }
-    public byte[]   getBodyBin      (){return body_bin;         }
-    public String   getBodyBin76    (){return body_bin_txt76;   }
-    public String   getBodyBin64    (){return body_bin_txt;     }
-    
-    public boolean  isSEEN() {return !isUNSEEN();}
-    public boolean  isUNSEEN() {return msg_receive_date==null;}
-    public boolean  isDELETE() {return msg_del_date==null;}
-    public boolean  isDRAFT() {return false;}
-    public boolean  isANSWERED() {return false;}
-    
-
-    public void     setTO           (String address) {msg_to=new ArrayList<String>();addTO(address);   }
-    public void     addTO           (String address) {msg_to.add(address);       }
+    public String        getMime         (){return msg_mime;        }
+    public int           getSize         (){return msg_size;        }
+                        
+    public String        getX509Type     (){return x509_type        ;}    
+    public String        getX509TypeFile (){return x509_type_file   ;}    
+    public Date          getX509BeginDate(){return x509_begin_date  ;}
+    public Date          getX509EndDate  (){return x509_end_date    ;}
+    public java.sql.Date _getX509BeginDate(){return new java.sql.Date(x509_begin_date.getTime());}
+    public java.sql.Date _getX509EndDate  (){return new java.sql.Date(x509_end_date.getTime());}
+    public String        getX509Serial   (){return x509_serial      ;}  
+    public String        getX509Subject  (){return x509_subject     ;} 
+    public String        getX509Issuer   (){return x509_issuer      ;}  
+                        
+    public String        getBodyTxt      (){return body_txt;         }
+    public byte[]        getBodyBin      (){return body_bin;         }
+    public String        getBodyBin76    (){return body_bin_txt76;   }
+    public String        getBodyBin64    (){return body_bin_txt;     }
+                        
+    public boolean       isSEEN() {return !isUNSEEN();}
+    public boolean       isUNSEEN() {return msg_receive_date==null;}
+    public boolean       isDELETE() {return msg_del_date==null;}
+    public boolean       isDRAFT() {return false;}
+    public boolean       isANSWERED() {return false;}
+                        
+                        
+    public void          setTO           (String address) {msg_to=new ArrayList<String>();addTO(address);   }
+    public void          addTO           (String address) {msg_to.add(address);       }
 
     //public void     setMessageNumber(int msg_num)    {this.msg_num = msg_num;    }
     public void     setNum          (int n)          {msg_num=n;                 }

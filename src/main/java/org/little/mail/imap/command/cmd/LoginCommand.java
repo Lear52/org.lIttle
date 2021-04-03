@@ -3,6 +3,7 @@ package org.little.mail.imap.command.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.little.lmsg.store.*;
 import org.little.mail.imap.IMAPTransaction;
 import org.little.mail.imap.SessionContext;
 import org.little.mail.imap.commonIMAP;
@@ -11,7 +12,6 @@ import org.little.mail.imap.command.ImapCommandParameter;
 import org.little.mail.imap.command.ImapConstants;
 import org.little.mail.imap.response.EmptyResponse;
 import org.little.mail.imap.response.ImapResponse;
-import org.little.store.*;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 

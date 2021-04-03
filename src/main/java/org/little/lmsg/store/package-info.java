@@ -5,4 +5,4 @@
  * @author lear5
  *
  */
-package org.little.store;
+package org.little.lmsg.store;

@@ -1,7 +1,6 @@
 package org.little.mailWeb;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -10,19 +9,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
-import org.little.util.run.task;
 import org.little.web.webThread;
 /**
  * @author av
  *  
  */
 public class webMngr extends webThread{
-	   private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
-	   private static final long serialVersionUID = -3616757490430537836L;
+       private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+       private static final long serialVersionUID = -3616757490430537836L;
        private ImapClient mngr;
 
        @Override
@@ -41,7 +38,8 @@ public class webMngr extends webThread{
                  logger.error("error read config file:"+xpath);
                  return;
               }
-              logger.info("START LITTLE.IMAPWEB "+Version.getVer()+"("+Version.getDate()+")");
+
+              logger.info("START LITTLE.IMAPWEB config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
 
               mngr.setDelay(mngr.getTimeout());
 

@@ -1,9 +1,9 @@
-package org.little.store;
+package org.little.lmsg.store;
 
 import java.util.ArrayList;
 
-import org.little.store.fsstore.lFSRoot;
-import org.little.store.fsstore.lFSStore;
+import org.little.lmsg.store.fsstore.lFSRoot;
+import org.little.lmsg.store.fsstore.lFSStore;
 
 
 public interface lRoot  {

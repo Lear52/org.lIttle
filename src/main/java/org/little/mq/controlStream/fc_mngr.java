@@ -2,17 +2,15 @@ package org.little.mq.controlStream;
        
 import java.util.ArrayList;
 
-import org.little.util.Logger;
-import org.little.util.LoggerFactory;
-import org.little.util.run.scheduler;
-import org.little.util.run.task;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.little.util.Logger;
+import org.little.util.LoggerFactory;
+import org.little.util.common;
+import org.little.util.run.scheduler;
+import org.little.util.run.task;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.little.util.common;
-import org.little.util.run.task;
 
 public class fc_mngr  extends task{
        private static final Logger logger = LoggerFactory.getLogger(fc_mngr.class);
@@ -88,6 +86,7 @@ public class fc_mngr  extends task{
               
        }
        
+       //protected fc_common getCfg() {return cfg;}
        public int      getActive() {return count_active_group;}
        public boolean  isControlStream() {return is_control_stream;}
        public int      getTimeout() {return task_timeout;}
@@ -161,9 +160,9 @@ public class fc_mngr  extends task{
                  logger.error("error read config file:"+xpath);
                  return;
               }
-              logger.info("START LITTLE.CONTROLSTREAM "+mngr.cfg.ver());
+              logger.info("START LITTLE.CONTROLSTREAM "+common.ver());
               mngr.init();
-              logger.info("RUN LITTLE.CONTROLSTREAM "+mngr.cfg.ver());
+              logger.info("RUN LITTLE.CONTROLSTREAM "+common.ver());
               scheduler runner = new scheduler(10);
 
               ArrayList<task> _task=mngr.getListTask();

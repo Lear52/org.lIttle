@@ -1,10 +1,10 @@
-package org.little.store.dbstore;
+package org.little.lmsg.store.dbstore;
 
 import java.util.ArrayList;
 
 import org.little.lmsg.lMessage;
-import org.little.store.lFolder;
-import org.little.store.lStore;
+import org.little.lmsg.store.lFolder;
+import org.little.lmsg.store.lStore;
 
 
 public class lDBFolder  implements lFolder {
@@ -12,9 +12,6 @@ public class lDBFolder  implements lFolder {
        //private lStore                 store;
        private ArrayList<lMessage>    msg;
        
-      
-      
-      
        public         lDBFolder(lStore store,lFolder _parent,String _name) {
                          clear();
                         // this.store = store; 

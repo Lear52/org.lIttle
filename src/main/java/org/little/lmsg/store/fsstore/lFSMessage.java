@@ -1,4 +1,4 @@
-package org.little.store.fsstore;
+package org.little.lmsg.store.fsstore;
         
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -9,7 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.little.lmsg.lMessage;
-import org.little.store.lFolder;
+import org.little.lmsg.store.lFolder;
 import org.little.util.Except;
 import org.little.util._Base64;
 import org.little.util.string.stringDate;
