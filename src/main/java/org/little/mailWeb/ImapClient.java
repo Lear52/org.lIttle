@@ -58,6 +58,8 @@ public class ImapClient extends task{
         }
         public int     getTimeout        () {return cfg.getTimeout();}
 
+        public logKeyArh getLog          () {return cfg.getLog(); }
+
         protected void   open(){
                 props = System.getProperties();
                 /*

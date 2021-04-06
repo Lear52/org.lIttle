@@ -32,6 +32,44 @@ public class lMessage2JSON  {
               JSONObject obj=list2obj(msg);
               obj.write(out);
        }
+       public static JSONObject MSG2OBJ(lMessage msg){
+              JSONObject root_object=new JSONObject();
+
+              JSONArray to=new JSONArray();
+
+              String [] _to=msg.getTO();
+
+              for(int i=0;i<_to.length;i++)to.put(_to[i]);
+
+              JSONObject obj=new JSONObject();
+
+              obj.put("From"          ,msg.getFrom                           ());
+              obj.put("To"            ,to                                      );                                
+              obj.put("Id"            ,msg.getId                             ());
+              obj.put("Subject"       ,msg.getSubject                        ());
+              obj.put("Filename"      ,msg.getFilename                       ());
+              if(msg.getCreateDate     ()!=null)obj.put("CreateDate" ,stringDate.date2prn(msg.getCreateDate ())); else obj.put("CreateDate" ,"");
+              if(msg.getSentDate       ()!=null)obj.put("SentDate"   ,stringDate.date2prn(msg.getSentDate   ())); else obj.put("SentDate"   ,"");
+              if(msg.getReceiveDate    ()!=null)obj.put("ReceiveDate",stringDate.date2prn(msg.getReceiveDate())); else obj.put("ReceiveDate","");
+              if(msg.getAnswerDate     ()!=null)obj.put("AnswerDate" ,stringDate.date2prn(msg.getAnswerDate ())); else obj.put("AnswerDate" ,"");
+
+              obj.put("Size"          ,msg.getSize                           ());
+                                              
+              obj.put("X509Type"      ,msg.getX509Type                       ());
+              obj.put("X509TypeFile"  ,msg.getX509TypeFile                   ());
+              obj.put("X509BeginDate" ,stringDate.date2prn(msg.getX509BeginDate()));
+              obj.put("X509EndDate"   ,stringDate.date2prn(msg.getX509EndDate  ()));
+              obj.put("X509Serial"    ,msg.getX509Serial                     ());
+              obj.put("X509Subject"   ,msg.getX509Subject                    ());
+              obj.put("X509Issuer"    ,msg.getX509Issuer                     ());
+              root_object.put("type"   ,"message"       );
+              root_object.put("header" ,obj             );
+              root_object.put("BodyTxt",msg.getBodyTxt());
+
+              return root_object;
+
+
+       }
 
        private static JSONObject list2obj(ArrayList<lMessage> msg){
               JSONArray list=new JSONArray();

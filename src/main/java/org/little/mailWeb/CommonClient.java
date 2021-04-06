@@ -39,6 +39,8 @@ public class CommonClient  extends common{
               imap_outbox_folder     ="outbox";              
               db_cfg                 =new commonDB();
        }
+       
+       public logKeyArh getLog           () {return db_cfg.getLog(); }
 
        public boolean  isDebug           () {return debug;             }
        public String   getUser           () {return userName;          }
@@ -58,8 +60,8 @@ public class CommonClient  extends common{
        }
        @Override
        public void  init(Node _node_cfg) {
-              String log_type="log";
-              Node   n_log=null;
+              //String log_type="log";
+              //Node   n_log=null;
               if(_node_cfg!=null){
                  logger.info("The configuration node:"+_node_cfg.getNodeName());
                  NodeList glist=_node_cfg.getChildNodes();     
