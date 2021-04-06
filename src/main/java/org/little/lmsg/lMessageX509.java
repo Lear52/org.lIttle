@@ -286,7 +286,7 @@ public class lMessageX509 {
                   catch(Exception e){
                         if(logger.isTrace()) {
                            Except ex=new Except(e);
-                           logger.error("DER no eevoked certificates ex:"+ex);
+                           logger.error("DER no revoked certificates ex:"+ex);
                         }
                         //return null;
                   }

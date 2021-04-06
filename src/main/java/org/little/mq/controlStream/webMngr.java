@@ -34,18 +34,14 @@ public class webMngr extends webThread{
               logger.trace("start"+":"+getServletInfo());
               mngr=new fc_mngr();
 
-              String xpath=this.getServletContext().getRealPath("");
-
-              String _xpath=getParametr("config");
-              //xpath+=File.separator;
-              //xpath+="littleproxy_mq.xml";
-              xpath+=_xpath;
+              String xpath=this.getServletContext().getRealPath("")+getParametr("config");
 
               if(mngr.loadCFG(xpath)==false){
                  logger.error("error read config file:"+xpath);
                  return;
               }
               logger.info("START LITTLE.CONTROLSTREAM "+Version.getVer()+"("+Version.getDate()+")");
+
               mngr.init();
               mngr.setDelay(1);
               ArrayList<task> _task=mngr.getListTask();
@@ -68,7 +64,7 @@ public class webMngr extends webThread{
               return "Show state queue";
        }
        /**
-          отдает JSON запрос 
+          processing JSON request: get all state group 
         */
        private void doGetList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
                response.setContentType("application/json");
@@ -80,6 +76,9 @@ public class webMngr extends webThread{
 
                logger.trace("webMngr.doGetList()");
        }
+       /**
+       processing JSON request: get local group 
+       */
        private void doSetState(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
                response.setContentType("application/json");
                response.setContentType("text/html; charset=UTF-8");
@@ -90,6 +89,9 @@ public class webMngr extends webThread{
 
                logger.trace("webMngr.doSetState()");
        }
+       /**
+         processing JSON request: set control flag  
+       */
        private void doSetFlag(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
                response.setContentType("application/json");
                response.setContentType("text/html; charset=UTF-8");
@@ -114,22 +116,20 @@ public class webMngr extends webThread{
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
-              //String    cmd = (String) request.getParameter("c");
-              //if(cmd == null){cmd="";}
               String    path = (String) request.getPathInfo();
               String    page=null;
 
               logger.trace("webAddr.doRun() path:"+path);
                 
               /**
-                 JSON запрос: 
+                 JSON request get all group 
                */
               if(path.startsWith("/list")){
                  doGetList(request,response);
                  return;
               }
               /**
-                 JSON запрос:
+                 JSON request get local group from remote mngr
                */
               else 
               if(path.startsWith("/state")){
@@ -137,7 +137,7 @@ public class webMngr extends webThread{
                  return;
               }  
               /**
-                 JSON запрос:
+                 JSON request set control flag
                */
               else 
               if(path.startsWith("/cntrl")){
@@ -145,7 +145,7 @@ public class webMngr extends webThread{
                  return;
               }  
               else{
-                 page ="/index.jsp";
+                 page =mngr.getDefaulPage();
               }
 
               //-----------------------------------------------------------------------------------------

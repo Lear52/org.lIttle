@@ -42,7 +42,7 @@ public class fc_groupL extends task implements fc_group{
        @Override
        public void               setName(String name) {this.name = name;}
        @Override
-       public boolean getState(){return state;}
+       public boolean            getState(){return state;}
 
        @Override
        public void work(){
@@ -63,6 +63,7 @@ public class fc_groupL extends task implements fc_group{
               root.put("type", "group");
               root.put("id", getID());
               root.put("name", getName());
+              root.put("state", getState());
               for(int i=0;i<flow_list.size();i++) {
                   fc_flow flow=flow_list.get(i);
                   list.put(i,flow.getStat());

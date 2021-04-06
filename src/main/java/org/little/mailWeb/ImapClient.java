@@ -29,15 +29,16 @@ import com.sun.mail.imap.IMAPFolder;
 
 public class ImapClient extends task{
 
-        private static final Logger logger  = LoggerFactory.getLogger(ImapClient.class);
-        private static final logFile log_arh = new logFile();
+        private static final Logger logger   = LoggerFactory.getLogger(ImapClient.class);
 
-        private Properties       props;
-        private Store            store;
-        private IMAPFolder       folder_inbox;
-        private IMAPFolder       folder_outbox;
-        private Session          session;
-        private CommonClient cfg;
+        private static logKeyArh    log_arh = new logFile();
+
+        private Properties          props;
+        private Store               store;
+        private IMAPFolder          folder_inbox;
+        private IMAPFolder          folder_outbox;
+        private Session             session;
+        private CommonClient        cfg;
 
             
         public ImapClient() {
@@ -45,13 +46,14 @@ public class ImapClient extends task{
                folder_inbox    = null;
                folder_outbox   = null;
                session         = null;
-               cfg=new CommonClient();
+               cfg             = new CommonClient();
         }
 
 
         public boolean loadCFG(String xpath){
                boolean ret=cfg.loadCFG(xpath);
                cfg.init();
+               log_arh=cfg.getCfgDB().getLog();
                return ret;
         }
         public int     getTimeout        () {return cfg.getTimeout();}
@@ -161,7 +163,7 @@ public class ImapClient extends task{
                         ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(buf));
                         ZipEntry       entry;
                         String         name;
-                        int           size;
+                        int            size;
                         while((entry=zin.getNextEntry())!=null){
                               
                             name = entry.getName(); // получим название файла
@@ -174,24 +176,28 @@ public class ImapClient extends task{
 
                         }
                         zin.close();
+                        return;
                    }
                    catch(Exception e){
                          logger.trace("no zip:" + filename);
-                         ParsePart(buf,msg,filename,false) ;
-                         return;
                    }
+                   ParsePart(buf,msg,filename,false) ;
+                   return;
                 }
                 else{
-                   logger.trace("parse:" + filename);
+                   logger.trace("no zip parse:" + filename);
                    lMessage _msg=new lMessage(msg);
                    _msg.setFilename(filename);
                    try {
                         _msg.setBodyBin(buf);
-                        logger.trace("letter:" + _msg);
+                        //logger.trace("letter:" + _msg);
                       
                         _msg=lMessageX509.parse(_msg);
-                        if(_msg!=null)log_arh.print( _msg);
-                  
+                        if(_msg!=null){
+                           logger.trace("letter:" + _msg);
+
+                           log_arh.print( _msg);
+                        }
                    }
                    catch(Exception e){
                          logger.error("ex:"+e);

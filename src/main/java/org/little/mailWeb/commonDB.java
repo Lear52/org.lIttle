@@ -30,13 +30,13 @@ public class commonDB{
               log_type ="log";
        }
 
-       public String  getUser           () {return userName;}
-       public String  getPasswd         () {return password;}
-       public String  getDrv            () {return db_drv;}
-       public String  getURL            () {return db_url;}
-       public String  getTable          () {return db_table;}
+       public String    getUser  () {return userName;}
+       public String    getPasswd() {return password;}
+       public String    getDrv   () {return db_drv;}
+       public String    getURL   () {return db_url;}
+       public String    getTable () {return db_table;}
 
-       public logKeyArh     getLog            () {return log_obj; }
+       public logKeyArh getLog   () {return log_obj; }
 
        public void  init(Node _node_cfg) {
 
@@ -47,6 +47,8 @@ public class commonDB{
                  if(_node_cfg.getAttributes().getNamedItem("type")!=null) {
                     log_type=_node_cfg.getAttributes().getNamedItem("type").getNodeValue();
                  }
+
+                 logger.info("log_type:"+log_type);
 
                  NodeList glist=_node_cfg.getChildNodes();     
                  for(int i=0;i<glist.getLength();i++){
@@ -68,6 +70,8 @@ public class commonDB{
 
               if("db" .equalsIgnoreCase(log_type)){log_obj=new logDB(); }
               if("log".equalsIgnoreCase(log_type)){log_obj=new logFile();}
+
+              log_obj.open(this);
 
        }
 

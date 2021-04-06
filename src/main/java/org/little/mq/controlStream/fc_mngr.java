@@ -21,6 +21,7 @@ public class fc_mngr  extends task{
        private int                 count_active_group;
        private int                 task_timeout;
        private boolean             is_control_stream;
+       private String              default_page;   
 
        public fc_mngr() {
               cfg       =new fc_common();
@@ -29,6 +30,7 @@ public class fc_mngr  extends task{
               count_active_group=0;
               is_control_stream=false;
               task_timeout=10;
+              default_page="index.html";
        }
        public boolean loadCFG(String xpath){
               return cfg.loadCFG(xpath);
@@ -36,6 +38,11 @@ public class fc_mngr  extends task{
        public void init() {
             init(cfg.getNode());
        }
+       
+       /**
+        * parsing configuration global section
+        * @param _node_cfg 
+        */
        private void init_global(Node _node_cfg) {
 
                if(_node_cfg==null)return;
@@ -45,6 +52,9 @@ public class fc_mngr  extends task{
                if(glist==null) return;
                for(int i=0;i<glist.getLength();i++){
                    Node n=glist.item(i);
+                   if("default_page".equals(n.getNodeName()) ){           
+                	   default_page=n.getTextContent();logger.info("default_page:"+default_page);
+                    }else
                    if("run_timeout".equals(n.getNodeName()) ){           
                       String s=n.getTextContent();try{task_timeout=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set run_timeout:"+s);task_timeout=10;}logger.info("run_timeout:"+task_timeout);
                    }else
@@ -53,6 +63,10 @@ public class fc_mngr  extends task{
                    }
                }
        }
+       /**
+        * parsing configuration  
+        * @param _node_cfg
+        */
        private void init(Node _node_cfg) {
               if(_node_cfg==null)return;
 
@@ -86,7 +100,7 @@ public class fc_mngr  extends task{
               
        }
        
-       //protected fc_common getCfg() {return cfg;}
+       protected String getDefaulPage() {return default_page;}
        public int      getActive() {return count_active_group;}
        public boolean  isControlStream() {return is_control_stream;}
        public int      getTimeout() {return task_timeout;}

@@ -127,11 +127,11 @@ public class lMessage{
     public Date          getReceiveDate  (){return msg_receive_date;}
     public Date          getDelDate      (){return msg_del_date;    }
     public Date          getAnswerDate   (){return msg_answer_date; }
-    public java.sql.Date _getCreateDate   (){return new java.sql.Date(msg_create_date.getTime()); }
-    public java.sql.Date _getSentDate     (){return new java.sql.Date(msg_sent_date.getTime());   }
-    public java.sql.Date _getReceiveDate  (){return new java.sql.Date(msg_receive_date.getTime());}
-    public java.sql.Date _getDelDate      (){return new java.sql.Date(msg_del_date.getTime());    }
-    public java.sql.Date _getAnswerDate   (){return new java.sql.Date(msg_answer_date.getTime()); }
+    public java.sql.Date _getCreateDate   (){if(msg_create_date !=null)return new java.sql.Date(msg_create_date.getTime()); else return null;}
+    public java.sql.Date _getSentDate     (){if(msg_sent_date   !=null)return new java.sql.Date(msg_sent_date.getTime());   else return null;}
+    public java.sql.Date _getReceiveDate  (){if(msg_receive_date!=null)return new java.sql.Date(msg_receive_date.getTime());else return null;}
+    public java.sql.Date _getDelDate      (){if(msg_del_date    !=null)return new java.sql.Date(msg_del_date.getTime());    else return null;}
+    public java.sql.Date _getAnswerDate   (){if(msg_answer_date !=null)return new java.sql.Date(msg_answer_date.getTime()); else return null;}
 
     public String        getMime         (){return msg_mime;        }
     public int           getSize         (){return msg_size;        }
@@ -140,8 +140,8 @@ public class lMessage{
     public String        getX509TypeFile (){return x509_type_file   ;}    
     public Date          getX509BeginDate(){return x509_begin_date  ;}
     public Date          getX509EndDate  (){return x509_end_date    ;}
-    public java.sql.Date _getX509BeginDate(){return new java.sql.Date(x509_begin_date.getTime());}
-    public java.sql.Date _getX509EndDate  (){return new java.sql.Date(x509_end_date.getTime());}
+    public java.sql.Date _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Date(x509_begin_date.getTime());else return null;}
+    public java.sql.Date _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Date(x509_end_date.getTime());  else return null;}
     public String        getX509Serial   (){return x509_serial      ;}  
     public String        getX509Subject  (){return x509_subject     ;} 
     public String        getX509Issuer   (){return x509_issuer      ;}  
