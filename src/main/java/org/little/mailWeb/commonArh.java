@@ -7,8 +7,8 @@ import org.little.util.string.stringTransform;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class CommonClient  extends common{
-       private static final Logger logger = LoggerFactory.getLogger(CommonClient.class);
+public class commonArh  extends common{
+       private static final Logger logger = LoggerFactory.getLogger(commonArh.class);
 
        private boolean     debug      ;
        private String      userName   ;
@@ -20,8 +20,10 @@ public class CommonClient  extends common{
        private String      imap_inbox_folder;
        private String      imap_outbox_folder;
        private commonDB    db_cfg;
+       private String      def_page;
+       private String      error_page;
 
-       public CommonClient() {
+       public commonArh() {
               clear();
               setNodeName("littlekey");
        }
@@ -38,9 +40,11 @@ public class CommonClient  extends common{
               imap_inbox_folder      ="inbox";              
               imap_outbox_folder     ="outbox";              
               db_cfg                 =new commonDB();
+              def_page               ="index.html";
+              error_page             ="error.html";
        }
        
-       public logKeyArh getLog           () {return db_cfg.getLog(); }
+       public folderARH getFolder           () {return db_cfg.getFolder(); }
 
        public boolean  isDebug           () {return debug;             }
        public String   getUser           () {return userName;          }
@@ -52,6 +56,8 @@ public class CommonClient  extends common{
        public String   getInboxFolder    () {return imap_inbox_folder; }
        public String   getOutboxFolder   () {return imap_outbox_folder;}
        public commonDB getCfgDB          () {return db_cfg;            }
+       public String   getDefPage        () {return def_page;          }
+       public String   getErrorPage      () {return error_page;        }
 
 
        @Override
@@ -101,6 +107,10 @@ public class CommonClient  extends common{
                      if("inbox_folder"      .equalsIgnoreCase(n.getNodeName())){imap_inbox_folder =n.getTextContent(); logger.info("inbox_folder:"+imap_inbox_folder);}
                      else
                      if("outbox_folder"     .equalsIgnoreCase(n.getNodeName())){imap_outbox_folder=n.getTextContent(); logger.info("outbox_folder:"+imap_outbox_folder);}
+                     else
+                     if("def_page"          .equalsIgnoreCase(n.getNodeName())){def_page          =n.getTextContent(); logger.info("def_page:"+def_page);}
+                     else
+                     if("error_page"        .equalsIgnoreCase(n.getNodeName())){error_page        =n.getTextContent(); logger.info("error_page:"+error_page);}
                  }
                  if(stringTransform.isEmpty(local_bind_client))local_bind_client="*";
               }
@@ -112,7 +122,7 @@ public class CommonClient  extends common{
 
 
        public static void main(String args[]){
-              CommonClient mngr=new CommonClient();
+              commonArh mngr=new commonArh();
               String xpath  =args[0];
 
               if(mngr.loadCFG(xpath)==false){
@@ -124,4 +134,5 @@ public class CommonClient  extends common{
               logger.info("RUN LITTLE.CONTROLSTREAM "+ver());
 
        }
+
 }

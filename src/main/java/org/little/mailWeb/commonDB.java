@@ -13,9 +13,10 @@ public class commonDB{
        private String      db_drv  ;
        private String      db_url  ;
        private String      db_table;
+       private String      db_seq;
 
        private String      log_type;
-       private logKeyArh         log_obj;
+       private folderARH      log_obj;
 
        public commonDB() {
               clear();
@@ -27,6 +28,7 @@ public class commonDB{
               db_drv   ="";
               db_url   ="";
               db_table ="arh_log";
+              db_seq   ="arh_seq";
               log_type ="log";
        }
 
@@ -35,8 +37,9 @@ public class commonDB{
        public String    getDrv   () {return db_drv;}
        public String    getURL   () {return db_url;}
        public String    getTable () {return db_table;}
+       public String    getSeq   () {return db_seq;}
 
-       public logKeyArh getLog   () {return log_obj; }
+       public folderARH getFolder   () {return log_obj; }
 
        public void  init(Node _node_cfg) {
 
@@ -62,17 +65,20 @@ public class commonDB{
                      if("db_url"          .equalsIgnoreCase(n.getNodeName())){db_url  =n.getTextContent(); logger.info("db_url:"+db_url);    }
                      else
                      if("db_table"        .equalsIgnoreCase(n.getNodeName())){db_table=n.getTextContent(); logger.info("db_table:"+db_table);}
+                     else
+                     if("db_seq"          .equalsIgnoreCase(n.getNodeName())){db_seq=n.getTextContent(); logger.info("db_seq:"+db_seq);}
                  }
               }
               else{
                   logger.error("The configuration node:null");
               }                 
 
-              if("db" .equalsIgnoreCase(log_type)){log_obj=new logDB(); }
-              if("log".equalsIgnoreCase(log_type)){log_obj=new logFile();}
+              if("db" .equalsIgnoreCase(log_type)){log_obj=new folderDB(this); }
+              if("log".equalsIgnoreCase(log_type)){log_obj=new folderLogFile();}
 
-              log_obj.open(this);
+              log_obj.open();
 
        }
+
 
 }

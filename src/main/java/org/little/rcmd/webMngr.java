@@ -1,4 +1,4 @@
-package org.little.mailWeb;
+package org.little.rcmd;
 
 import java.io.IOException;
 
@@ -10,42 +10,37 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-import org.little.lmsg.lMessage;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
-import org.little.web.webThread;
+import org.little.web.webRun;
 /**
  * @author av
  *  
  */
-public class webMngr extends webThread{
-       private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
-       private static final long serialVersionUID = -3616757490430537836L;
-       private ImapClient client;
+public class webMngr extends webRun{
+	private static final long serialVersionUID = -8820420158454598488L;
+	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
 
        @Override
        public void init() throws ServletException {
 
               logger.trace("start"+":"+getServletInfo());
               
-              client=new ImapClient();
+              //client=new ImapClient();
               
               String xpath=this.getServletContext().getRealPath("");
 
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-              if(client.loadCFG(xpath)==false){
-                 logger.error("error read config file:"+xpath);
-                 return;
-              }
+              //if(client.loadCFG(xpath)==false){
+              //   logger.error("error read config file:"+xpath);
+              //   return;
+              //}
 
               logger.info("START LITTLE.IMAPWEB config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
 
-              client.setDelay(client.getTimeout());
-
-              runner.add(client);
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
@@ -60,17 +55,16 @@ public class webMngr extends webThread{
            logger.trace("begin doGetFileID:"+_uid);
 
 
-           lMessage  msg=client.getLog().loadArray(_uid);
            //logger.trace("load lMessage:"+msg);
 
-           byte [] buf=msg.getBodyBin();
+           byte [] buf=null;
            logger.trace("load buf:"+buf.length);
 
            response.setContentType("application/octet-stream");
            response.addHeader("Accept-Ranges","bytes");
            response.setHeader("Content-Type","application/octet-stream");
            response.setHeader("Content-Transfer-Encoding", "Binary");
-           response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+           //response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
            response.setContentLength(buf.length);
            logger.trace("set header");
 
@@ -83,7 +77,7 @@ public class webMngr extends webThread{
        private void doGetList(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
            logger.trace("begin doGetList type:"+_type);
 
-           JSONObject  root=client.getLog().loadJSON(_type);
+           JSONObject  root=null;
 
            logger.trace("getStatAll() :"+root);
 
@@ -117,10 +111,10 @@ public class webMngr extends webThread{
                      return;
                   }
                   logger.trace("error request uid:"+_uid);
-                  page =client.getErrorPage();;
+                  //page =client.getErrorPage();;
               }
   
-              if(page==null)page = client.getDefPage();
+              //if(page==null)page = client.getDefPage();
 
               //-----------------------------------------------------------------------------------------
               if(page!=null)

@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210405-SNAPSHOT</version>
+        <version>202104010-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>

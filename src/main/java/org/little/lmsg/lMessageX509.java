@@ -37,6 +37,8 @@ import org.little.util._ByteBuilder;
 public class lMessageX509 {
        private static final Logger          logger  = LoggerFactory.getLogger(lMessageX509.class);
 
+       public static boolean debug=false;
+
        private static String checkPEMType(String type) {
                
            if("CERTIFICATE"            .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "CERTIFICATE";}
@@ -68,7 +70,7 @@ public class lMessageX509 {
                    if(type==null)return null;
               }
               catch(Exception e){
-                    if(logger.isTrace()) { 
+                    if(logger.isTrace()&&debug) { 
                        Except ex=new Except(e);
                        logger.error("DER NO! ex:"+ex);
                     }
@@ -108,7 +110,7 @@ public class lMessageX509 {
                       else return null;
                   } 
                   catch(Exception e){
-                             if(logger.isTrace()) { 
+                             if(logger.isTrace()&&debug) { 
                                  Except ex=new Except(e);
                                  logger.error("DER NO! ex:"+ex);
                               }
@@ -130,17 +132,20 @@ public class lMessageX509 {
                           String issuer=crl.getIssuer().toString();
                           Iterator<?> crl_number=crl.getRevokedCertificates().iterator();
                               
-                          String n_str="";
+                          //String n_str="";
+                          boolean is_add=false;
                           while(crl_number.hasNext()){
                                 X509CRLEntryHolder p=(X509CRLEntryHolder)crl_number.next();
-                                n_str+=p.getSerialNumber().toString()+";";           
+                                if(is_add)msg.addX509Serial   (p.getSerialNumber().toString());
+                                else      msg.setX509Serial   (p.getSerialNumber().toString()); 
+                                is_add=true;
                           }
                             
                           msg.setX509Type     (type);
                           msg.setX509TypeFile ("PEM");
                           msg.setX509BeginDate(new Date());
                           msg.setX509EndDate  (new Date());
-                          msg.setX509Serial   (n_str);
+                          
                           msg.setX509Subject  (issuer);
                           msg.setX509Issuer   (issuer);
                       }
@@ -148,7 +153,7 @@ public class lMessageX509 {
                       
                    } 
                    catch(Exception e) {
-                         if(logger.isTrace()) { 
+                         if(logger.isTrace()&&debug) { 
                             Except ex=new Except(e);
                             logger.error("DER NO! ex:"+ex);
                          }
@@ -183,7 +188,7 @@ public class lMessageX509 {
                        else return null;
                   } 
                   catch(Exception e) {
-                        if(logger.isTrace()) { 
+                        if(logger.isTrace()&&debug) { 
                            Except ex=new Except(e);
                            logger.error("DER NO! ex:"+ex);
                         }
@@ -214,7 +219,7 @@ public class lMessageX509 {
                        cert = (X509Certificate) certFactory.generateCertificate(in);
                    }
                    catch (Exception e){
-                          if(logger.isTrace()) {
+                          if(logger.isTrace()&&debug) {
                              Except ex=new Except(e);
                              logger.error("DER NO! ex:"+ex);
                           }
@@ -241,7 +246,7 @@ public class lMessageX509 {
                        msg.setX509Issuer   (issuer );
                    }
                    catch (Exception e){
-                           if(logger.isTrace()) {                  
+                           if(logger.isTrace()&&debug) {                  
                              Except ex=new Except(e);
                              logger.error("DER NO! ex:"+ex);
                            }
@@ -269,22 +274,26 @@ public class lMessageX509 {
                       crl = (X509CRL)certFactory.generateCRL(in);
                   }
                   catch (Exception e){
-                         if(logger.isTrace()) {
+                         if(logger.isTrace()&&debug) {
                             Except ex=new Except(e);
                             logger.error("DER NO! ex:"+ex);
                          }
                          return null;
                   }
-                  String n_str="";
+                  //String n_str="";
                   try{
                      Iterator<? extends X509CRLEntry> crl_number=crl.getRevokedCertificates().iterator();
+                     boolean is_add=false;
                      while(crl_number.hasNext()){
                            X509CRLEntry p=crl_number.next();
-                           n_str+=p.getSerialNumber().toString()+";";           
+                           //n_str+=p.getSerialNumber().toString()+";";           
+                           if(is_add)msg.addX509Serial(p.getSerialNumber().toString());
+                           else      msg.setX509Serial(p.getSerialNumber().toString());
+                           is_add=true;
                      }
                   }
                   catch(Exception e){
-                        if(logger.isTrace()) {
+                        if(logger.isTrace()&&debug) {
                            Except ex=new Except(e);
                            logger.error("DER no revoked certificates ex:"+ex);
                         }
@@ -303,12 +312,12 @@ public class lMessageX509 {
                       msg.setX509TypeFile ("DER"     );
                       msg.setX509BeginDate(start     );
                       msg.setX509EndDate  (end       );
-                      msg.setX509Serial   (n_str     );
+                      //msg.setX509Serial   (n_str     );
                       msg.setX509Subject  (subject   ); 
                       msg.setX509Issuer   (issuer    );
                   }
                   catch(Exception e){
-                        if(logger.isTrace()) {
+                        if(logger.isTrace()&&debug) {
                            Except ex=new Except(e);
                            logger.error("DER NO! ex:"+ex);
                         }
@@ -341,7 +350,7 @@ public class lMessageX509 {
                       msg.setX509Issuer   (" "       );
                }
                catch(Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
@@ -369,7 +378,7 @@ public class lMessageX509 {
                       msg.setX509Issuer   (" "       );
                }
                catch(Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
@@ -393,7 +402,7 @@ public class lMessageX509 {
                        cert = (X509Certificate)parser.engineRead();
                    }
                    catch (Exception e){
-                         if(logger.isTrace()) {
+                         if(logger.isTrace()&&debug) {
                             Except ex=new Except(e);
                             logger.error("DER NO! ex:"+ex);
                          }
@@ -419,7 +428,7 @@ public class lMessageX509 {
                        msg.setX509Issuer   (issuer            );
                    }
                    catch (Exception e){
-                         if(logger.isTrace()) {
+                         if(logger.isTrace()&&debug) {
                             Except ex=new Except(e);
                             logger.error("DER NO! ex:"+ex);
                          }
@@ -437,7 +446,7 @@ public class lMessageX509 {
                byte[] buf=null;
                try{buf=_ByteBuilder.toByte(in);}
                catch (Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
@@ -449,7 +458,7 @@ public class lMessageX509 {
                byte[] buf=null;
                try{buf=_ByteBuilder.toByte(in);}
                catch (Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
@@ -461,7 +470,7 @@ public class lMessageX509 {
                byte[] buf=null;
                try{buf=_ByteBuilder.toByte(in);}
                catch (Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
@@ -473,7 +482,7 @@ public class lMessageX509 {
                byte[] buf=null;
                try{buf=_ByteBuilder.toByte(in);}
                catch (Exception e){
-                     if(logger.isTrace()) {
+                     if(logger.isTrace()&&debug) {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }

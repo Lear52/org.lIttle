@@ -39,7 +39,7 @@ public class lMessage{
     private   String             x509_type_file  ;
     private   Date               x509_begin_date ;
     private   Date               x509_end_date   ;
-    private   String             x509_serial     ;
+    private   ArrayList<String>  x509_serial     ;
     private   String             x509_subject    ;
     private   String             x509_issuer     ;
     
@@ -78,7 +78,7 @@ public class lMessage{
               x509_type_file   ="PEM"; //"PEM"-чисто текстовый ,"DER"    
               x509_begin_date  =getSentDate();
               x509_end_date    =getSentDate();  
-              x509_serial      ="";    
+              x509_serial      =new ArrayList<String>(10);           
               x509_subject     ="";   
               x509_issuer      ="";    
               
@@ -107,7 +107,7 @@ public class lMessage{
     public String getTOsInet(String _domain){
         StringBuilder buf=new StringBuilder();
         //for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(commonIMAP.get().getDefaultDomain());}
-        for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(","); buf.append(msg_to.get(i)).append("@").append(_domain);}
+        for(int i=0;i<msg_to.size();i++){if(i>0)buf.append(", "); buf.append(msg_to.get(i)).append("@").append(_domain);}
         return buf.toString();
     }
     public String   getFromInet     (String _domain){
@@ -115,7 +115,6 @@ public class lMessage{
            return msg_from+"@"+_domain;
     }
     
-    //public int      getMessageNumber(){return msg_num;         }
     public int           getNum          (){return msg_num;         }
     public int           getUID          (){return msg_uid;         }
     public String        getFrom         (){return msg_from;        }
@@ -142,7 +141,8 @@ public class lMessage{
     public Date          getX509EndDate  (){return x509_end_date    ;}
     public java.sql.Date _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Date(x509_begin_date.getTime());else return null;}
     public java.sql.Date _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Date(x509_end_date.getTime());  else return null;}
-    public String        getX509Serial   (){return x509_serial      ;}  
+    public String[]      getX509Serial    (){String[] arr_s=(String[])x509_serial.toArray(new String[x509_serial.size()]);return arr_s;}  
+    public String        getX509Serials   (){StringBuilder buf=new StringBuilder();for(int i=0;i<x509_serial.size();i++){if(i>0)buf.append(", "); buf.append(x509_serial.get(i));}return buf.toString();}  
     public String        getX509Subject  (){return x509_subject     ;} 
     public String        getX509Issuer   (){return x509_issuer      ;}  
                         
@@ -185,7 +185,8 @@ public class lMessage{
     public void     setX509TypeFile (String s)       {x509_type_file =s;}    
     public void     setX509BeginDate(Date   s)       {x509_begin_date=s;}
     public void     setX509EndDate  (Date   s)       {x509_end_date  =s;}
-    public void     setX509Serial   (String s)       {x509_serial    =s;}  
+    public void     addX509Serial   (String s)       {x509_serial.add(s);}  
+    public void     setX509Serial   (String s)       {x509_serial=new ArrayList<String>();addX509Serial(s);}/**/  
     public void     setX509Subject  (String s)       {x509_subject   =s;} 
     public void     setX509Issuer   (String s)       {x509_issuer    =s;}  
 

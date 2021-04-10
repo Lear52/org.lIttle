@@ -1,5 +1,5 @@
 package org.little.mailWeb;
-
+       
 import java.io.*;
 import java.util.zip.*;
 import java.util.Date;
@@ -31,14 +31,14 @@ public class ImapClient extends task{
 
         private static final Logger logger   = LoggerFactory.getLogger(ImapClient.class);
 
-        private static logKeyArh    log_arh = new logFile();
+        private static folderARH    log_arh = new folderLogFile();
 
         private Properties          props;
         private Store               store;
         private IMAPFolder          folder_inbox;
         private IMAPFolder          folder_outbox;
         private Session             session;
-        private CommonClient        cfg;
+        private commonArh           cfg;
 
             
         public ImapClient() {
@@ -46,19 +46,21 @@ public class ImapClient extends task{
                folder_inbox    = null;
                folder_outbox   = null;
                session         = null;
-               cfg             = new CommonClient();
+               cfg             = new commonArh();
         }
 
 
         public boolean loadCFG(String xpath){
                boolean ret=cfg.loadCFG(xpath);
                cfg.init();
-               log_arh=cfg.getCfgDB().getLog();
+               log_arh=cfg.getCfgDB().getFolder();
                return ret;
         }
         public int     getTimeout        () {return cfg.getTimeout();}
 
-        public logKeyArh getLog          () {return cfg.getLog(); }
+        public folderARH getLog          () {return cfg.getFolder(); }
+        public String    getDefPage      () {return cfg.getDefPage(); }
+        public String    getErrorPage      () {return cfg.getErrorPage(); }
 
         protected void   open(){
                 props = System.getProperties();
@@ -88,50 +90,48 @@ public class ImapClient extends task{
 
                 session.setDebug(cfg.isDebug());
                 try {
-                        // Try to initialise session with given credentials
-                        store = session.getStore("imap");
+                     // Try to initialise session with given credentials
+                     store = session.getStore("imap");
 
-                        logger.trace("connect to:"+cfg.getHost()+"("+cfg.getPort()+") "+cfg.getUser()+":"+cfg.getPasswd());
+                     logger.trace("connect to:"+cfg.getHost()+"("+cfg.getPort()+") "+cfg.getUser()+":"+cfg.getPasswd());
 
-                        store.connect(cfg.getHost(), cfg.getPort(), cfg.getUser(), cfg.getPasswd());// 143
+                     store.connect(cfg.getHost(), cfg.getPort(), cfg.getUser(), cfg.getPasswd());// 143
 
-                        logger.trace("connect "+cfg.getHost()+","+cfg.getPort()+","+cfg.getUser()+","+cfg.getPasswd());
+                     logger.trace("connect "+cfg.getHost()+","+cfg.getPort()+","+cfg.getUser()+","+cfg.getPasswd());
 
                 } catch (Exception e) {
-                        Except ex=new Except(e);
-                        logger.error("error open connection ex:" + ex);
-                        store = null;
-                        return;
+                     Except ex=new Except(e);
+                     logger.error("error open connection ex:" + ex);
+                     store = null;
+                     return;
                 }
                 try {
+                     folder_inbox = (IMAPFolder) store.getFolder(cfg.getInboxFolder()); // Get the inbox
+                     logger.trace("getInboxFolder "+cfg.getInboxFolder());
 
-                        folder_inbox = (IMAPFolder) store.getFolder(cfg.getInboxFolder()); // Get the inbox
-                        logger.trace("getInboxFolder "+cfg.getInboxFolder());
-
-                        if (!folder_inbox.isOpen())folder_inbox.open(Folder.READ_WRITE);
-                        logger.trace("openInboxFolder "+cfg.getInboxFolder()+" No of Messages:"  + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
+                     if (!folder_inbox.isOpen())folder_inbox.open(Folder.READ_WRITE);
+                     logger.trace("openInboxFolder "+cfg.getInboxFolder()+" No of Messages:"  + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
 
                 } catch (Exception e) {
-                        Except ex=new Except(e);
-                        logger.error("error open input folder ex:" + ex);
-                        store  = null;
-                        folder_inbox = null;
-                        return;
+                     Except ex=new Except(e);
+                     logger.error("error open input folder ex:" + ex);
+                     store  = null;
+                     folder_inbox = null;
+                     return;
                 }
                 logger.trace("getInboxFolder open!");
                 try {
+                     folder_outbox = (IMAPFolder) store.getFolder(cfg.getOutboxFolder()); // Get the inbox
+                     logger.trace("getOutboxFolder "+cfg.getOutboxFolder());
 
-                        folder_outbox = (IMAPFolder) store.getFolder(cfg.getOutboxFolder()); // Get the inbox
-                        logger.trace("getOutboxFolder "+cfg.getOutboxFolder());
-
-                        if (!folder_outbox.isOpen())folder_outbox.open(Folder.READ_WRITE);
-                        logger.trace("openOutboxFolder "+cfg.getInboxFolder()+" No of Messages:" + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
+                     if (!folder_outbox.isOpen())folder_outbox.open(Folder.READ_WRITE);
+                     logger.trace("openOutboxFolder "+cfg.getInboxFolder()+" No of Messages:" + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
 
                 } catch (Exception e) {
-                        Except ex=new Except(e);
-                        logger.error("error open output folder ex:" + ex);
-                        folder_outbox = null;
-                        return;
+                     Except ex=new Except(e);
+                     logger.error("error open output folder ex:" + ex);
+                     folder_outbox = null;
+                     return;
                 }
                 logger.trace("getOutboxFolder open!");
 
@@ -198,7 +198,7 @@ public class ImapClient extends task{
                         if(_msg!=null){
                            logger.trace("letter:" + _msg);
 
-                           log_arh.print( _msg);
+                           log_arh.save( _msg);
                         }
                    }
                    catch(Exception e){
@@ -252,11 +252,17 @@ public class ImapClient extends task{
                   logger.trace("letter:" + count + " subject: " + message.getSubject());
               
                   Address[] addr;
+
                   if((addr = message.getFrom()) != null) msg.setFrom(addr[0].toString());
-                  if ((addr = message.getAllRecipients()) != null) for (int j = 0; j < addr.length; j++)msg.addTO(addr[j].toString());
+                  if((addr = message.getAllRecipients()) != null) for (int j = 0; j < addr.length; j++)msg.addTO(addr[j].toString());
+
+                  msg.setUID(-1);
+                  
+                  msg.setNum       (message.getMessageNumber());
                   msg.setSubject   (message.getSubject());
                   msg.setCreateDate(message.getSentDate());
                   msg.setSentDate  (message.getSentDate());
+                  msg.setReceiveDate(message.getReceivedDate());
                   String _id=null;
                   if( message instanceof MimeMessage)_id = ((MimeMessage)message).getMessageID();
                   if(_id==null) {_id=lMessage.getNewID(msg.getFrom());}

@@ -43,6 +43,7 @@ public class lMessage2JSON  {
 
               JSONObject obj=new JSONObject();
 
+              obj.put("uid"           ,msg.getUID                            ());
               obj.put("From"          ,msg.getFrom                           ());
               obj.put("To"            ,to                                      );                                
               obj.put("Id"            ,msg.getId                             ());
