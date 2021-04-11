@@ -24,7 +24,7 @@ public class folderDB implements folderARH{
        private String                 querySelectID0;
        private String                 querySelectType;
        private String                 querySelectType0;
-       private String                 querySelectX509;
+       //private String                 querySelectX509;
 
        private String                 queryCreateSeq;
                                      
@@ -62,14 +62,14 @@ public class folderDB implements folderARH{
                     q=db.open();
                     q.execute(queryCreate);
                     ret2=true;
-                    logger.trace("create tabl:"+cfg.getTable());
+                    logger.trace("create tabl:"+cfg.getTableEml());
                } catch (dbExcept ex1) {   
                   if(logger.isTrace()) {
-                     logger.error("create table:"+cfg.getTable()+" ex:"+ex1);
+                     logger.error("create table:"+cfg.getTableEml()+" ex:"+ex1);
                   }
                } catch (Exception ex2) {
                   if(logger.isTrace()) {
-                     logger.error("create table:"+cfg.getTable()+" ex:"+ex2);
+                     logger.error("create table:"+cfg.getTableEml()+" ex:"+ex2);
                   }
                }
                finally{
@@ -94,25 +94,25 @@ public class folderDB implements folderARH{
            String next_id =  " NEXT VALUE for "+cfg.getSeq()+" ,";
            //String next_id0=" "+cfg.getSeq()+".NEXTVAL"+" ,";
 
-           String fields_selectX509="MAIL_UID,X509_TYPE,X509_TYPE_FILE,X509_BEGIN_DATE,X509_END_DATE,X509_SERIAL,X509_SUBJECT,X509_ISSUER";
+           //String fields_selectX509="MAIL_UID,X509_TYPE,X509_TYPE_FILE,X509_BEGIN_DATE,X509_END_DATE,X509_SERIAL,X509_SUBJECT,X509_ISSUER";
            String fields_select0="MAIL_UID,ADDR_FROM,SUBJECT,FILENAME,ADDR_TO,CREATE_DATE,SENT_DATE,RECEIVE_DATE,DEL_DATE,ANS_DATE,ATTACH_SIZE,X509_TYPE,X509_TYPE_FILE,X509_BEGIN_DATE,X509_END_DATE,X509_SERIAL,X509_SUBJECT,X509_ISSUER";
            String fields_select ="MAIL_UID,MAIL_NUM,ADDR_FROM,MAIL_ID,SUBJECT,FILENAME,ADDR_TO,CREATE_DATE,SENT_DATE,RECEIVE_DATE,DEL_DATE,ANS_DATE,MIME,ATTACH_SIZE,X509_TYPE,X509_TYPE_FILE,X509_BEGIN_DATE,X509_END_DATE,X509_SERIAL,X509_SUBJECT,X509_ISSUER,X509_TXT,X509_BIN";
                                          //1       2        3          4       5       6        7       8           9         10           11       12       13   14         15         16             17              18            19          20           21          22       
            String fields_insert=next_id+
                                           "?      ,?       ,?         ,?      ,?      ,?       ,?      ,?          ,?        ,?           ,?       ,?       ,?   ,?         ,?         ,?             ,?              ,?            ,?          ,?           ,?          ,?";
 
-           queryInsert      = "INSERT INTO "+cfg.getTable()+" ( "+fields_select+" ) VALUES ("+fields_insert+" ) ";
-           querySelect      = "SELECT MAIL_UID,"+fields_select+" FROM "+cfg.getTable()+" ORDER BY CREATE_DATE ";
-           querySelect0     = "SELECT "+fields_select0+" FROM "+cfg.getTable()+" ORDER BY CREATE_DATE ";
-           querySelectID    = "SELECT "+fields_select +" FROM "+cfg.getTable()+" WHERE MAIL_UID  = ? ";
-           querySelectID0   = "SELECT "+fields_select0+" FROM "+cfg.getTable()+" WHERE MAIL_UID  = ? ";
-           querySelectType  = "SELECT "+fields_select +" FROM "+cfg.getTable()+" WHERE X509_TYPE = ? ORDER BY CREATE_DATE";
-           querySelectType0 = "SELECT "+fields_select0+" FROM "+cfg.getTable()+" WHERE X509_TYPE = ? ORDER BY CREATE_DATE";
+           queryInsert      = "INSERT INTO "+cfg.getTableEml()+" ( "+fields_select+" ) VALUES ("+fields_insert+" ) ";
+           querySelect      = "SELECT MAIL_UID,"+fields_select+" FROM "+cfg.getTableEml()+" ORDER BY CREATE_DATE ";
+           querySelect0     = "SELECT "+fields_select0+" FROM "+cfg.getTableEml()+" ORDER BY CREATE_DATE ";
+           querySelectID    = "SELECT "+fields_select +" FROM "+cfg.getTableEml()+" WHERE MAIL_UID  = ? ";
+           querySelectID0   = "SELECT "+fields_select0+" FROM "+cfg.getTableEml()+" WHERE MAIL_UID  = ? ";
+           querySelectType  = "SELECT "+fields_select +" FROM "+cfg.getTableEml()+" WHERE X509_TYPE = ? ORDER BY CREATE_DATE";
+           querySelectType0 = "SELECT "+fields_select0+" FROM "+cfg.getTableEml()+" WHERE X509_TYPE = ? ORDER BY CREATE_DATE";
 
-           querySelectX509="SELECT "+fields_selectX509 +" FROM "+cfg.getTable()+"  ORDER BY CREATE_DATE";
+           //querySelectX509="SELECT "+fields_selectX509 +" FROM "+cfg.getTableEml()+"  ORDER BY CREATE_DATE";
 
            queryCreateSeq  = "CREATE SEQUENCE "+cfg.getSeq()+"  START WITH 1000 INCREMENT BY 1  "; //CREATE SEQUENCE ARH_SEQ START WITH 1000 INCREMENT BY 1  NOCYCLE    
-           queryCreate     = "CREATE TABLE "+cfg.getTable()+" ( "+
+           queryCreate     = "CREATE TABLE "+cfg.getTableEml()+" ( "+
                          "MAIL_UID          INTEGER,"+      
                          "MAIL_NUM          INTEGER,"+      
                          "ADDR_FROM         VARCHAR(512),"+ 
@@ -259,6 +259,7 @@ public class folderDB implements folderARH{
 
                 return msg;
         }
+        /*
         private lMessage getX509(query q) throws dbExcept{
                 int s=0;
                 lMessage msg=new lMessage();
@@ -281,7 +282,7 @@ public class folderDB implements folderARH{
 
                 return msg;
         }
-
+        */
         @Override
         public ArrayList<lMessage> loadArray(String _type) {
                if(_type==null)return loadArray(querySelect,-1,null);
@@ -421,6 +422,12 @@ public class folderDB implements folderARH{
               }
               logger.info("-- "+msg.toString());
        }
+       @Override
+       public JSONObject loadJSONX509(String _type) {return new JSONObject();}
+       @Override
+       public JSONObject loadJSONX509(int _uid) {return new JSONObject();}
+   	   @Override
+   	   public lMessage loadArrayX509(int _x509_id) {return new lMessage();}
 
 
        public static void main(String args[]){

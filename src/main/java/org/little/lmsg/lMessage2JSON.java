@@ -56,6 +56,7 @@ public class lMessage2JSON  {
 
               obj.put("Size"          ,msg.getSize                           ());
                                               
+              obj.put("X509_id"       ,msg.getX509ID                         ());
               obj.put("X509Type"      ,msg.getX509Type                       ());
               obj.put("X509TypeFile"  ,msg.getX509TypeFile                   ());
               obj.put("X509BeginDate" ,stringDate.date2prn(msg.getX509BeginDate()));

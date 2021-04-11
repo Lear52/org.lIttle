@@ -62,7 +62,7 @@ public class ImapClient extends task{
         public String    getDefPage      () {return cfg.getDefPage(); }
         public String    getErrorPage      () {return cfg.getErrorPage(); }
 
-        protected void   open(){
+        protected boolean  open(){
                 props = System.getProperties();
                 /*
                  * if(false){ Enumeration en = prop.propertyNames();
@@ -102,8 +102,9 @@ public class ImapClient extends task{
                 } catch (Exception e) {
                      Except ex=new Except(e);
                      logger.error("error open connection ex:" + ex);
-                     store = null;
-                     return;
+                     store   = null;
+                     session = null;
+                     return false;
                 }
                 try {
                      folder_inbox = (IMAPFolder) store.getFolder(cfg.getInboxFolder()); // Get the inbox
@@ -116,8 +117,9 @@ public class ImapClient extends task{
                      Except ex=new Except(e);
                      logger.error("error open input folder ex:" + ex);
                      store  = null;
+                     session = null;
                      folder_inbox = null;
-                     return;
+                     return false;
                 }
                 logger.trace("getInboxFolder open!");
                 try {
@@ -131,10 +133,11 @@ public class ImapClient extends task{
                      Except ex=new Except(e);
                      logger.error("error open output folder ex:" + ex);
                      folder_outbox = null;
-                     return;
+                     //return false;
                 }
                 logger.trace("getOutboxFolder open!");
 
+                return true;
 
         }
         protected void close(){
@@ -166,6 +169,7 @@ public class ImapClient extends task{
                         ZipEntry       entry;
                         String         name;
                         int            size;
+                        int            COUNT=0;
                         while((entry=zin.getNextEntry())!=null){
                               
                             name = entry.getName(); // получим название файла
@@ -175,9 +179,13 @@ public class ImapClient extends task{
                             zin.closeEntry();
                             logger.trace("zip entry:" + filename+"|"+name);
                             ParsePart(_buf,msg,filename+"|"+name,false) ;
-
+                            COUNT++;
                         }
                         zin.close();
+                        if(COUNT==0){
+                           logger.trace("no zip:" + filename);
+                           ParsePart(buf,msg,filename,false) ;
+                        }
                         return;
                    }
                    catch(Exception e){
@@ -301,6 +309,7 @@ public class ImapClient extends task{
 
                logger.trace("begin work");
                open();
+               if(session     ==null)return;
                if(folder_inbox==null)return;
 
                try {

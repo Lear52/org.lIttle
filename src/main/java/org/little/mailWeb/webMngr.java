@@ -59,12 +59,14 @@ public class webMngr extends webThread{
        private void doGetFileID(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
            logger.trace("begin doGetFileID:"+_uid);
 
-
            lMessage  msg=client.getLog().loadArray(_uid);
-           //logger.trace("load lMessage:"+msg);
-
-           byte [] buf=msg.getBodyBin();
-           logger.trace("load buf:"+buf.length);
+           byte [] buf=null;
+           int     buf_size=0;
+           if(msg!=null){
+              buf=msg.getBodyBin();
+              buf_size=buf.length;
+              logger.trace("load buf:"+buf.length);
+           }
 
            response.setContentType("application/octet-stream");
            response.addHeader("Accept-Ranges","bytes");
@@ -80,6 +82,31 @@ public class webMngr extends webThread{
 
            logger.trace("end doGetFileID:"+_uid);
        }
+       private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
+           logger.trace("begin doGetX509ID:"+_x509_id);
+
+           lMessage  msg=client.getLog().loadArrayX509(_x509_id);
+           byte [] buf=null;
+           int     buf_size=0;
+           if(msg!=null){
+              buf=msg.getBodyBin();
+              buf_size=buf.length;
+              logger.trace("load buf:"+buf.length);
+           }
+           response.setContentType("application/octet-stream");
+           response.addHeader("Accept-Ranges","bytes");
+           response.setHeader("Content-Type","application/octet-stream");
+           response.setHeader("Content-Transfer-Encoding", "Binary");
+           response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+           response.setContentLength(buf_size);
+           logger.trace("set header");
+
+           response.getOutputStream().write(buf,0,buf_size);
+           logger.trace("write buf");
+           response.getOutputStream().flush();;
+
+           logger.trace("end doGetX509ID:"+_x509_id);
+       }
        private void doGetList(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
            logger.trace("begin doGetList type:"+_type);
 
@@ -94,6 +121,20 @@ public class webMngr extends webThread{
 
            logger.trace("end doGetList type:"+_type);
        }
+       private void doGetX509(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
+           logger.trace("begin doGetX509 type:"+_type);
+
+           JSONObject  root=client.getLog().loadJSONX509(_type);
+
+           logger.trace("getStatAll() :"+root);
+
+           response.setContentType("application/json");
+           response.setContentType("text/html; charset=UTF-8");
+
+           root.write(response.getWriter());
+
+           logger.trace("end doGetX509 type:"+_type);
+       }
 
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -107,13 +148,22 @@ public class webMngr extends webThread{
                   doGetList(request,response,_type);
                   return;
               }
+              if(path.startsWith("/x509")){
+                  String    _type = (String) request.getParameter("type");
+                  doGetX509(request,response,_type);
+                  return;
+              }
               if(path.startsWith("/get")){
-                  String    _uid = (String) request.getParameter("uid");
-                  int uid;
-                  try {uid=Integer.parseInt(_uid, 10);} catch(Exception e) {uid=-1;}
+                  String    _uid     = (String) request.getParameter("uid");
+                  String    _x509_id = (String) request.getParameter("x509_id");
+                  int uid    =-1;
+                  int x509_id=-1;
+                  if(_uid    !=null)try {uid    =Integer.parseInt(_uid, 10);    } catch(Exception e) {uid=-1;}
+                  if(_x509_id!=null)try {x509_id=Integer.parseInt(_x509_id, 10);} catch(Exception e) {x509_id=-1;}
 
-                  if(uid>0) {
-                     doGetFileID(request,response,uid);
+                  if(uid>0 || x509_id>0) {
+                     if(x509_id>0)doGetX509ID(request,response,x509_id);
+                     else         doGetFileID(request,response,uid);
                      return;
                   }
                   logger.trace("error request uid:"+_uid);

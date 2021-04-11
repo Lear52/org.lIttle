@@ -24,5 +24,11 @@ public class folderLogFile implements folderARH{
 	public lMessage loadArray(int _uid) {return new lMessage();}
 	@Override
 	public JSONObject loadJSON(int _uid) {return new JSONObject();}
+	@Override
+	public JSONObject loadJSONX509(String _type) {return new JSONObject();}
+	@Override
+	public JSONObject loadJSONX509(int _uid) {return new JSONObject();}
+	@Override
+	public lMessage loadArrayX509(int _x509_id) {return new lMessage();}
 
 }

@@ -7,7 +7,6 @@ import org.little.lmsg.lMessage;
 
 public interface folderARH{
 
-
        public void                open();
        public void                close();
        public void                save(lMessage msg);
@@ -15,6 +14,8 @@ public interface folderARH{
        public lMessage            loadArray(int _uid);
        public JSONObject          loadJSON(String _type);
        public JSONObject          loadJSON(int _uid);
-       
+       public JSONObject          loadJSONX509(String _type);
+       public JSONObject          loadJSONX509(int _x509_id);
+       public lMessage            loadArrayX509(int _x509_id);
 
 }
