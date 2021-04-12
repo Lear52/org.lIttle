@@ -85,7 +85,7 @@ public class commonDB{
                   logger.error("The configuration node:null");
               }                 
 
-              if("db" .equalsIgnoreCase(log_type)){log_obj=new folderDB0(this); }
+              if("db" .equalsIgnoreCase(log_type)){log_obj=new folderDB(this); }
               if("log".equalsIgnoreCase(log_type)){log_obj=new folderLogFile();}
 
               log_obj.open();

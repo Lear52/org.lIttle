@@ -84,16 +84,16 @@ public class ImapClient extends task{
                           }
                 };
         
-                logger.trace("console:pre Session.getInstance");
+                //logger.trace("console:pre Session.getInstance");
                 session = Session.getInstance(props, auth);//null
-                logger.trace("console:post Session.getInstance");
+                //logger.trace("console:post Session.getInstance");
 
                 session.setDebug(cfg.isDebug());
                 try {
                      // Try to initialise session with given credentials
                      store = session.getStore("imap");
 
-                     logger.trace("connect to:"+cfg.getHost()+"("+cfg.getPort()+") "+cfg.getUser()+":"+cfg.getPasswd());
+                     //logger.trace("connect to:"+cfg.getHost()+"("+cfg.getPort()+") "+cfg.getUser()+":"+cfg.getPasswd());
 
                      store.connect(cfg.getHost(), cfg.getPort(), cfg.getUser(), cfg.getPasswd());// 143
 
@@ -121,7 +121,7 @@ public class ImapClient extends task{
                      folder_inbox = null;
                      return false;
                 }
-                logger.trace("getInboxFolder open!");
+                logger.trace("Folder:"+cfg.getInboxFolder()+" open!");
                 try {
                      folder_outbox = (IMAPFolder) store.getFolder(cfg.getOutboxFolder()); // Get the inbox
                      logger.trace("getOutboxFolder "+cfg.getOutboxFolder());
@@ -135,7 +135,7 @@ public class ImapClient extends task{
                      folder_outbox = null;
                      //return false;
                 }
-                logger.trace("getOutboxFolder open!");
+                logger.trace("Folder:"+cfg.getOutboxFolder()+" open!");
 
                 return true;
 
@@ -200,17 +200,20 @@ public class ImapClient extends task{
                    _msg.setFilename(filename);
                    try {
                         _msg.setBodyBin(buf);
-                        //logger.trace("letter:" + _msg);
-                      
                         _msg=lMessageX509.parse(_msg);
+                        logger.trace("letter:" + _msg);
+                   }
+                   catch(Exception e){
+                         logger.error("ex:"+new Except("parse no zip part",e));
+                         return;
+                   }
+                   try {
                         if(_msg!=null){
-                           logger.trace("letter:" + _msg);
-
-                           log_arh.save( _msg);
+                           log_arh.save(_msg);
                         }
                    }
                    catch(Exception e){
-                         logger.error("ex:"+e);
+                         logger.error("ex:"+new Except("save no zip part",e));
                          return;
                    }
                    logger.trace("parse:" + filename+" ok!");

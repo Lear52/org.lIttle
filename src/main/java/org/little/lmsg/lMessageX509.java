@@ -39,15 +39,21 @@ public class lMessageX509 {
 
        public static boolean debug=false;
 
+       public final static String X509_CERTIFICATE        ="CERTIFICATE";
+       public final static String X509_PRIVATE_KEY        ="PRIVATE KEY";
+       public final static String X509_CERTIFICATE_REQUEST="CERTIFICATE REQUEST";
+       public final static String X509_CRL                ="X509 CRL";
+
+
        private static String checkPEMType(String type) {
                
-           if("CERTIFICATE"            .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "CERTIFICATE";}
-           if("X509 CERTIFICATE"       .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "CERTIFICATE";}
-           if("PRIVATE KEY"            .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "PRIVATE KEY";}
-           if("RSA PRIVATE KEY"        .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "PRIVATE KEY";}
-           if("NEW CERTIFICATE REQUEST".equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "CERTIFICATE REQUEST";}
-           if("CERTIFICATE REQUEST"    .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "CERTIFICATE REQUEST";}
-           if("X509 CRL"               .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return "X509 CRL";}
+           if("CERTIFICATE"            .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_CERTIFICATE;}
+           if("X509 CERTIFICATE"       .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_CERTIFICATE;}
+           if("PRIVATE KEY"            .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_PRIVATE_KEY;}
+           if("RSA PRIVATE KEY"        .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_PRIVATE_KEY;}
+           if("NEW CERTIFICATE REQUEST".equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_CERTIFICATE_REQUEST;}
+           if("CERTIFICATE REQUEST"    .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_CERTIFICATE_REQUEST;}
+           if("X509 CRL"               .equals(type)){ logger.trace("PEM ("+type+") Ok!"); return X509_CRL;}
            logger.trace("PEM UNKNOW ("+type+")!");
            return null;   
                
@@ -86,7 +92,7 @@ public class lMessageX509 {
               is     = new InputStreamReader(in);
               parser = new PEMParser(is);
 
-              if("CERTIFICATE".equals(type)){
+              if(X509_CERTIFICATE.equals(type)){
                   try {
                       Object parsedObj = parser.readObject();
                       if(parsedObj==null)return null;
@@ -123,7 +129,7 @@ public class lMessageX509 {
                   }
                }
                else
-               if("X509 CRL".equals(type)){
+               if(X509_CRL.equals(type)){
                       try {
                       Object parsedObj = parser.readObject();
                       if(parsedObj==null)return null;
@@ -166,7 +172,7 @@ public class lMessageX509 {
                   }
                }
                else
-               if("CERTIFICATE REQUEST".equals(type)){
+               if(X509_CERTIFICATE_REQUEST.equals(type)){
                   try {
                        Object parsedObj = parser.readObject();
                        if(parsedObj==null)return null;
@@ -209,7 +215,7 @@ public class lMessageX509 {
        //---------------------------------------------------------------------------------------------------------------
        //  X.509 Certificate
        private static lMessage parseX509CERDER2MSG(lMessage msg,byte [] buf){
-               String          type="CERTIFICATE";
+               String          type=X509_CERTIFICATE;
                InputStream     in  =null;
                X509Certificate cert=null;
                try{
@@ -264,7 +270,7 @@ public class lMessageX509 {
        
        //Certificate Revocation List (CRL)
        private static lMessage parseX509CRLDER2MSG(lMessage msg,byte [] buf){
-               String type="X509 CRL";
+               String type=X509_CRL;
                InputStream in=null;
                X509CRL crl=null; 
                try{
@@ -333,7 +339,7 @@ public class lMessageX509 {
 
        //  Certificate Request Message
        private static lMessage parseX509CSRDER2MSG(lMessage msg,byte [] buf){
-               String type="CERTIFICATE REQUEST";
+               String type=X509_CERTIFICATE_REQUEST;
                //if(true)
                try {
                       JcaPKCS10CertificationRequest csr = new JcaPKCS10CertificationRequest(buf);

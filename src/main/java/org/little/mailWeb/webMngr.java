@@ -57,83 +57,83 @@ public class webMngr extends webThread{
               return "Show state queue";
        }
        private void doGetFileID(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
-           logger.trace("begin doGetFileID:"+_uid);
-
-           lMessage  msg=client.getLog().loadArray(_uid);
-           byte [] buf=null;
-           int     buf_size=0;
-           if(msg!=null){
-              buf=msg.getBodyBin();
-              buf_size=buf.length;
-              logger.trace("load buf:"+buf.length);
-           }
-
-           response.setContentType("application/octet-stream");
-           response.addHeader("Accept-Ranges","bytes");
-           response.setHeader("Content-Type","application/octet-stream");
-           response.setHeader("Content-Transfer-Encoding", "Binary");
-           response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
-           response.setContentLength(buf.length);
-           logger.trace("set header");
-
-           response.getOutputStream().write(buf,0,buf.length);
-           logger.trace("write buf");
-           response.getOutputStream().flush();;
-
-           logger.trace("end doGetFileID:"+_uid);
+               logger.trace("begin doGetFileID:"+_uid);
+              
+               lMessage  msg=client.getLog().loadArray(_uid);
+               byte [] buf=null;
+               int     buf_size=0;
+               if(msg!=null){
+                  buf=msg.getBodyBin();
+                  buf_size=buf.length;
+                  logger.trace("load buf:"+buf.length);
+               }
+              
+               response.setContentType("application/octet-stream");
+               response.addHeader("Accept-Ranges","bytes");
+               response.setHeader("Content-Type","application/octet-stream");
+               response.setHeader("Content-Transfer-Encoding", "Binary");
+               response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+               response.setContentLength(buf_size);
+               logger.trace("set header");
+              
+               response.getOutputStream().write(buf,0,buf_size);
+               logger.trace("write buf");
+               response.getOutputStream().flush();;
+              
+               logger.trace("end doGetFileID:"+_uid);
        }
        private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
-           logger.trace("begin doGetX509ID:"+_x509_id);
-
-           lMessage  msg=client.getLog().loadArrayX509(_x509_id);
-           byte [] buf=null;
-           int     buf_size=0;
-           if(msg!=null){
-              buf=msg.getBodyBin();
-              buf_size=buf.length;
-              logger.trace("load buf:"+buf.length);
-           }
-           response.setContentType("application/octet-stream");
-           response.addHeader("Accept-Ranges","bytes");
-           response.setHeader("Content-Type","application/octet-stream");
-           response.setHeader("Content-Transfer-Encoding", "Binary");
-           response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
-           response.setContentLength(buf_size);
-           logger.trace("set header");
-
-           response.getOutputStream().write(buf,0,buf_size);
-           logger.trace("write buf");
-           response.getOutputStream().flush();;
-
-           logger.trace("end doGetX509ID:"+_x509_id);
+               logger.trace("begin doGetX509ID:"+_x509_id);
+              
+               lMessage  msg=client.getLog().loadArrayX509(_x509_id);
+               byte [] buf=null;
+               int     buf_size=0;
+               if(msg!=null){
+                  buf=msg.getBodyBin();
+                  buf_size=buf.length;
+                  logger.trace("load buf:"+buf.length);
+               }
+               response.setContentType("application/octet-stream");
+               response.addHeader("Accept-Ranges","bytes");
+               response.setHeader("Content-Type","application/octet-stream");
+               response.setHeader("Content-Transfer-Encoding", "Binary");
+               response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+               response.setContentLength(buf_size);
+               logger.trace("set header");
+              
+               response.getOutputStream().write(buf,0,buf_size);
+               logger.trace("write buf");
+               response.getOutputStream().flush();;
+              
+               logger.trace("end doGetX509ID:"+_x509_id);
        }
        private void doGetList(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
-           logger.trace("begin doGetList type:"+_type);
-
-           JSONObject  root=client.getLog().loadJSON(_type);
-
-           logger.trace("getStatAll() :"+root);
-
-           response.setContentType("application/json");
-           response.setContentType("text/html; charset=UTF-8");
-
-           root.write(response.getWriter());
-
-           logger.trace("end doGetList type:"+_type);
+               logger.trace("begin doGetList type:"+_type);
+               
+               JSONObject  root=client.getLog().loadJSON(_type);
+               
+               logger.trace("getStatAll() :"+root);
+               
+               response.setContentType("application/json");
+               response.setContentType("text/html; charset=UTF-8");
+               
+               root.write(response.getWriter());
+               
+               logger.trace("end doGetList type:"+_type);
        }
        private void doGetX509(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
-           logger.trace("begin doGetX509 type:"+_type);
-
-           JSONObject  root=client.getLog().loadJSONX509(_type);
-
-           logger.trace("getStatAll() :"+root);
-
-           response.setContentType("application/json");
-           response.setContentType("text/html; charset=UTF-8");
-
-           root.write(response.getWriter());
-
-           logger.trace("end doGetX509 type:"+_type);
+               logger.trace("begin doGetX509 type:"+_type);
+              
+               JSONObject  root=client.getLog().loadJSONX509(_type);
+              
+               logger.trace("getStatAll() :"+root);
+              
+               response.setContentType("application/json");
+               response.setContentType("text/html; charset=UTF-8");
+              
+               root.write(response.getWriter());
+              
+               logger.trace("end doGetX509 type:"+_type);
        }
 
        @Override

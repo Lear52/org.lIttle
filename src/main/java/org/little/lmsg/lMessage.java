@@ -43,6 +43,7 @@ public class lMessage{
     private   ArrayList<String>  x509_serial     ;
     private   String             x509_subject    ;
     private   String             x509_issuer     ;
+    private   Date               x509_date_rl    ;
     
     
 
@@ -87,6 +88,7 @@ public class lMessage{
               msg_uid          = 0;
               expunged         = false;
               x509_id          = -1;
+              x509_date_rl     =null;
 
     }
     public static String getNewID(String id){
@@ -144,8 +146,10 @@ public class lMessage{
     public String        getX509TypeFile (){return x509_type_file   ;}    
     public Date          getX509BeginDate(){return x509_begin_date  ;}
     public Date          getX509EndDate  (){return x509_end_date    ;}
+    public Date          getX509DateRL   (){return x509_date_rl     ;}
     public java.sql.Date _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Date(x509_begin_date.getTime());else return null;}
     public java.sql.Date _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Date(x509_end_date.getTime());  else return null;}
+    public java.sql.Date _getX509DateRL   (){if(x509_date_rl   !=null)return new java.sql.Date(x509_date_rl.getTime());  else return null;}
     public String[]      getX509Serial    (){String[] arr_s=(String[])x509_serial.toArray(new String[x509_serial.size()]);return arr_s;}  
     public String        getX509Serial    (int i){return x509_serial.get(i);}  
     public int           getX509SizeSerial(){return x509_serial.size();}  
@@ -196,6 +200,7 @@ public class lMessage{
     public void     setX509Serial   (String s)       {x509_serial=new ArrayList<String>();addX509Serial(s);}/**/  
     public void     setX509Subject  (String s)       {x509_subject    =s;        } 
     public void     setX509Issuer   (String s)       {x509_issuer     =s;        }  
+    public void     setX509DateRL   (Date   s)       {x509_date_rl    =s;        }
 
     public void     setBodyTxt      (String b)       {body_txt=b;                }
     private void    setBodyBin76    ()       {

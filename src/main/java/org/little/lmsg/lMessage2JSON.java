@@ -64,6 +64,7 @@ public class lMessage2JSON  {
               obj.put("X509Serial"    ,msg.getX509Serial                     ());
               obj.put("X509Subject"   ,msg.getX509Subject                    ());
               obj.put("X509Issuer"    ,msg.getX509Issuer                     ());
+              obj.put("X509DateRL"    ,stringDate.date2prn(msg.getX509DateRL ()));
               root_object.put("type"   ,"message"       );
               root_object.put("header" ,obj             );
               root_object.put("BodyTxt",msg.getBodyTxt());
