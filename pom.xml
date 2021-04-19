@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>202104012-SNAPSHOT</version>
+        <version>20210415-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
@@ -62,7 +62,7 @@
                             <shadedClassifierName>little-shade</shadedClassifierName>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>org.bouncycastle:*</exclude>
+                                    <exclude>javax.servlet:*</exclude>
                                 </excludes>
                             </artifactSet>
 
@@ -101,21 +101,48 @@
 
         <dependencies>
 
+        <dependency>
+            <groupId>org.syslog4j</groupId>
+            <artifactId>syslog4j</artifactId>
+            <version>0.9.46-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+           <dependency>
+              <groupId>com.oracle.database.jdbc</groupId>
+              <artifactId>ojdbc8</artifactId>
+              <version>21.1.0.0</version>
+           </dependency>
+           <dependency>
+              <groupId>com.oracle.ojdbc</groupId>
+              <artifactId>orai18n</artifactId>
+              <version>19.3.0.0</version>
+           </dependency>
+           <dependency>
+              <groupId>com.ibm.db2.jcc</groupId>
+              <artifactId>db2jcc</artifactId>
+              <version>db2jcc4</version>
+           </dependency>
+
            <!-- db derby -->
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derby</artifactId>
-              <version>10.15.2.0</version>
+              <version>10.14.2.0</version>
            </dependency>
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derbyclient</artifactId>
-              <version>10.15.2.0</version>
+              <version>10.14.2.0</version>
            </dependency>
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derbynet</artifactId>
-              <version>10.15.2.0</version>
+              <version>10.14.2.0</version>
            </dependency>
           
            <!-- ibm mq -->

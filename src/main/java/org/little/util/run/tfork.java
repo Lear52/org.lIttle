@@ -3,10 +3,11 @@
  * Modification 17/10/2014
  *
  */
-package org.little.util;
+package org.little.util.run;
 
+import org.little.util.Logger;
 
-       //------------------------------------------------
+//------------------------------------------------
 /**
  * @author av
  * класс создания потока потоков
@@ -65,7 +66,6 @@ public class tfork implements Runnable{
       }
       public void shutdown(){
              is_run=false;
-             
       }
       static public void delay(int d){
              delayMs(d*1000);

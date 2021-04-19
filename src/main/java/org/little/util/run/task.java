@@ -74,7 +74,7 @@ public class task   implements Runnable{
                    state=KILL;
        }
        public void VIRGIN(){
-                   state=VIRGIN;
+                   if(state!=KILL)state=VIRGIN;
                    stopExecutionTime=System.currentTimeMillis();
                    nextExecutionTime=stopExecutionTime+period*1000L;
        };
@@ -95,11 +95,11 @@ public class task   implements Runnable{
        /**
         * @return int
         */
-       public int getId() {return id;        }
+       public int  getId() {return id;        }
        /**
         * @param _id
         */
-       public void setId(int _id) {id = _id;        }
+       public void setId(int _id) {id = _id;  }
 
        public void setStart(int start) {
               nextExecutionTime=System.currentTimeMillis()+start*1000L;

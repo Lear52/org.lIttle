@@ -23,7 +23,7 @@ public class fc_groupR  extends task implements fc_group{
        private String             id;
        private String             remote_id;
        private String             name;
-       private boolean            state;
+       private boolean            state_group;
 
        public fc_groupR(){
               clear();
@@ -32,7 +32,7 @@ public class fc_groupR  extends task implements fc_group{
        @Override
        public void clear() {
               flow_list=new ArrayList<fc_flow>();
-              state      =false;
+              state_group      =false;
               url_state  =null;  
               url_control=null;
               userURL    =null;    
@@ -51,14 +51,14 @@ public class fc_groupR  extends task implements fc_group{
        @Override
        public void               setName(String name) {this.name = name;}
        @Override
-       public boolean            getState(){return state;}
+       public boolean            getStateGroup(){return state_group;}
 
        @Override
        public void work(){
 
               logger.trace("begin run group");
 
-              state      =false;
+              state_group      =false;
 
               lHttpCLN cln=new lHttpCLN(url_state);
 
@@ -105,7 +105,7 @@ public class fc_groupR  extends task implements fc_group{
                   flow.work();
               }
 
-              state      =true;
+              state_group      =true;
 
               logger.trace("end run group id:"+getID()+" name:"+getName());
               
@@ -113,7 +113,7 @@ public class fc_groupR  extends task implements fc_group{
        @Override
        public JSONObject setFlag(String flow_id, boolean is_flag) {
               String _url_control=url_control+"?group="+getRID()+"&flow="+flow_id+"&state="+is_flag;
-              state      =false;
+              state_group      =false;
 
               lHttpCLN cln=new lHttpCLN(_url_control);
 
@@ -136,13 +136,44 @@ public class fc_groupR  extends task implements fc_group{
               logger.trace("setFlag("+_url_control+" group id:"+getID()+" flow:"+flow_id +" flag:"+is_flag+") ret:"+root);
 
 
-              state      =true;
+              state_group      =true;
 
-              logger.trace("end setflaf groupR id:"+getID()+" name:"+getName());
+              logger.trace("end setFlag groupR id:"+getID()+" name:"+getName());
 
               return root;
        }
-       
+       @Override
+       public JSONObject ClearQ(String flow_id,String mngr_id,String q_id){
+              String _url_control=url_control+"?group="+getRID()+"&mngr="+mngr_id+"&q="+q_id;
+              state_group      =false;
+
+              lHttpCLN cln=new lHttpCLN(_url_control);
+
+              logger.trace("new lHttpCLN("+_url_control+")");
+
+              JSONObject root=null;
+              try{
+                  root=cln.getJSON();
+              } 
+              catch (Exception ex) {
+                    logger.error("ex:"+new Except("cln.getJSON("+_url_control+")",ex));
+                    return null;
+              }
+
+              logger.trace("getJSON("+_url_control+")");
+
+              if(root==null)return null;
+
+
+              logger.trace("ClearQ("+_url_control+" group id:"+getID()+" flow:"+flow_id + " ret:"+root);
+
+
+              state_group      =true;
+
+              logger.trace("end ClearQ groupR id:"+getID()+" name:"+getName());
+
+              return root;
+       }
        @Override
        public JSONObject getStat(){
 
@@ -151,6 +182,7 @@ public class fc_groupR  extends task implements fc_group{
               root.put("type", "group");
               root.put("id" , getID());
               root.put("rid", getRID());
+              root.put("state", getStateGroup());
               root.put("name", getName());
               for(int i=0;i<flow_list.size();i++) {
                   fc_flow flow=flow_list.get(i);

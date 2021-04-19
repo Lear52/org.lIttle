@@ -81,6 +81,23 @@ public class fc_flowL  extends fc_flow{
        @Override
        protected JSONObject setFlag(boolean flag) {JSONObject ret=flow_contrl.setFlag(flag); work();return ret;}
 
+
+       @Override
+       protected JSONObject ClearQ(String mngr_id,String q_id){
+                 JSONObject root=new JSONObject();
+                 logger.trace("flow.ClearQ(flow:"+getID()+",mngr:"+mngr_id+",q:"+q_id+")");
+                 for(int i=0;i<q_list.size();i++){
+                  if(q_list.get(i).getNameQ().equals(q_id) && q_list.get(i).getNameMngr().equals(mngr_id)) {
+                     JSONObject ret=q_list.get(i).ClearQ(); 
+                     root.put("resp", ret);
+                     logger.trace("flow.ClearQ(flow:"+getID()+",mngr:"+mngr_id+",q:"+q_id+") ret:"+ret);
+                     break;
+                  }
+              }
+              
+              return root;
+       }
+
        @Override
        public void init(Node node_cfg) {
               clear();

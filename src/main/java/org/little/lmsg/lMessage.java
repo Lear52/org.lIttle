@@ -130,11 +130,11 @@ public class lMessage{
     public Date          getReceiveDate  (){return msg_receive_date;}
     public Date          getDelDate      (){return msg_del_date;    }
     public Date          getAnswerDate   (){return msg_answer_date; }
-    public java.sql.Date _getCreateDate   (){if(msg_create_date !=null)return new java.sql.Date(msg_create_date.getTime()); else return null;}
-    public java.sql.Date _getSentDate     (){if(msg_sent_date   !=null)return new java.sql.Date(msg_sent_date.getTime());   else return null;}
-    public java.sql.Date _getReceiveDate  (){if(msg_receive_date!=null)return new java.sql.Date(msg_receive_date.getTime());else return null;}
-    public java.sql.Date _getDelDate      (){if(msg_del_date    !=null)return new java.sql.Date(msg_del_date.getTime());    else return null;}
-    public java.sql.Date _getAnswerDate   (){if(msg_answer_date !=null)return new java.sql.Date(msg_answer_date.getTime()); else return null;}
+    public java.sql.Timestamp _getCreateDate   (){if(msg_create_date !=null)return new java.sql.Timestamp(msg_create_date.getTime()); else return null;}
+    public java.sql.Timestamp _getSentDate     (){if(msg_sent_date   !=null)return new java.sql.Timestamp(msg_sent_date.getTime());   else return null;}
+    public java.sql.Timestamp _getReceiveDate  (){if(msg_receive_date!=null)return new java.sql.Timestamp(msg_receive_date.getTime());else return null;}
+    public java.sql.Timestamp _getDelDate      (){if(msg_del_date    !=null)return new java.sql.Timestamp(msg_del_date.getTime());    else return null;}
+    public java.sql.Timestamp _getAnswerDate   (){if(msg_answer_date !=null)return new java.sql.Timestamp(msg_answer_date.getTime()); else return null;}
 
     public String        getMime         (){return msg_mime;        }
     public int           getSize         (){return msg_size;        }
@@ -147,9 +147,9 @@ public class lMessage{
     public Date          getX509BeginDate(){return x509_begin_date  ;}
     public Date          getX509EndDate  (){return x509_end_date    ;}
     public Date          getX509DateRL   (){return x509_date_rl     ;}
-    public java.sql.Date _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Date(x509_begin_date.getTime());else return null;}
-    public java.sql.Date _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Date(x509_end_date.getTime());  else return null;}
-    public java.sql.Date _getX509DateRL   (){if(x509_date_rl   !=null)return new java.sql.Date(x509_date_rl.getTime());  else return null;}
+    public java.sql.Timestamp _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Timestamp(x509_begin_date.getTime());else return null;}
+    public java.sql.Timestamp _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Timestamp(x509_end_date.getTime());  else return null;}
+    public java.sql.Timestamp _getX509DateRL   (){if(x509_date_rl   !=null)return new java.sql.Timestamp(x509_date_rl.getTime());  else return null;}
     public String[]      getX509Serial    (){String[] arr_s=(String[])x509_serial.toArray(new String[x509_serial.size()]);return arr_s;}  
     public String        getX509Serial    (int i){return x509_serial.get(i);}  
     public int           getX509SizeSerial(){return x509_serial.size();}  

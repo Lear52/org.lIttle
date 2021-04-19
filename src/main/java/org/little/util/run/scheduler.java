@@ -11,7 +11,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.little.util.Logger;
-import org.little.util.tfork;
 
 //------------------------------------------------
 /**
@@ -26,11 +25,11 @@ public class scheduler extends tfork{
              public  static int    getClassId(){return CLASS_ID;}
              private static Logger log=new Logger(CLASS_NAME);
 
-       static private Object  lock = new Object();
-       static  private int        count_scheduler=0;
+       static private Object      lock = new Object();
+       static private int         count_scheduler=0;
 
        private int                id_scheduler   =0;
-       private ArrayList<task>       list_task     = null;
+       private ArrayList<task>    list_task     = null;
        // Число задач
        private int                n_thread      = 0;
        // потоки
@@ -149,11 +148,15 @@ public class scheduler extends tfork{
 
               }
 
+              for(int i=0;i<list_task.size();i++){list_task.get(i).KILL();}
+
               runner.shutdown(); 
+
               clear();
               list_task=null;
               runner   =null;
 
+              log.trace("stop all task for scheduler_id:"+id_scheduler);
       };
 
 

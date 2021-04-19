@@ -168,10 +168,10 @@ public class mq_queue {
                              + " manager:"   +qmname
                              );
 
-                     if (e.reasonCode == MQConstants.MQRC_NO_MSG_AVAILABLE)return def.RET_WARN; 
-                     if (e.reasonCode == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED && mode==def.QMODE_TRUNC)return def.RET_WARN; 
-                     if (e.reasonCode == MQConstants.MQRC_TRUNCATED_MSG_FAILED)return def.RET_ERROR; 
-                     if (e.reasonCode == MQConstants.MQRC_BUFFER_LENGTH_ERROR )return def.RET_ERROR;
+                     if (e.reasonCode == MQConstants.MQRC_NO_MSG_AVAILABLE                               )return def.RET_WARN; 
+                     if (e.reasonCode == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED && mode==def.QMODE_TRUNC)return def.RET_OK; //def.RET_WARN; 
+                     if (e.reasonCode == MQConstants.MQRC_TRUNCATED_MSG_FAILED                           )return def.RET_ERROR; 
+                     if (e.reasonCode == MQConstants.MQRC_BUFFER_LENGTH_ERROR                            )return def.RET_ERROR;
 
                      throw  new mqExcept("get "+err,e);
                  }

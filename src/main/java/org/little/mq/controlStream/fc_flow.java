@@ -43,6 +43,8 @@ public class fc_flow{
        protected void            setState(JSONObject root){}
                                 
        protected JSONObject      setFlag(boolean flag) {return null;}
+
+       protected JSONObject      ClearQ(String mngr_id,String q_id){return null;}
                                 
        public    void            init(Node n) {}
                                 

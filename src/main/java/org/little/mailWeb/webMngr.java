@@ -14,12 +14,12 @@ import org.little.lmsg.lMessage;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
-import org.little.web.webThread;
+import org.little.web.webRun;
 /**
  * @author av
  *  
  */
-public class webMngr extends webThread{
+public class webMngr extends webRun{
        private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
        private static final long serialVersionUID = -3616757490430537836L;
        private ImapClient client;
@@ -45,7 +45,6 @@ public class webMngr extends webThread{
 
               client.setDelay(client.getTimeout());
 
-              runner.add(client);
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
@@ -54,7 +53,7 @@ public class webMngr extends webThread{
 
        @Override
        public String getServletInfo() {
-              return "Show state queue";
+              return "Show key data";
        }
        private void doGetFileID(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
                logger.trace("begin doGetFileID:"+_uid);
@@ -67,12 +66,16 @@ public class webMngr extends webThread{
                   buf_size=buf.length;
                   logger.trace("load buf:"+buf.length);
                }
-              
+
+               String filename=msg.getFilename();
+               if(filename==null)filename="cert_"+_uid+".cer";
+               if(filename.equals(""))filename="cert_"+_uid+".cer";
+
                response.setContentType("application/octet-stream");
                response.addHeader("Accept-Ranges","bytes");
                response.setHeader("Content-Type","application/octet-stream");
                response.setHeader("Content-Transfer-Encoding", "Binary");
-               response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+               response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
                response.setContentLength(buf_size);
                logger.trace("set header");
               
@@ -80,7 +83,7 @@ public class webMngr extends webThread{
                logger.trace("write buf");
                response.getOutputStream().flush();;
               
-               logger.trace("end doGetFileID:"+_uid);
+               logger.trace("end doGetFileID:"+_uid+" filename="+filename);
        }
        private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
                logger.trace("begin doGetX509ID:"+_x509_id);
@@ -93,11 +96,15 @@ public class webMngr extends webThread{
                   buf_size=buf.length;
                   logger.trace("load buf:"+buf.length);
                }
+               String filename=msg.getFilename();
+               if(filename==null)filename="cert_"+_x509_id+".cer";
+               if(filename.equals(""))filename="cert_"+_x509_id+".cer";
+
                response.setContentType("application/octet-stream");
                response.addHeader("Accept-Ranges","bytes");
                response.setHeader("Content-Type","application/octet-stream");
                response.setHeader("Content-Transfer-Encoding", "Binary");
-               response.setHeader("Content-Disposition", "inline; filename=\"" + msg.getFilename() + "\"");
+               response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
                response.setContentLength(buf_size);
                logger.trace("set header");
               
@@ -105,7 +112,7 @@ public class webMngr extends webThread{
                logger.trace("write buf");
                response.getOutputStream().flush();;
               
-               logger.trace("end doGetX509ID:"+_x509_id);
+               logger.trace("end doGetX509ID:"+_x509_id+" filename="+filename);
        }
        private void doGetList(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
                logger.trace("begin doGetList type:"+_type);

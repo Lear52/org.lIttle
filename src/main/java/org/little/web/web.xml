@@ -1,0 +1,12 @@
+<filter>
+    <filter-name>MyFilterName</filter-name>
+    <filter-class>my.package.MyBasicAuthFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>MyFilterName</filter-name>
+    <url-pattern>/my/path/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+</filter-mapping>

@@ -1,11 +1,7 @@
 package org.little.proxy.util;
 
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
 
 public class pointHost extends pointHostPort{
-
-    //private static final Logger LOG = LoggerFactory.getLogger(pointHost.class);
 
     private int     id;
     private boolean is_active;
@@ -31,10 +27,10 @@ public class pointHost extends pointHostPort{
                   setID(0); 
     }
 
-    public boolean isActive(){return is_active;}
-    public void    isActive(boolean a){is_active=a;}
-    public int     getID(){return id;}
-    public void    setID(int _id){id=_id;}
+    public boolean isActive()          {return is_active;}
+    public void    isActive(boolean a) {is_active=a;     }
+    public int     getID   ()          {return id;       }
+    public void    setID   (int _id)   {id=_id;          }
 
   
     public String  getString(){return "id:"+getID()+" active:"+isActive()+" ip:"+getHostPort();}

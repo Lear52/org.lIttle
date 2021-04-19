@@ -15,7 +15,7 @@ public interface fc_group {
        public String     getName();
        public void       setName(String name);
 
-       public boolean    getState();
+       public boolean    getStateGroup();
 
        public JSONObject getStat();
 
@@ -23,6 +23,8 @@ public interface fc_group {
        public void       work();
        
        public JSONObject setFlag(String flow_id,boolean is_flag);
+
+       public JSONObject ClearQ(String flow_id,String mngr_id,String q_id);
 
        
 

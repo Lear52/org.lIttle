@@ -47,6 +47,8 @@ public class fc_Q {
 
               return root;
        }
+       protected JSONObject ClearQ(){JSONObject root=new JSONObject();return root;}
+
        protected void setState(JSONObject root) {
                  logger.trace("setStat json:"+root); 
                  try{

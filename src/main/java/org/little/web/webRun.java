@@ -26,12 +26,14 @@ public class webRun extends HttpServlet {
         
         @Override
         public void init() throws ServletException {
-                    super.init();
+               super.init();
+               logger.info("webRun  is run");
         }
 
         @Override
         public void destroy() {
                super.destroy();
+               logger.info("webRun  is stop");
         }
         
         @Override

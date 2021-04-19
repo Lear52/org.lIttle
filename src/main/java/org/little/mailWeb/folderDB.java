@@ -99,11 +99,11 @@ public class folderDB implements folderARH{
            String fields_selectSerial="x509_ID,X509_SERIAL";
            //String fields_select0     ="MAIL_UID,ADDR_FROM,SUBJECT,FILENAME,ADDR_TO,CREATE_DATE,RECEIVE_DATE,ATTACH_SIZE,X509_ID";
            
-           String fields_select_eml   ="E.MAIL_UID,E.MAIL_ID,E.ADDR_FROM,E.ADDR_TO,E.SUBJECT,E.FILENAME,E.CREATE_DATE,E.SENT_DATE,E.RECEIVE_DATE,E.DEL_DATE,E.ANS_DATE,E.ATTACH_SIZE,E.X509_TXT,E.X509_ID";
-           String fields_select_eml_  ="  MAIL_UID,  MAIL_ID,  ADDR_FROM,  ADDR_TO,  SUBJECT,  FILENAME,  CREATE_DATE,  SENT_DATE,  RECEIVE_DATE,  DEL_DATE,  ANS_DATE,  ATTACH_SIZE,  X509_TXT,  X509_ID";
-                                     // 1          2         3           4         5         6          7             8           9              10         11         12            13           14        
+           String fields_select_eml   ="E.MAIL_UID,E.MAIL_ID,E.ADDR_FROM,E.ADDR_TO,E.SUBJECT,E.FILENAME,E.CREATE_DATE,E.SENT_DATE,E.RECEIVE_DATE,E.ATTACH_SIZE,E.X509_TXT,E.X509_ID";
+           String fields_select_eml_  ="  MAIL_UID,  MAIL_ID,  ADDR_FROM,  ADDR_TO,  SUBJECT,  FILENAME,  CREATE_DATE,  SENT_DATE,  RECEIVE_DATE,  ATTACH_SIZE,  X509_TXT,  X509_ID";
+                                     // 1          2         3           4         5         6          7             8           9              10            11         12      
            String fields_insert_eml  =next_id+
-                                                 ",?        ,?          ,?        ,?        ,?         ,?            ,?          ,?              ,?         ,?         ,?           ,?            ,?";
+                                                 ",?        ,?          ,?        ,?        ,?         ,?            ,?          ,?              ,?           ,?         ,?";
            String fields_select_x509  ="X.X509_ID,X.X509_TYPE,X.X509_TYPE_FILE,X.X509_BEGIN_DATE,X.X509_END_DATE,X.X509_SERIAL,X.X509_SUBJECT,X.X509_ISSUER,X.X509_DATE_RL,X.X509_BIN";
            String fields_select_x509_ ="  X509_ID,  X509_TYPE,  X509_TYPE_FILE,  X509_BEGIN_DATE,  X509_END_DATE,  X509_SERIAL,  X509_SUBJECT,  X509_ISSUER,  X509_DATE_RL,  X509_BIN";
                                      // 1        2           3                4                 5               6             7              8              9              10
@@ -120,8 +120,9 @@ public class folderDB implements folderARH{
            querySelectX509      ="SELECT "+fields_select_x509 +" FROM "+cfg.getTableX509()+" X ORDER BY X.X509_BEGIN_DATE";
            querySelectX509Type  ="SELECT "+fields_select_x509 +" FROM "+cfg.getTableX509()+" X WHERE X.X509_TYPE = ? ORDER BY X.X509_BEGIN_DATE";
            querySelectX509ID    ="SELECT "+fields_select_x509 +" FROM "+cfg.getTableX509()+" X WHERE X.X509_ID = ? ORDER BY X.X509_BEGIN_DATE";
-           //                                                                                   1                      2                       3                     4                   5                    6                   7                8               9
-           querySelectX509SEARCHID= "SELECT X.X509_ID FROM "+cfg.getTableX509()+" X WHERE X.X509_TYPE=? and X.X509_TYPE_FILE=? and X.X509_BEGIN_DATE=? and X.X509_END_DATE=? and X.X509_SERIAL=? and X.X509_SUBJECT=? and X.X509_ISSUER=? and X.X509_DATE_RL=? and X.X509_BIN=?";
+           querySelectX509SEARCHID= "SELECT X.X509_ID FROM "+cfg.getTableX509()+" X "
+           //                              1                 2                      3                       4                     5                   6                    7                   8               
+                                   +"WHERE X.X509_TYPE=? and X.X509_TYPE_FILE=? and X.X509_BEGIN_DATE=? and X.X509_END_DATE=? and X.X509_SERIAL=? and X.X509_SUBJECT=? and X.X509_ISSUER=? and X.X509_BIN=?";
            queryUpdateRL          = "UPDATE "+cfg.getTableX509()+" SET X509_DATE_RL=? WHERE X509_SERIAL = ? AND X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"'";
 
            queryCreateSeq  = "CREATE SEQUENCE "+cfg.getSeq()+"  START WITH 1000 INCREMENT BY 1  "; //CREATE SEQUENCE ARH_SEQ START WITH 1000 INCREMENT BY 1  NOCYCLE    
@@ -132,11 +133,9 @@ public class folderDB implements folderARH{
                          "ADDR_TO           VARCHAR(8192),"+ 
                          "SUBJECT           VARCHAR(2048),"+ 
                          "FILENAME          VARCHAR(512),"+ 
-                         "CREATE_DATE       DATE,"+         
-                         "SENT_DATE         DATE,"+         
-                         "RECEIVE_DATE      DATE,"+         
-                         "DEL_DATE          DATE,"+         
-                         "ANS_DATE          DATE,"+         
+                         "CREATE_DATE       TIMESTAMP,"+         
+                         "SENT_DATE         TIMESTAMP,"+         
+                         "RECEIVE_DATE      TIMESTAMP,"+         
                          "ATTACH_SIZE       INTEGER,"+ 
                          "X509_TXT          VARCHAR(8192),"+
                          "X509_ID           INTEGER"+ 
@@ -145,13 +144,13 @@ public class folderDB implements folderARH{
                          "X509_ID           INTEGER,"+           // 1
                          "X509_TYPE         VARCHAR(64),"+       // 2
                          "X509_TYPE_FILE    VARCHAR(64),"+       // 3
-                         "X509_BEGIN_DATE   DATE,"+              // 4
-                         "X509_END_DATE     DATE,"+              // 5
-                         "X509_SERIAL       VARCHAR(8192),"+     // 6
+                         "X509_BEGIN_DATE   TIMESTAMP,"+              // 4
+                         "X509_END_DATE     TIMESTAMP,"+              // 5
+                         "X509_SERIAL       VARCHAR(20480),"+     // 6
                          "X509_SUBJECT      VARCHAR(8192), "+    // 7
                          "X509_ISSUER       VARCHAR(8192), "+    // 8
-                         "X509_BIN          VARCHAR(8192), "+    // 9
-                         "X509_DATE_RL      DATE "+              // 10
+                         "X509_BIN          VARCHAR(20480), "+    // 9
+                         "X509_DATE_RL      TIMESTAMP "+         // 10
                          ")";
            queryCreateSerial  = "CREATE TABLE "+cfg.getTableSerial()+" ( "+
                    "X509_ID           INTEGER,"+ 
@@ -177,14 +176,12 @@ public class folderDB implements folderARH{
                       q.setString   ( 3+s,msg.getTOs           ()); //  ADDR_TO           VARCHAR(256), -- -> new table
                       q.setString   ( 4+s,msg.getSubject       ()); //  SUBJECT           VARCHAR(128),
                       q.setString   ( 5+s,msg.getFilename      ()); //  FILENAME          VARCHAR(128),
-                      q.setDate     ( 6+s,msg._getCreateDate   ()); //  CREATE_DATE       DATE,
-                      q.setDate     ( 7+s,msg._getSentDate     ()); //  SENT_DATE         DATE,
-                      q.setDate     ( 8+s,msg._getReceiveDate  ()); //  RECEIVE_DATE      DATE,
-                      q.setDate     ( 9+s,msg._getDelDate      ()); //  DEL_DATE          DATE,
-                      q.setDate     (10+s,msg._getAnswerDate   ()); //  ANS_DATE          DATE,
-                      q.setInt      (11+s,msg.getSize          ()); //  ATTACH_SIZE       INTEGER,
-                      q.setString   (12+s,msg.getBodyTxt       ()); //  X509_TXT          VARCHAR(4096), -- -> new table or clob
-                      q.setInt      (13+s,msg.getX509ID        ()); //  MAIL_NUM          INTEGER,
+                      q.setTimestamp( 6+s,msg._getCreateDate   ()); //  CREATE_DATE       DATE,
+                      q.setTimestamp( 7+s,msg._getSentDate     ()); //  SENT_DATE         DATE,
+                      q.setTimestamp( 8+s,msg._getReceiveDate  ()); //  RECEIVE_DATE      DATE,
+                      q.setInt      ( 9+s,msg.getSize          ()); //  ATTACH_SIZE       INTEGER,
+                      q.setString   (10+s,msg.getBodyTxt       ()); //  X509_TXT          VARCHAR(4096), -- -> new table or clob
+                      q.setInt      (11+s,msg.getX509ID        ()); //  MAIL_NUM          INTEGER,
                                                               
                 } catch (dbExcept ex1) {   
                         logger.error("setEml ex:"+ex1);
@@ -203,13 +200,12 @@ public class folderDB implements folderARH{
                                             
                  q.setString   ( 1+s,msg.getX509Type      ()); //  X509_TYPE         VARCHAR(32),
                  q.setString   ( 2+s,msg.getX509TypeFile  ()); //  X509_TYPE_FILE    VARCHAR(32),
-                 q.setDate     ( 3+s,msg._getX509BeginDate()); //  X509_BEGIN_DATE   DATE,
-                 q.setDate     ( 4+s,msg._getX509EndDate  ()); //  X509_END_DATE     DATE,
+                 q.setTimestamp( 3+s,msg._getX509BeginDate()); //  X509_BEGIN_DATE   DATE,
+                 q.setTimestamp( 4+s,msg._getX509EndDate  ()); //  X509_END_DATE     DATE,
                  q.setString   ( 5+s,msg.getX509Serials   ()); //  X509_SERIAL       VARCHAR(4096), -- -> new table
                  q.setString   ( 6+s,msg.getX509Subject   ()); //  X509_SUBJECT      VARCHAR(256),
                  q.setString   ( 7+s,msg.getX509Issuer    ()); //  X509_ISSUER       VARCHAR(256),
-                 q.setDate     ( 8+s,msg._getX509DateRL   ()); //  X509_DATE_RL      DATE,
-                 q.setString   ( 9+s,msg.getBodyBin64     ()); //  X509_BIN          VARCHAR(4096)  -- -> new table or blob
+                 q.setString   ( 8+s,msg.getBodyBin64     ()); //  X509_BIN          VARCHAR(4096)  -- -> new table or blob
                                                          
            } catch (dbExcept ex1) {   
                    logger.error("setX509 ex:"+ex1);
@@ -229,12 +225,12 @@ public class folderDB implements folderARH{
                  q.setInt      ( 1+s,msg.getX509ID        ()); //  MAIL_NUM          INTEGER,
                  q.setString   ( 2+s,msg.getX509Type      ()); //  X509_TYPE         VARCHAR(32),
                  q.setString   ( 3+s,msg.getX509TypeFile  ()); //  X509_TYPE_FILE    VARCHAR(32),
-                 q.setDate     ( 4+s,msg._getX509BeginDate()); //  X509_BEGIN_DATE   DATE,
-                 q.setDate     ( 5+s,msg._getX509EndDate  ()); //  X509_END_DATE     DATE,
+                 q.setTimestamp( 4+s,msg._getX509BeginDate()); //  X509_BEGIN_DATE   DATE,
+                 q.setTimestamp( 5+s,msg._getX509EndDate  ()); //  X509_END_DATE     DATE,
                  q.setString   ( 6+s,msg.getX509Serials   ()); //  X509_SERIAL       VARCHAR(4096), -- -> new table
                  q.setString   ( 7+s,msg.getX509Subject   ()); //  X509_SUBJECT      VARCHAR(256),
                  q.setString   ( 8+s,msg.getX509Issuer    ()); //  X509_ISSUER       VARCHAR(256),
-                 q.setDate     ( 9+s,msg._getX509DateRL   ()); //  X509_DATE_RL      DATE,
+                 q.setTimestamp( 9+s,msg._getX509DateRL   ()); //  X509_DATE_RL      DATE,
                  q.setString   (10+s,msg.getBodyBin64     ()); //  X509_BIN          VARCHAR(4096)  -- -> new table or blob
                                                          
            } catch (dbExcept ex1) {   
@@ -278,25 +274,23 @@ public class folderDB implements folderARH{
                      msg.setTO            (q.Result().getString   ( 4+s)); 
                      msg.setSubject       (q.Result().getString   ( 5+s)); 
                      msg.setFilename      (q.Result().getString   ( 6+s)); 
-                     msg.setCreateDate    (q.Result().getDate     ( 7+s)); 
-                     msg.setSentDate      (q.Result().getDate     ( 8+s)); 
-                     msg.setReceiveDate   (q.Result().getDate     ( 9+s)); 
-                     msg.setDelDate       (q.Result().getDate     (10+s)); 
-                     msg.setAnswerDate    (q.Result().getDate     (11+s)); 
-                     msg.setSize          (q.Result().getInt      (12+s)); 
-                     msg.setBodyTxt       (q.Result().getString   (13+s)); 
-                     msg.setX509ID        (q.Result().getInt      (14+s)); 
+                     msg.setCreateDate    (q.Result().getTimestamp( 7+s)); 
+                     msg.setSentDate      (q.Result().getTimestamp( 8+s)); 
+                     msg.setReceiveDate   (q.Result().getTimestamp( 9+s)); 
+                     msg.setSize          (q.Result().getInt      (10+s)); 
+                     msg.setBodyTxt       (q.Result().getString   (11+s)); 
+                     msg.setX509ID        (q.Result().getInt      (12+s)); 
                                                               
-                     msg.setX509ID        (q.Result().getInt      (14+ 1+s)); 
-                     msg.setX509Type      (q.Result().getString   (14+ 2+s)); 
-                     msg.setX509TypeFile  (q.Result().getString   (14+ 3+s)); 
-                     msg.setX509BeginDate (q.Result().getDate     (14+ 4+s)); 
-                     msg.setX509EndDate   (q.Result().getDate     (14+ 5+s)); 
-                     msg.setX509Serial    (q.Result().getString   (14+ 6+s)); 
-                     msg.setX509Subject   (q.Result().getString   (14+ 7+s)); 
-                     msg.setX509Issuer    (q.Result().getString   (14+ 8+s)); 
-                     msg.setX509DateRL    (q.Result().getDate     (14+ 9+s)); 
-                     msg.setBodyBin64     (q.Result().getString   (14+10+s)); 
+                     msg.setX509ID        (q.Result().getInt      (12+ 1+s)); 
+                     msg.setX509Type      (q.Result().getString   (12+ 2+s)); 
+                     msg.setX509TypeFile  (q.Result().getString   (12+ 3+s)); 
+                     msg.setX509BeginDate (q.Result().getTimestamp(12+ 4+s)); 
+                     msg.setX509EndDate   (q.Result().getTimestamp(12+ 5+s)); 
+                     msg.setX509Serial    (q.Result().getString   (12+ 6+s)); 
+                     msg.setX509Subject   (q.Result().getString   (12+ 7+s)); 
+                     msg.setX509Issuer    (q.Result().getString   (12+ 8+s)); 
+                     msg.setX509DateRL    (q.Result().getTimestamp(12+ 9+s)); 
+                     msg.setBodyBin64     (q.Result().getString   (12+10+s)); 
                 }
                 catch (Exception ex2) {
                         logger.error("setAll ex:"+ex2);
@@ -312,16 +306,16 @@ public class folderDB implements folderARH{
                 lMessage msg=new lMessage();
 
                 try {
-                     msg.setX509ID        (q.Result().getInt      (1+s)); 
-                     msg.setX509Type      (q.Result().getString   (2+s)); 
-                     msg.setX509TypeFile  (q.Result().getString   (3+s)); 
-                     msg.setX509BeginDate (q.Result().getDate     (4+s)); 
-                     msg.setX509EndDate   (q.Result().getDate     (5+s)); 
-                     msg.setX509Serial    (q.Result().getString   (6+s)); 
-                     msg.setX509Subject   (q.Result().getString   (7+s)); 
-                     msg.setX509Issuer    (q.Result().getString   (8+s)); 
-                     msg.setBodyBin64     (q.Result().getString   (9+s)); 
-                     msg.setX509DateRL    (q.Result().getDate     (10+s)); 
+                     msg.setX509ID        (q.Result().getInt      ( 1+s)); 
+                     msg.setX509Type      (q.Result().getString   ( 2+s)); 
+                     msg.setX509TypeFile  (q.Result().getString   ( 3+s)); 
+                     msg.setX509BeginDate (q.Result().getTimestamp( 4+s)); 
+                     msg.setX509EndDate   (q.Result().getTimestamp( 5+s)); 
+                     msg.setX509Serial    (q.Result().getString   ( 6+s)); 
+                     msg.setX509Subject   (q.Result().getString   ( 7+s)); 
+                     msg.setX509Issuer    (q.Result().getString   ( 8+s)); 
+                     msg.setX509DateRL    (q.Result().getTimestamp( 9+s)); 
+                     msg.setBodyBin64     (q.Result().getString   (10+s)); 
                 }
                 catch (Exception ex2) {
                         logger.error("setAll ex:"+ex2);
@@ -338,53 +332,52 @@ public class folderDB implements folderARH{
        }
        @Override
        public lMessage loadArray(int _uid) {
-               ArrayList<lMessage> list;
+              ArrayList<lMessage> list;
 
-               if(_uid<0)list=loadArray(querySelect  ,-1  ,null);
-               else      list=loadArray(querySelectID,_uid,null);
+              if(_uid<0)list=loadArray(querySelect  ,-1  ,null);
+              else      list=loadArray(querySelectID,_uid,null);
 
-               if(list.size()>0)return list.get(0);
+              if(list.size()>0)return list.get(0);
 
-               logger.error("msg not find for uid:"+_uid);
+              logger.error("msg not find for uid:"+_uid);
 
-               return new lMessage();
+              return new lMessage();
        }
        
        private ArrayList<lMessage> loadArray(String _select,int _uid,String _type) {
-              ArrayList<lMessage> list=new ArrayList<lMessage>(100);
-              if(db==null){
-                 logger.error("db is not init");
-              }
-              else{
-                 query q=null;
-                 try{
-                     // 
-                      q=db.open();
-                      logger.trace("open db q_id:"+q.getId());
-
-                      q.creatPreSt(_select);
-                      if(_uid>0     )q.setInt    ( 1,_uid);
-                      if(_type!=null)q.setString ( 1,_type);
-
-                      q.executeQuery();
-                      while(q.isNextResult()) {
-                           lMessage msg=getAll(q);
-                           list.add(msg);
-                           if(_uid>0)break;
-                      } 
-
-                 }catch(dbExcept ex){
-                      if(q!=null){
-                         logger.error("db q_id:"+q.getId()+" error sql:"+_select);
-                         logger.error("db q_id:"+q.getId()+" ex:"+ex);
-                      }
-                      else logger.error("db q_id:? ex:"+ex);
-                 }
-                 finally{
-                      db.close(q);
-                 }
-              }
-              return list;
+               ArrayList<lMessage> list=new ArrayList<lMessage>(100);
+               if(db==null){
+                  logger.error("db is not init");
+               }
+               else{
+                  query q=null;
+                  try{
+                       q=db.open();
+                       logger.trace("open db q_id:"+q.getId());
+              
+                       q.creatPreSt(_select);
+                       if(_uid>0     )q.setInt    ( 1,_uid);
+                       if(_type!=null)q.setString ( 1,_type);
+              
+                       q.executeQuery();
+                       while(q.isNextResult()) {
+                            lMessage msg=getAll(q);
+                            list.add(msg);
+                            if(_uid>0)break;
+                       } 
+              
+                  }catch(dbExcept ex){
+                       if(q!=null){
+                          logger.error("db q_id:"+q.getId()+" error sql:"+_select);
+                          logger.error("db q_id:"+q.getId()+" ex:"+ex);
+                       }
+                       else logger.error("db q_id:? ex:"+ex);
+                  }
+                  finally{
+                       db.close(q);
+                  }
+               }
+               return list;
        }
        private ArrayList<lMessage> loadArrayX509(String _select,int _x509_id,String _type) {
                ArrayList<lMessage> list=new ArrayList<lMessage>(100);
@@ -613,7 +606,7 @@ public class folderDB implements folderARH{
                        setSerial(q1,msg,i);
                        q1.execute();
 
-                       q2.setDate     ( 1,msg._getX509BeginDate()); 
+                       q2.setTimestamp( 1,msg._getX509BeginDate()); 
                        q2.setString     ( 2,msg.getX509Serial(i)); 
                        q2.execute();
                    }

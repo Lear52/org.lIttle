@@ -112,6 +112,27 @@ public class webMngr extends webThread{
 
                logger.trace("webMngr.doSetFlag()");
        }
+       private void doClearQ(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+               response.setContentType("application/json");
+               response.setContentType("text/html; charset=UTF-8");
+
+               String group_id=(String) request.getParameter("group");
+               String flow_id =(String) request.getParameter("flow");
+               String mngr_id =(String) request.getParameter("mngr");
+               String q_id    =(String) request.getParameter("q");
+
+               logger.trace("mngr.ClearQ(group:"+group_id+",flow:"+flow_id+",mngr:"+mngr_id+",q:"+q_id+")");
+
+               JSONObject  root=mngr.ClearQ(group_id,flow_id,mngr_id,q_id);
+
+               logger.trace("mngr.ClearQ(group:"+group_id+",flow:"+flow_id+",mngr:"+mngr_id+",q:"+q_id+") return:"+root);
+
+               mngr.work();/**/
+
+               root.write(response.getWriter());
+
+               logger.trace("mngr.ClearQ()");
+       }
 
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -142,6 +163,14 @@ public class webMngr extends webThread{
               else 
               if(path.startsWith("/cntrl")){
                  doSetFlag(request,response);
+                 return;
+              }  
+              /**
+                 JSON request set control flag
+               */
+              else 
+              if(path.startsWith("/clr")){
+                 doClearQ(request,response);
                  return;
               }  
               else{

@@ -3,6 +3,7 @@ package org.little.mq.controlStream;
 import org.json.JSONObject;
 import org.little.mq.mqapi.mq_contrl;
 import org.little.mq.mqapi.mqExcept;
+import org.little.mq.mqapi.clearQ;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.w3c.dom.Node;
@@ -16,6 +17,7 @@ public class fc_QL extends fc_Q{
        private String mq_user;
        private String mq_passwd;
        private int    deep_alarm;
+       private String mq_channel;
 
        @Override
        public void   clear() {
@@ -25,14 +27,31 @@ public class fc_QL extends fc_Q{
               mq_user   =null;
               mq_passwd =null;
               deep_alarm=150;
+              mq_channel="SYSTEM.ADMIN.SVRCONN";
        }
 
        @Override
        public JSONObject getState() {
               JSONObject q=super.getState();
               logger.info("getState() queue:"+getNameQ()+" len:"+getDeepQ());
-
               return q;
+       }
+       @Override
+       protected JSONObject ClearQ(){
+                 JSONObject root=new JSONObject();
+                 if(mq_host==null){
+                    logger.trace("QL.ClearQ(mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
+                    clearQ.clear(getNameMngr(),getNameQ());
+                 }
+                 else{
+                    logger.trace("QL.ClearQ(host:"+mq_host+":"+mq_port+",mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
+                    clearQ.clear(getNameMngr(),mq_host,mq_port,mq_channel,getNameQ(),mq_user,mq_passwd);
+                 }
+                 root.put("clear","Ok");
+
+                 logger.trace("QL.ClearQ(mngr:"+getNameMngr()+",q:"+getNameQ()+") ret:"+root);
+                
+                 return root;
        }
        @Override
        public void work() {
@@ -40,7 +59,7 @@ public class fc_QL extends fc_Q{
               mq_contrl cntrl=new mq_contrl();
               int len=0;
               try {
-                   cntrl.open(getNameMngr(),mq_host,mq_port,"SYSTEM.ADMIN.SVRCONN",mq_user,mq_passwd);
+                   cntrl.open(getNameMngr(),mq_host,mq_port,mq_channel,mq_user,mq_passwd);
                    len=cntrl.lengthLocalQueues(getNameQ());
 
                    if(deep_alarm<len)isAlarm(true);
@@ -72,11 +91,14 @@ public class fc_QL extends fc_Q{
                   if("port"    .equals(n.getNodeName())){String          s=n.getTextContent();try{mq_port=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set port:"+s);mq_port=1414;}logger.info("port:"+mq_port        );}else
                   if("user"    .equals(n.getNodeName())){mq_user          =n.getTextContent();logger.info("user:"    +mq_user   );                     }else
                   if("password".equals(n.getNodeName())){mq_passwd        =n.getTextContent();logger.info("password:"+mq_passwd );                     }else
-                  if("deep"    .equals(n.getNodeName())){String          s=n.getTextContent();try{deep_alarm=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set deep:"+s);deep_alarm=150;}logger.info("deep:"+deep_alarm);}
+                  if("deep"    .equals(n.getNodeName())){String          s=n.getTextContent();try{deep_alarm=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set deep:"+s);deep_alarm=150;}logger.info("deep:"+deep_alarm);}else
+                  if("channel" .equals(n.getNodeName())){String mq_channel=n.getTextContent();logger.info("channel:" +mq_channel  );}
               }
 
 
        }
+
+
 
 }
 

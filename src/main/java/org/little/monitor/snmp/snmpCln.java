@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.little.util.Except;
 import org.little.util.Logger;
-import org.little.util.tfork;
+import org.little.util.run.tfork;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.SNMP4JSettings;

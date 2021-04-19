@@ -22,6 +22,7 @@ public class fc_mngr  extends task{
        private int                 task_timeout;
        private boolean             is_control_stream;
        private String              default_page;   
+       private static Object       LOCK=new Object();   
 
        public fc_mngr() {
               cfg       =new fc_common();
@@ -107,17 +108,30 @@ public class fc_mngr  extends task{
 
        @Override
        public void work() {
-              int _count=0;
-              for(int i=0;i<group_list.size();i++) {
-                  fc_group gr=group_list.get(i);
-                  if(gr.getState())_count++;
-              }       
-              count_active_group=_count;
+              synchronized(LOCK){
+                  int _count=0;
+                  for(int i=0;i<group_list.size();i++) {
+                      fc_group gr=group_list.get(i);
+                      if(gr.getStateGroup())_count++;
+                  }       
+                  count_active_group=_count;
+              }
        }
        
        public ArrayList<task> getListTask() {return task_list;}
 
-
+       public JSONObject ClearQ(String group_id,String flow_id,String mngr_id,String q_id){
+              JSONObject root=new JSONObject();
+              root.put("type", "clear");
+              for(int i=0;i<group_list.size();i++){
+                  if(group_list.get(i).getID().equals(group_id)) {
+                     JSONObject ret=group_list.get(i).ClearQ(flow_id,mngr_id,q_id); 
+                     root.put("resp", ret);
+                     break;
+                  }
+              }
+              return root;
+       }
        public JSONObject setFlag(String group_id,String flow_id,boolean is_flag) {
               JSONObject root=new JSONObject();
               root.put("type", "flag");

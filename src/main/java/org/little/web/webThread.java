@@ -27,7 +27,7 @@ public class webThread extends HttpServlet{
         public void init() throws ServletException {
         //     Запуск нового пула потоков 
                runner.fork();
-               logger.trace("web scheduller is run");
+               logger.info("web scheduller is run");
         }
      
         @Override
@@ -36,6 +36,7 @@ public class webThread extends HttpServlet{
                if(runner!=null)runner.shutdown();
                runner = null;
                super.destroy();
+               logger.info("web scheduller is stop");
         }
      
         @Override

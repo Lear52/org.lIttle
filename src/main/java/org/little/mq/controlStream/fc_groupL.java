@@ -17,7 +17,7 @@ public class fc_groupL extends task implements fc_group{
        private ArrayList<fc_flow> flow_list;
        private String             id;
        private String             name;
-       private boolean            state;
+       private boolean            state_group;
        private fc_mngr            mngr;
 
        public fc_groupL(fc_mngr _mngr){
@@ -27,7 +27,7 @@ public class fc_groupL extends task implements fc_group{
 
        @Override
        public void clear() {
-              state      =false;
+              state_group      =false;
               flow_list=new ArrayList<fc_flow>();
               id         =null;  
               name       =null;
@@ -42,17 +42,17 @@ public class fc_groupL extends task implements fc_group{
        @Override
        public void               setName(String name) {this.name = name;}
        @Override
-       public boolean            getState(){return state;}
+       public boolean            getStateGroup(){return state_group;}
 
        @Override
        public void work(){
-              state      =false;
+              state_group      =false;
               for(int i=0;i<flow_list.size();i++) {
                   fc_flow flow=flow_list.get(i);
                   logger.trace("group id:"+id+" name:"+name+" flow:"+i);
                   flow.work();  
               }
-              state      =true;
+              state_group      =true;
               
        }
        @Override
@@ -63,7 +63,7 @@ public class fc_groupL extends task implements fc_group{
               root.put("type", "group");
               root.put("id", getID());
               root.put("name", getName());
-              root.put("state", getState());
+              root.put("state", getStateGroup());
               for(int i=0;i<flow_list.size();i++) {
                   fc_flow flow=flow_list.get(i);
                   list.put(i,flow.getStat());
@@ -124,5 +124,22 @@ public class fc_groupL extends task implements fc_group{
               return root;
        }
 
+       @Override
+       public JSONObject ClearQ(String flow_id,String mngr_id,String q_id){
+              JSONObject root=new JSONObject();
+
+              logger.trace("group.ClearQ(group:"+id+",flow:"+flow_id+",mngr:"+mngr_id+",q:"+q_id+")");
+              for(int i=0;i<flow_list.size();i++){
+                  if(flow_list.get(i).getID().equals(flow_id)) {
+                     JSONObject ret=flow_list.get(i).ClearQ(mngr_id,q_id); 
+                     root.put("resp", ret);
+                     logger.trace("group.ClearQ(group:"+id+",flow:"+flow_id+",mngr:"+mngr_id+",q:"+q_id+") ret:"+ret);
+                     break;
+                  }
+              }
+              
+              return root;
+
+       }
 
 }

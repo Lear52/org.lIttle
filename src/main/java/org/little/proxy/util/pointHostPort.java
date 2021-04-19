@@ -2,27 +2,18 @@ package org.little.proxy.util;
 
 import java.net.InetSocketAddress;
 
-//import org.little.util.Logger;
-//import org.little.util.LoggerFactory;
 
 
 public class pointHostPort{
 
-    //private static final Logger LOG = LoggerFactory.getLogger(pointHostPort.class);
 
     private String  host_port;
     private String  host;
     private int     port;
 
-    public        pointHostPort(){
-                  setHostPort("");
-    }
-    public        pointHostPort(String _host){
-                  setHostPort(_host);
-    }
-    public        pointHostPort(String _host,int port){
-                  setHostPort(_host+":"+port);
-    }
+    public        pointHostPort(){setHostPort("");}
+    public        pointHostPort(String _host){setHostPort(_host);}
+    public        pointHostPort(String _host,int port){setHostPort(_host+":"+port);}
 
     public String  getHostPort(){return host_port;}
     public String  getHost(){return host;}

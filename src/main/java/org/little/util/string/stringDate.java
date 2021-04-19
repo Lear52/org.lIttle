@@ -21,7 +21,7 @@ public class stringDate{
            } catch (Exception e) { return null; }
     }
     public static String date2prn(Date d){
-           if(d==null) return null;
+           if(d==null) return "";
            try{
                SimpleDateFormat sfd=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                return sfd.format(d);
