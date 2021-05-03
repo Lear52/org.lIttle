@@ -22,16 +22,18 @@ public class fc_mngr  extends task{
        private int                 task_timeout;
        private boolean             is_control_stream;
        private String              default_page;   
+       private int                 min_count_group;
        private static Object       LOCK=new Object();   
 
        public fc_mngr() {
-              cfg       =new fc_common();
-              group_list=new ArrayList<fc_group>();
-              task_list =new ArrayList<task>();
+              cfg               =new fc_common();
+              group_list        =new ArrayList<fc_group>();
+              task_list         =new ArrayList<task>();
               count_active_group=0;
-              is_control_stream=false;
-              task_timeout=10;
-              default_page="index.html";
+              is_control_stream =false;
+              task_timeout      =10;
+              default_page      ="index.html";
+              min_count_group   =2;
        }
        public boolean loadCFG(String xpath){
               return cfg.loadCFG(xpath);
@@ -61,6 +63,9 @@ public class fc_mngr  extends task{
                    }else
                    if("control_stream".equals(n.getNodeName()) ){           
                       String s=n.getTextContent();try{is_control_stream=Boolean.parseBoolean(s);}catch(Exception e){logger.error("error set control_stream:"+s);is_control_stream=false;}logger.info("control_stream:"+is_control_stream);
+                   }else
+                   if("min_count_group".equals(n.getNodeName()) ){           
+                      String s=n.getTextContent();try{min_count_group=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set min_count_group:"+s);min_count_group=2;}logger.info("min_count_group:"+min_count_group);
                    }
                }
        }
@@ -102,9 +107,10 @@ public class fc_mngr  extends task{
        }
        
        protected String getDefaulPage() {return default_page;}
-       public int      getActive() {return count_active_group;}
-       public boolean  isControlStream() {return is_control_stream;}
-       public int      getTimeout() {return task_timeout;}
+       public int       getActive() {return count_active_group;}
+       public boolean   isControlStream() {return is_control_stream && ((getActive()-getMinCountGroup())>=0);}
+       public int       getTimeout() {return task_timeout;}
+       public int       getMinCountGroup(){return min_count_group;}
 
        @Override
        public void work() {
@@ -171,7 +177,8 @@ public class fc_mngr  extends task{
                   list.put(i,group.getStat());
               }
               root.put("list"   , list);
-              root.put("active" , count_active_group);
+              root.put("active" , getActive());
+              root.put("auto"   , isControlStream());
               root.put("timeout", task_timeout);
               root.put("size"   , group_list.size());
 

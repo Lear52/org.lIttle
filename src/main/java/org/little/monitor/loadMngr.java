@@ -1,4 +1,4 @@
-package org.little.mailWeb;
+package org.little.monitor;
 
 import javax.servlet.ServletException;
 
@@ -13,30 +13,30 @@ import org.little.web.webThread;
 public class loadMngr extends webThread{
        private static final long serialVersionUID = -8857423924701221546L;
        private static final Logger logger = LoggerFactory.getLogger(loadMngr.class);
-       private ImapClient client;
+       //private ImapClient client;
 
        @Override
        public void init() throws ServletException {
 
               logger.trace("start"+":"+getServletInfo());
               
-              client=new ImapClient();
+              //client=new ImapClient();
               
               String xpath=this.getServletContext().getRealPath("");
 
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-              if(client.loadCFG(xpath)==false){
-                 logger.error("error read config file:"+xpath);
-                 return;
-              }
+              //if(client.loadCFG(xpath)==false){
+              //   logger.error("error read config file:"+xpath);
+              //   return;
+              //}
 
               logger.info("START LITTLE.IMAPWEB config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
 
-              client.setDelay(client.getTimeout());
+              //client.setDelay(client.getTimeout());
 
-              runner.add(client);
+              //runner.add(client);
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------

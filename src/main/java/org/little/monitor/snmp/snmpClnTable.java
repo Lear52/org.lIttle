@@ -3,17 +3,13 @@ package org.little.monitor.snmp;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.little.util.*;
+import org.little.util.Except;
 
 /**
  класс содержащий пул клиенских snmpCln
 */
 
 public class snmpClnTable{ 
-       final private static String CLASS_NAME="prj0.snmp.snmpClnTable";
-       final private static int    CLASS_ID  =609;
-             public  static String getClassName(){return CLASS_NAME;}
-             public  static int    getClassId(){return CLASS_ID;}
 
        ArrayList<snmpCln> list;
  

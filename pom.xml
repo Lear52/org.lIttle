@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210415-SNAPSHOT</version>
+        <version>20210430-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
@@ -197,12 +197,12 @@
            <dependency>
                <groupId>org.bouncycastle</groupId>
                <artifactId>bcpkix-jdk15on</artifactId>
-               <version>1.66</version>
+               <version>1.67</version>
            </dependency>
            <dependency>
                <groupId>org.bouncycastle</groupId>
                <artifactId>bcprov-jdk15on</artifactId>
-               <version>1.66</version>
+               <version>1.67</version>
            </dependency>
 
            <!-- mail -->
@@ -220,17 +220,17 @@
            <dependency>
                <groupId>org.apache.httpcomponents</groupId>
                <artifactId>httpclient</artifactId>
-               <version>4.5.12</version>
+               <version>4.5.13</version>
            </dependency>
            <dependency>
               <groupId>org.apache.httpcomponents</groupId>
               <artifactId>httpcore</artifactId>
-              <version>4.4.13</version>
+              <version>4.4.14</version>
            </dependency>
            <dependency>
               <groupId>org.apache.httpcomponents</groupId>
               <artifactId>httpmime</artifactId>
-              <version>4.5.12</version>
+              <version>4.5.13</version>
            </dependency>
            <dependency>
                <groupId>commons-cli</groupId>
@@ -240,7 +240,7 @@
            <dependency>
                <groupId>commons-codec</groupId>
                <artifactId>commons-codec</artifactId>
-               <version>1.14</version>
+               <version>1.15</version>
            </dependency>
            <dependency>
                <groupId>commons-io</groupId>
@@ -250,7 +250,7 @@
            <dependency>
                <groupId>org.apache.commons</groupId>
                <artifactId>commons-lang3</artifactId>
-               <version>3.11</version>
+               <version>3.12.0</version>
            </dependency>
            <dependency>
                <groupId>commons-logging</groupId>

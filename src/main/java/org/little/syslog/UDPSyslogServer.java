@@ -40,7 +40,9 @@ public class UDPSyslogServer extends UDPNetSyslogServer {
 				final DatagramPacket dp = new DatagramPacket(receiveData, receiveData.length);
 				this.ds.receive(dp);
 				final SyslogServerEventIF event = new Rfc5424SyslogEvent(receiveData, dp.getOffset(), dp.getLength());
+
 				System.out.println(">>> Syslog message came: " + event);
+
 			} catch (SocketException se) {
 				se.printStackTrace();
 			} catch (IOException ioe) {

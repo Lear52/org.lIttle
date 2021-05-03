@@ -35,9 +35,9 @@ public class folderDB implements folderARH{
        private String                 querySelectX509SEARCHID;
        private String                 queryGetID;
        private String                 queryUpdateRL;
-       private commonDB               cfg;
+       private commonX509DB               cfg;
 
-       public  folderDB(commonDB _cfg){cfg=_cfg;}
+       public  folderDB(commonX509DB _cfg){cfg=_cfg;}
 
        private boolean _create(String query,String name_obj,String msg){
            if(db==null){

@@ -11,13 +11,11 @@ import org.snmp4j.SNMP4JSettings;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
-//import org.snmp4j.*; 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
-//import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
@@ -25,10 +23,6 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class snmpCln{ 
-       final private static String CLASS_NAME="prj0.snmp.snmpCln";
-       final private static int    CLASS_ID  =608;
-             public  static String getClassName(){return CLASS_NAME;}
-             public  static int    getClassId(){return CLASS_ID;}
 
        public final static int    SNMP_RETRIES   = 3;
        public final static long   SNMP_TIMEOUT   = 5000L;
@@ -352,11 +346,6 @@ public class snmpCln{
 
        public static void main(String[] args) throws IOException,Except { 
               snmpCln cln;
-              //LogFactory.setLogFactory(new Log4jLogFactory());
-              //org.apache.log4j.BasicConfigurator.configure();
-              //BER.setCheckSequenceLength(false);
-              //LogFactory.getLogFactory().getRootLogger().setLogLevel(LogLevel.toLevel("TRACE"));
-              //LogFactory.getLogFactory().getRootLogger().setLogLevel(LogLevel.toLevel("DEBUG"));
 
               cln=new snmpCln("udp:10.93.128.11/161","public");
               cln.start();

@@ -13,17 +13,10 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
-//import java.lang.management.ThreadInfo;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
 
-//import java.util.Iterator;
-//import java.util.Set;
-//import javax.management.Attribute;
-//import javax.management.MBeanServerConnection;
-//import javax.management.MBeanServerInvocationHandler;
-//import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;

@@ -10,18 +10,18 @@ import org.w3c.dom.NodeList;
 public class commonArh  extends common{
        private static final Logger logger = LoggerFactory.getLogger(commonArh.class);
 
-       private boolean     debug      ;
-       private String      userName   ;
-       private String      password   ;
-       private String      local_bind_client;
-       private String      client_host;
-       private int         client_port;
-       private int         task_timeout;
-       private String      imap_inbox_folder;
-       private String      imap_outbox_folder;
-       private commonDB    db_cfg;
-       private String      def_page;
-       private String      error_page;
+       private boolean       debug      ;
+       private String        userName   ;
+       private String        password   ;
+       private String        local_bind_client;
+       private String        client_host;
+       private int           client_port;
+       private int           task_timeout;
+       private String        imap_inbox_folder;
+       private String        imap_outbox_folder;
+       private commonX509DB  db_cfg;
+       private String        def_page;
+       private String        error_page;
 
        public commonArh() {
               clear();
@@ -39,25 +39,25 @@ public class commonArh  extends common{
               local_bind_client      ="*";   
               imap_inbox_folder      ="inbox";              
               imap_outbox_folder     ="outbox";              
-              db_cfg                 =new commonDB();
+              db_cfg                 =new commonX509DB();
               def_page               ="index.html";
               error_page             ="error.html";
        }
        
-       public folderARH getFolder           () {return db_cfg.getFolder(); }
+       public folderARH    getFolder         () {return db_cfg.getFolder(); }
 
-       public boolean  isDebug           () {return debug;             }
-       public String   getUser           () {return userName;          }
-       public String   getPasswd         () {return password;          }
-       public String   getLocalBindClient() {return local_bind_client; }
-       public String   getHost           () {return client_host;       }
-       public int      getPort           () {return client_port;       }
-       public int      getTimeout        () {return task_timeout;      }
-       public String   getInboxFolder    () {return imap_inbox_folder; }
-       public String   getOutboxFolder   () {return imap_outbox_folder;}
-       public commonDB getCfgDB          () {return db_cfg;            }
-       public String   getDefPage        () {return def_page;          }
-       public String   getErrorPage      () {return error_page;        }
+       public boolean      isDebug           () {return debug;             }
+       public String       getUser           () {return userName;          }
+       public String       getPasswd         () {return password;          }
+       public String       getLocalBindClient() {return local_bind_client; }
+       public String       getHost           () {return client_host;       }
+       public int          getPort           () {return client_port;       }
+       public int          getTimeout        () {return task_timeout;      }
+       public String       getInboxFolder    () {return imap_inbox_folder; }
+       public String       getOutboxFolder   () {return imap_outbox_folder;}
+       public commonX509DB getCfgDB          () {return db_cfg;            }
+       public String       getDefPage        () {return def_page;          }
+       public String       getErrorPage      () {return error_page;        }
 
 
        @Override

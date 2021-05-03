@@ -1,8 +1,9 @@
 package org.little.syslog;
 
-//import java.io.IOException;
-//import java.net.Socket;
-//import java.util.Collections;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Collections;
+import java.util.Set;
 
 import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
 
@@ -12,13 +13,14 @@ import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
  * @author Josef Cacek
  */
 public class TCPSyslogServer extends TCPNetSyslogServer {
-/*
-	@SuppressWarnings("unchecked")
+	protected Set<Socket> sockets;
+	
+	//@SuppressWarnings("unchecked")
 	public TCPSyslogServer() {
 		sockets = Collections.synchronizedSet(sockets);
 	}
-
-	@SuppressWarnings("unchecked")
+	
+	//@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		try {
@@ -38,5 +40,5 @@ public class TCPSyslogServer extends TCPNetSyslogServer {
 			}
 		}
 	}
-*/
+
 }
