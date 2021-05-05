@@ -36,8 +36,8 @@ public class mq_contrl{
               queueManager   = new mq_mngr();
               isUsed           = false;
        }
-       protected boolean isUse(){return isUsed;}
-       protected void    isUse(boolean is){isUsed=is;}
+       public boolean isUse(){return isUsed;}
+       public void    isUse(boolean is){isUsed=is;}
 
 
        public int open(String _qmname,String _host,int _port,String _channel,String user,String passwd) throws  mqExcept {

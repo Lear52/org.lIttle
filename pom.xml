@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210430-SNAPSHOT</version>
+        <version>20210505-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
@@ -100,6 +100,23 @@
         </build>
 
         <dependencies>
+
+        <dependency>
+           <groupId>javax.servlet</groupId>
+           <artifactId>javax.servlet-api</artifactId>
+           <version>4.0.1</version>
+        </dependency>
+        <dependency>
+           <groupId>org.zeromq</groupId>
+           <artifactId>jeromq-jms</artifactId>
+           <version>3.0.1-RELEASE</version>
+        </dependency>
+        <dependency>
+           <groupId>org.zeromq</groupId>
+           <artifactId>jeromq</artifactId>
+           <version>0.5.2</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.syslog4j</groupId>

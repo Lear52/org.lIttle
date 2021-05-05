@@ -8,13 +8,13 @@ public class cfg_conn {
              public  static int    getClassId(){return CLASS_ID;}
              //private static Logger log=new Logger(CLASS_NAME);
 
-       private String          qmname;
-       private String          hostname;
-       private int             port;
-       private String          channel;
-       private boolean         local;
-       private String          user;
-       private String          password;
+       private String    qmname;
+       private String    hostname;
+       private int       port;
+       private String    channel;
+       private boolean   local;
+       private String    user;
+       private String    password;
 
        public String     getQMName   (){return qmname  ;}
        public String     getHost   (){return hostname;}
