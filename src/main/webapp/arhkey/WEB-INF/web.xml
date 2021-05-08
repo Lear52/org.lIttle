@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+
+  <display-name>stat</display-name>
+
+  <description>
+     Welcome to archive key
+  </description>
+
+
+  <servlet>
+     <servlet-name>arhview</servlet-name>
+     <servlet-class>org.little.mailWeb.webMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>littleproxy_key.xml</param-value>
+     </init-param>
+     <load-on-startup>20</load-on-startup> 
+  </servlet>
+
+  <servlet>
+     <servlet-name>arhload</servlet-name>
+     <servlet-class>org.little.mailWeb.loadMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>littleproxy_key.xml</param-value>
+     </init-param>
+     <load-on-startup>10</load-on-startup> 
+  </servlet>
+
+  <servlet-mapping>
+     <servlet-name>arhview</servlet-name>
+     <url-pattern>/arh/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

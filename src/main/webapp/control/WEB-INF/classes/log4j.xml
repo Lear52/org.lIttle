@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" >
+
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <param name="target" value="System.out"/>
+        <param name="ImmediateFlush" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p [%d{dd.MM.yyyy HH:mm:ss}] %C{1}: %m%n"/>
+        </layout>
+    </appender>
+    
+    <appender name="STDERR" class="org.apache.log4j.ConsoleAppender">
+        <param name="target" value="System.err"/>
+        <param name="ImmediateFlush" value="true"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p [%d{dd.MM.yyyy HH:mm:ss}] %C{1}: %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="prj0app" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="logs/prj02_1.txt"/>
+        <param name="MaxFileSize" value="1MB"/>
+        <param name="ImmediateFlush" value="true"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <param name="Encoding" value="Cp1251"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy.MM.dd HH:mm:ss}] %-5p  %C{1}:%m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="prj0err" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="logs/prj02_err1.txt"/>
+        <param name="MaxFileSize" value="1MB"/>
+        <param name="ImmediateFlush" value="true"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <param name="Encoding" value="Cp1251"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy.MM.dd HH:mm:ss}] %-5p  %C{1}:%m%n"/>
+        </layout>
+    </appender>
+
+
+
+    <logger name="org" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="prj0app"/>
+    </logger>
+
+    <logger name="prj0" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="prj0app"/>
+    </logger>
+
+    <logger name="error.prj0" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="prj0err"/>
+    </logger>
+
+    <logger name="error.org" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="prj0err"/>
+    </logger>
+
+    <root>
+        <level value="info"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</log4j:configuration>
+

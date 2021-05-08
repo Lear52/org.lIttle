@@ -20,6 +20,8 @@ public class commonSyslog{
        private String        def_page;
        private String        error_page;
        private int           port;
+       private Node          mq_node_cfg;
+       private boolean       forward_mq;
 
 
 
@@ -29,7 +31,12 @@ public class commonSyslog{
        private commonSyslog(){clear();}
 
        private void clear(){
-               node_cfg=null;              
+               node_cfg   =null;            
+               def_page   ="index.jsp";   
+               error_page ="error.jsp"; 
+               port       =9898;       
+               mq_node_cfg=null;
+               forward_mq =false;   
        }
        
        public boolean init(Node _node_cfg){
@@ -42,6 +49,7 @@ public class commonSyslog{
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
                   if("global_option".equalsIgnoreCase(n.getNodeName())){initGlobal(n);}
+                  if("mq_option".equalsIgnoreCase(n.getNodeName())){mq_node_cfg=n;}
               }
 
               logger.info("The configuration node:"+node_cfg.getNodeName()+" for commonSyslog ");
@@ -55,9 +63,11 @@ public class commonSyslog{
                      Node n=glist.item(i);
                      if("port"       .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{port=Integer.parseInt(s, 10);}catch(Exception e){ port=9898;logger.error("port:"+s);} logger.info("port:"+port);}
                      else
-                     if("def_page"          .equalsIgnoreCase(n.getNodeName())){def_page          =n.getTextContent(); logger.info("def_page:"+def_page);}
+                     if("forward_mq" .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{forward_mq=Boolean.parseBoolean(s);}catch(Exception e){ forward_mq=false;logger.error("forward_mq:"+s);} logger.info("forward_mq:"+forward_mq);}
                      else
-                     if("error_page"        .equalsIgnoreCase(n.getNodeName())){error_page        =n.getTextContent(); logger.info("error_page:"+error_page);}
+                     if("def_page"   .equalsIgnoreCase(n.getNodeName())){def_page          =n.getTextContent(); logger.info("def_page:"+def_page);}
+                     else
+                     if("error_page" .equalsIgnoreCase(n.getNodeName())){error_page        =n.getTextContent(); logger.info("error_page:"+error_page);}
                  }
               }
               else{
@@ -68,6 +78,9 @@ public class commonSyslog{
        public String       getDefPage        () {return def_page;          }
        public String       getErrorPage      () {return error_page;        }
        public int          getPort           () {return port;              }
+       public Node         getMQNode         () { return mq_node_cfg;      }
+       public boolean      isForwardMQ       () { return forward_mq;       }
+
        //--------------------------------------------------------------------------------------------------------
 
        private static String getDefNodeName(){ return "little";};

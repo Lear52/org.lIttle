@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+
+  <display-name>syslog</display-name>
+
+  <description>
+     Welcome to syslog
+  </description>
+
+
+  <servlet>
+     <servlet-name>syslog</servlet-name>
+     <servlet-class>org.little.syslog.webMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>littleproxy_syslog.xml </param-value>
+     </init-param>
+     <load-on-startup>10</load-on-startup> 
+  </servlet>
+
+  <servlet-mapping>
+     <servlet-name>syslog</servlet-name>
+     <url-pattern>/syslog/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

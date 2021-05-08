@@ -8,6 +8,7 @@ import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.little.syslog.impl.TCPSyslogServerConfig;
 import org.little.syslog.impl.UDPSyslogServerConfig;
+import org.little.syslog.impl.printEvent;
 import org.little.syslog.impl.printEventBuf;
 import org.little.syslog.impl.printEventConsole;
 import org.little.syslog.impl.printEventLog;
@@ -22,10 +23,10 @@ public class Server extends tfork{
        public  int           SYSLOG_PORT;
        private printEventSet log;
        private printEventBuf last;
-       private String     syslogProtocol;
+       //private String     syslogProtocol;
 
        public Server(){
-              syslogProtocol = "udp";
+              //syslogProtocol = "udp";
               SYSLOG_PORT = 9898;
               log = new printEventSet();
               last= new printEventBuf();
@@ -33,41 +34,45 @@ public class Server extends tfork{
               log.add(last);
        }
        public void printConsole() {
-              log.add(new printEventConsole());
+              addPrintEvent(new printEventConsole());
        }
-       public void set(String _syslogProtocol,int _SYSLOG_PORT) {
-              syslogProtocol = _syslogProtocol;
+       public void addPrintEvent(printEvent _log) {
+              log.add(_log);
+       }
+       public void set(int _SYSLOG_PORT) {
+              //syslogProtocol = _syslogProtocol;
               SYSLOG_PORT    = _SYSLOG_PORT;
        }
        public printEventBuf print(){return last;}
 
        @Override
        public void run() {
+              logger.info("Start Syslog Servers");
+              // clear created server instances (TCP/UDP)
+              SyslogServer.shutdown();
+
               SyslogServerConfigIF config1 =null;
               SyslogServerConfigIF config2 =null;
-              //if ("udp".equals(syslogProtocol)) 
+
               config1 = new UDPSyslogServerConfig(log);
-              //else
-              //if ("tcp".equals(syslogProtocol)) 
-              config2 = new TCPSyslogServerConfig(log);
-              //else {
-              //   logger.error("Unsupported Syslog protocol: " + syslogProtocol);
-              //   return;
-              //}
               config1.setUseStructuredData(true);
               config1.setHost("0.0.0.0");
               config1.setPort(SYSLOG_PORT);
+              logger.info("Starting Syslog Server udp");
+              logger.info("Protocol:     " + "udp");
+              logger.info("Bind address: " + config1.getHost());
+              logger.info("Port:         " + config1.getPort());
+
+              config2 = new TCPSyslogServerConfig(log);
               config2.setUseStructuredData(true);
               config2.setHost("0.0.0.0");
               config2.setPort(SYSLOG_PORT);
 
-              logger.info("Starting Syslog Server");
-              logger.info("Protocol:     " + syslogProtocol);
-              logger.info("Bind address: " + config1.getHost());
-              logger.info("Port:         " + config1.getPort());
+              logger.info("Starting Syslog Server tcp");
+              logger.info("Protocol:     " + "tcp");
+              logger.info("Bind address: " + config2.getHost());
+              logger.info("Port:         " + config2.getPort());
 
-              // clear created server instances (TCP/UDP)
-              SyslogServer.shutdown();
               // start syslog server
               SyslogServerIF server1=SyslogServer.createThreadedInstance("udp", config1);
               SyslogServerIF server2=SyslogServer.createThreadedInstance("tcp", config2);
@@ -81,6 +86,7 @@ public class Server extends tfork{
                  //
                  server1.setThread(thread);
                  thread.start();
+                 logger.info("Start Syslog Server (udp)");
               }
               if(server2.getThread() == null) {
                  Thread thread = new Thread(server2);
@@ -92,10 +98,14 @@ public class Server extends tfork{
                  //
                  server2.setThread(thread);
                  thread.start();
+                 logger.info("Start Syslog Server (tcp)");
               }
+
+              logger.trace("Start loop");
               
               while(isRun()){
-                  try {Thread.sleep(100);}catch(Exception e){}
+                    //logger.trace("loop");
+                    try {Thread.sleep(100);}catch(Exception e){}
               }
               server1.shutdown();
               server2.shutdown();
@@ -113,7 +123,7 @@ public class Server extends tfork{
               //System.setProperty("sun.security.ssl.allowLegacyHelloMessages", "true");
 
               if(args.length > 0) {
-                 server.set(args[0],9898);
+                 server.set(9898);
               } 
               else {
                      logger.error("No protocol provided. Defaulting to udp");

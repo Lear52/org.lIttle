@@ -22,34 +22,49 @@ import org.little.web.webRun;
 public class webMngr extends webRun{
        private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
        private static final long serialVersionUID = -3616757490430537836L;
-       private ImapClient client;
+       private commonArh    cfg;
+       //private ImapView client;
+
+       public webMngr(){
+              cfg = new commonArh();
+              logger.info("create webMngr");
+       } 
 
        @Override
        public void init() throws ServletException {
 
               logger.trace("start"+":"+getServletInfo());
-              
-              client=new ImapClient();
-              
               String xpath=this.getServletContext().getRealPath("");
-
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-              if(client.loadCFG(xpath)==false){
+              boolean ret=cfg.loadCFG(xpath);
+              cfg.init();
+              if(ret==false){
                  logger.error("error read config file:"+xpath);
                  return;
               }
 
-              logger.info("START LITTLE.IMAPWEB config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
+              //client=new ImapView();
+              //if(client.loadCFG(xpath)==false){
+              //   client=null;
+             //    logger.error("error read config file:"+xpath);
+             //    return;
+             // }
+             // client.setDelay(client.getTimeout());
 
-              client.setDelay(client.getTimeout());
-
+              logger.info("START LITTLE.IMAPWEB(VIEW) config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
               logger.trace("run:"+getServletInfo());
-       }
+        }
+        @Override
+        public void destroy() {
+               super.destroy();
+               //client=null;
+               logger.info("STOP LITTLE.IMAPWEB(VIEW) "+Version.getVer()+"("+Version.getDate()+")");
+        }
 
        @Override
        public String getServletInfo() {
@@ -58,7 +73,8 @@ public class webMngr extends webRun{
        private void doGetFileID(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
                logger.trace("begin doGetFileID:"+_uid);
               
-               lMessage  msg=client.getLog().loadArray(_uid);
+               lMessage  msg=cfg.getFolder().loadArray(_uid);
+
                byte [] buf=null;
                int     buf_size=0;
                if(msg!=null){
@@ -88,7 +104,7 @@ public class webMngr extends webRun{
        private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
                logger.trace("begin doGetX509ID:"+_x509_id);
               
-               lMessage  msg=client.getLog().loadArrayX509(_x509_id);
+               lMessage  msg=cfg.getFolder().loadArrayX509(_x509_id);
                byte [] buf=null;
                int     buf_size=0;
                if(msg!=null){
@@ -115,9 +131,12 @@ public class webMngr extends webRun{
                logger.trace("end doGetX509ID:"+_x509_id+" filename="+filename);
        }
        private void doGetList(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
-               logger.trace("begin doGetList type:"+_type);
+               String prn_type;
+               if(_type==null)prn_type="is null";else prn_type=_type;
+
+               logger.trace("begin doGetList type:"+prn_type);
                
-               JSONObject  root=client.getLog().loadJSON(_type);
+               JSONObject  root=cfg.getFolder().loadJSON(_type);
                
                logger.trace("getStatAll() :"+root);
                
@@ -126,12 +145,15 @@ public class webMngr extends webRun{
                
                root.write(response.getWriter());
                
-               logger.trace("end doGetList type:"+_type);
+               logger.trace("end doGetList type:"+prn_type);
        }
        private void doGetX509(HttpServletRequest request, HttpServletResponse response,String _type) throws ServletException, IOException{
-               logger.trace("begin doGetX509 type:"+_type);
+               String prn_type;
+               if(_type==null)prn_type="is null";else prn_type=_type;
+
+               logger.trace("begin doGetX509 type:"+prn_type);
               
-               JSONObject  root=client.getLog().loadJSONX509(_type);
+               JSONObject  root=cfg.getFolder().loadJSONX509(_type);
               
                logger.trace("getStatAll() :"+root);
               
@@ -140,7 +162,7 @@ public class webMngr extends webRun{
               
                root.write(response.getWriter());
               
-               logger.trace("end doGetX509 type:"+_type);
+               logger.trace("end doGetX509 type:"+prn_type);
        }
 
        @Override
@@ -174,10 +196,10 @@ public class webMngr extends webRun{
                      return;
                   }
                   logger.trace("error request uid:"+_uid);
-                  page =client.getErrorPage();;
+                  page =cfg.getErrorPage();;
               }
   
-              if(page==null)page = client.getDefPage();
+              if(page==null)page = cfg.getDefPage();
 
               //-----------------------------------------------------------------------------------------
               if(page!=null)

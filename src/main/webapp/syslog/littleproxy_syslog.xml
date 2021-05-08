@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+	<littlesyslog>
+		<global_option>
+                        <port>9898</port>
+		        <def_page>/index.jsp</def_page>
+		        <error_page>/error.jsp</error_page>
+                        <forward_mq>true</forward_mq>
+		</global_option>
+		<mq_option>
+			<mngr>SBPFRONT_SNT_TU</mngr><queue>TEST</queue><host>10.70.112.150</host><port>2701</port><user>av</user><password>483886416409</password><channel>MONITOR</channel>
+		</mq_option>
+	</littlesyslog>
+
+</little>

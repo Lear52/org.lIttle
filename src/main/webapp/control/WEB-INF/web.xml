@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+
+  <display-name>stat</display-name>
+
+  <description>
+     Welcome to stat queue
+  </description>
+
+
+  <servlet>
+     <servlet-name>cmd</servlet-name>
+     <servlet-class>org.little.mq.controlStream.webMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>littleproxy_mq.xml</param-value>
+     </init-param>
+     <load-on-startup>20</load-on-startup> 
+  </servlet>
+
+  <servlet-mapping>
+     <servlet-name>cmd</servlet-name>
+     <url-pattern>/cmd/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

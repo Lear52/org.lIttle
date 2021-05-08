@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.little.syslog.impl.commonSyslog;
+import org.little.syslog.impl.printEventMQ;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
@@ -26,7 +27,7 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 public class webMngr extends webRun{
 	private static final long serialVersionUID = -8820420158454598488L;
 	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
-	private Server server;
+	private static Server server=null;
 
        @Override
        public void init() throws ServletException {
@@ -39,18 +40,26 @@ public class webMngr extends webRun{
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-              
-              if(commonSyslog.loadCFG(xpath)==false){
-                 logger.error("error read config file:"+xpath);
-                 return;
+              if(server==null){
+                 if(commonSyslog.loadCFG(xpath)==false){
+                    logger.error("error read config file:"+xpath);
+                    return;
+                 }
+                 server=new Server();
+                 server.set(commonSyslog.get().getPort());
+
+                 if(commonSyslog.get().isForwardMQ()){
+                    printEventMQ _log=new printEventMQ();
+                    _log.init(commonSyslog.get().getMQNode());
+                    _log.open();
+                    server.addPrintEvent(_log);
+                 }
+                 else{
+                     logger.info("START LITTLE.SYSLOG forward mq close");
+                 }
+                 server.fork();
+                 logger.info("START LITTLE.SYSLOG config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
               }
-              server=new Server();
-              server.set("tcp",commonSyslog.get().getPort());
-              server.fork();
-              
-
-              logger.info("START LITTLE.SYSLOG config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
-
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
@@ -64,15 +73,16 @@ public class webMngr extends webRun{
        private void doGetList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
            logger.trace("begin doGetList");
 
-           JSONObject  root=null;
+           JSONObject  root=new JSONObject();
+           JSONArray evn_list=new JSONArray();
 
            response.setContentType("application/json");
            response.setContentType("text/html; charset=UTF-8");
            
-           root=new JSONObject();
-           Iterator<SyslogServerEventIF> list = server.print().getEvent();
-           JSONArray evn_list=new JSONArray();
-           while(list.hasNext()) {
+           if(server!=null){
+              Iterator<SyslogServerEventIF> list;
+              list = server.print().getEvent();
+              while(list.hasNext()) {
         	   JSONObject  p=new JSONObject();
         	   SyslogServerEventIF evn = list.next();
         	   p.put("date", evn.getDate());
@@ -81,11 +91,12 @@ public class webMngr extends webRun{
         	   p.put("facility", evn.getFacility());
         	   p.put("msg", evn.getMessage());
         	   evn_list.put(p);
+              }
+              
            }
-           
+
            root.put("list_msg",evn_list);
            root.put("name","list last message");
-           
            root.write(response.getWriter());
 
            logger.trace("end doGetList");
@@ -97,14 +108,15 @@ public class webMngr extends webRun{
               String    path = (String) request.getPathInfo();
               String    page=null;
 
-              logger.trace("webAddr.doRun() path:"+path);
+              logger.trace("webMngr.doRun() path:"+path);
+
               if(path.startsWith("/list")){
                  doGetList(request,response);
                  return;
               }
   
               if(page==null)page = commonSyslog.get().getDefPage();
-
+              logger.trace("webMngr.doRun() page:"+page);
               //-----------------------------------------------------------------------------------------
               if(page!=null)
               try {

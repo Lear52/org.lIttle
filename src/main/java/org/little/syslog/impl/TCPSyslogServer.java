@@ -23,6 +23,7 @@ public class TCPSyslogServer extends TCPNetSyslogServer {
        
        @Override
        public void run() {
+              logger.info("starting  Syslog server socket tcp");
               printEvent           log=null;
               {
                 SyslogServerConfigIF _log = this.getConfig();

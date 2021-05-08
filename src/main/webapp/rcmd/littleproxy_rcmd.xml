@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+	<littlecmd>
+		<global_option>
+		        <def_page>/index.html</def_page>
+		        <error_page>/error.jsp</error_page>
+		</global_option>
+
+		<apk>
+                   <node id="ext-nn"><host>10.70.116.148</host><user>cisco</user><password>cisco</password></node>
+                   <node id="ext-dk"><host>192.168.1.1</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-tu"><host>10.93.130.77</host><user>adm</user><password>2wsxXSW@</password></node>
+                   <node id="ext-nu"><host>10.70.116.149</host><user>cisco</user><password>cisco</password></node>
+		</apk>
+		<commanddi>
+		      <open>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>bash</req><res>#</res></cmd>
+		         <cmd><req>export TERM=vt100</req><res>#</res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>show crypto ike conns</req><res print="true">#</res></cmd>
+		         <cmd><req>show</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </open>
+		      <dir_flash>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>ls flash0:</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </dir_flash>
+		      <show_ser>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ssh -l root 172.16.31.85</req><res>word:</res></cmd>
+		         <cmd><req>@$Fduecnf2019</req><res># </res></cmd>
+		         <cmd><req>ssh -l adm 172.16.30.20</req><res>word:</res></cmd>
+		         <cmd><req>1qaz!QAZ</req><res>#</res></cmd>
+		         <cmd><req>show crypto pki pkcs10 flash0:/new_test_key/cert-test1.p10</req><res print="true"></res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		         <cmd><req>exit</req></cmd>
+		      </show_ser>
+		      <open1>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>show</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		      </open1>
+		      <dir_flash1>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>ls log:</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		      </dir_flash1>
+		      <open2>
+		         <cmd><res res="#"></res></cmd>
+		         <cmd><req>show crypto ike conns</req><res print="true">#</res></cmd>
+		         <cmd><req>exit</req><res>#</res></cmd>
+		      </open2>
+                      
+		</commanddi>
+
+	</littlecmd>
+
+</little>

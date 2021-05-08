@@ -2,6 +2,7 @@ package org.little.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -111,7 +112,11 @@ public class webRun extends HttpServlet {
                 String page = null;
 
                 //u=getUserSession(request);/**/
-
+                Principal u = request.getUserPrincipal();
+                String user=u.getName();
+                request.isUserInRole("admin_group");
+                
+                
                 cmd = (String) request.getParameter(webDef.request_cmd);
                 logger.trace("webaccess cmd:"+cmd);
                 //-------------------------------------------------------------------------------------

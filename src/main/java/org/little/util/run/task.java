@@ -102,7 +102,9 @@ public class task   implements Runnable{
        public void setId(int _id) {id = _id;  }
 
        public void setStart(int start) {
-              nextExecutionTime=System.currentTimeMillis()+start*1000L;
+           startExecutionTime=System.currentTimeMillis()+start*1000L;
+           nextExecutionTime=startExecutionTime;
+           //nextExecutionTime=System.currentTimeMillis()+start*1000L;
        }
        
        public int state(){return state;}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+
+  <display-name>stat</display-name>
+
+  <description>
+     Welcome to rcmd
+  </description>
+
+
+  <servlet>
+     <servlet-name>rcmd</servlet-name>
+     <servlet-class>org.little.rcmd.webMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>littleproxy_rcmd.xml </param-value>
+     </init-param>
+     <load-on-startup>10</load-on-startup> 
+  </servlet>
+
+  <servlet-mapping>
+     <servlet-name>rcmd</servlet-name>
+     <url-pattern>/rcmd/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

@@ -23,6 +23,7 @@ public class UDPSyslogServer extends UDPNetSyslogServer {
 
        @Override
        public void run() {
+              logger.info("starting  Syslog server socket udp");
               this.shutdown = false;
               printEvent log=null;
               SyslogServerConfigIF _log = this.getConfig();
