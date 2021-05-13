@@ -1,17 +1,7 @@
 package org.little.mq.mqapi;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.StringTokenizer;
-
-import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
-import org.little.util.run.tfork;
-
-import com.ibm.mq.MQException;
 
 
 public class clearQ {

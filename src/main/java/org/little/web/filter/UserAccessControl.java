@@ -3,6 +3,10 @@ package org.little.web.filter;
 
 import java.util.Properties;
 
+import org.little.web.filter.access.LdapAccessControl;
+import org.little.web.filter.access.SpnegoAccessControl;
+import org.little.web.filter.impl.UserInfo;
+
 /**
  * An interface for specifying how a program/library interacts with an  
  * implementing object when performing util authorization (authZ). This
@@ -329,161 +333,158 @@ import java.util.Properties;
  * </p>
  * 
  * 
- * @author Darwin V. Felix
- *
  */
 public interface UserAccessControl {
     
-    /**
-     * Used for clean-up when usage of the object is no longer needed and no other 
-     * method calls will be made on this instance. 
-     * 
-     * <p>
-     * Calling this method is an indication that no other method calls will be called 
-     * on this instance. If method calls must resume on this instance, the init method 
-     * MUST be called before this instance can be placed back into service.
-     * </p>
-     * 
-     * <p>
-     * If this method has been called and a reference to the instance is 
-     * maintained, the init method must be called again to re-initialize the 
-     * object's instance variables.
-     * </p>
-     */
-    void destroy();
-    
-    /**
-     * Checks to see if the given util has at least one of the passed-in attributes.
-     * 
-     * <pre>
-     * String[] attributes = new String[] {"Developer", "Los Angeles", "Manager"};
-     * 
-     * if (accessControl.anyRole("dfelix", attributes)) {
-     *     // will be in here if dfelix has at least one matching attribute
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param attribute e.g. Team Lead, IT, Developer
-     * @return true if the util has at least one of the passed-in roles/features
-     */
-    boolean anyRole(final String username, final String... attribute);
-    
-    /**
-     * Checks to see if the given util has the passed-in attribute.
-     * 
-     * <pre>
-     * String attribute = "Los Angeles";
-     * 
-     * if (accessControl.hasRole("dfelix", attribute)) {
-     *     // will be in here if dfelix has that one attribute
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param attribute e.g. IT
-     * @return true if the util has the passed-in role/attribute
-     */
-    boolean hasRole(final String username, final String attribute);
-
-    /**
-     * Checks to see if the given util has the first attribute
-     * AND has at least one of the passed-in attributes.
-     * 
-     * <pre>
-     * String attributeX = "Los Angeles";
-     * String[] attributeYs = new String[] {"Developer", "Manager"};
-     * 
-     * if (accessControl.hasRole("dfelix", attributeX, attributeYs)) {
-     *     // will be in here if dfelix has attributeX 
-     *     // AND has at least one of the attributeYs.
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param attributeX e.g. Information Technology
-     * @param attributeYs e.g. Team Lead, IT-Architecture-DL
-     * @return true if util has featureX AND at least one the featureYs
-     */
-    boolean hasRole(final String username
-        , final String attributeX, final String... attributeYs);
-    
-    /**
-     * Checks to see if the given util has at least one of the passed-in
-     * util-defined resource labels.
-     * 
-     * <pre>
-     * if (accessControl.anyAccess("dfelix", "admin-links", "buttons-for-ops")) {
-     *     // will be in here if dfelix has at least one matching resource
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param resources e.g. admin-links, ops-buttons
-     * @return true if the util has at least one of the passed-in util-defined resource labels
-     */
-    boolean anyAccess(final String username, final String... resources);
-    
-    /**
-     * Checks to see if the passed-in util has access to the
-     * util-defined resource label.
-     * 
-     * <pre>
-     * UserAccessControl accessControl = ...;
-     * boolean editAndAdminBtns = false;
-     * 
-     * if (accessControl.hasAccess("dfelix", "admin-buttons")) {
-     *     editAndAdminBtns = true;
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param resource e.g. admin-buttons
-     * @return true if util has access to the util-defined resource labels
-     */
-    boolean hasAccess(final String username, final String resource);
-    
-    /**
-     * Checks to see if the given util has the first resource label
-     * AND has at least one of the passed-in resource labels.
-     * 
-     * <pre>
-     * String resourceX = "phone-list";
-     * String[] resourceYs = new String[] {"staff-directory", "procedure-manual"};
-     * 
-     * if (accessControl.hasAccess("dfelix", resourceX, resourceYs)) {
-     *     // will be in here if dfelix has resourceX 
-     *     // AND has at least one of the resourceYs.
-     * }
-     * </pre>
-     * 
-     * @param username e.g. dfelix
-     * @param resourceX e.g. phone-list
-     * @param resourceYs e.g. staff-directory, procedure-manual, emergency-contact-list
-     * @return true if util has resourceX AND at least one the resourceYs
-     */
-    boolean hasAccess(final String username, final String resourceX, final String... resourceYs);
-    
-    /**
-     * Returns the util's info object for the given util.
-     * 
-     * @return the util's info object for the given util
-     */
-    UserInfo getUserInfo(final String username);
-
-    /**
-     * Method is used for initialization prior to use/calling any other method. 
-     * 
-     * <p>
-     * Calling this method is an indication that this instance is in service/active
-     * and any method can be called at anytime for the purpose of servicing a request.
-     * </p>
-     * 
-     * <p>
-     * If this method has been called and a reference to the instance is 
-     * maintained, this method should not be called again unless the destroy 
-     * method is called first.
-     * </p>
-     */
-    void init(final Properties props); 
-}
+       /**
+        * Used for clean-up when usage of the object is no longer needed and no other 
+        * method calls will be made on this instance. 
+        * 
+        * <p>
+        * Calling this method is an indication that no other method calls will be called 
+        * on this instance. If method calls must resume on this instance, the init method 
+        * MUST be called before this instance can be placed back into service.
+        * </p>
+        * 
+        * <p>
+        * If this method has been called and a reference to the instance is 
+        * maintained, the init method must be called again to re-initialize the 
+        * object's instance variables.
+        * </p>
+        */
+       void destroy();
+       
+       /**
+        * Checks to see if the given util has at least one of the passed-in attributes.
+        * 
+        * <pre>
+        * String[] attributes = new String[] {"Developer", "Los Angeles", "Manager"};
+        * 
+        * if (accessControl.anyRole("dfelix", attributes)) {
+        *     // will be in here if dfelix has at least one matching attribute
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param attribute e.g. Team Lead, IT, Developer
+        * @return true if the util has at least one of the passed-in roles/features
+        */
+       boolean anyRole(final String username, final String... attribute);
+       
+       /**
+        * Checks to see if the given util has the passed-in attribute.
+        * 
+        * <pre>
+        * String attribute = "Los Angeles";
+        * 
+        * if (accessControl.hasRole("dfelix", attribute)) {
+        *     // will be in here if dfelix has that one attribute
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param attribute e.g. IT
+        * @return true if the util has the passed-in role/attribute
+        */
+       boolean hasRole(final String username, final String attribute);
+      
+       /**
+        * Checks to see if the given util has the first attribute
+        * AND has at least one of the passed-in attributes.
+        * 
+        * <pre>
+        * String attributeX = "Los Angeles";
+        * String[] attributeYs = new String[] {"Developer", "Manager"};
+        * 
+        * if (accessControl.hasRole("dfelix", attributeX, attributeYs)) {
+        *     // will be in here if dfelix has attributeX 
+        *     // AND has at least one of the attributeYs.
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param attributeX e.g. Information Technology
+        * @param attributeYs e.g. Team Lead, IT-Architecture-DL
+        * @return true if util has featureX AND at least one the featureYs
+        */
+       boolean hasRole(final String username, final String attributeX, final String... attributeYs);
+       
+       /**
+        * Checks to see if the given util has at least one of the passed-in
+        * util-defined resource labels.
+        * 
+        * <pre>
+        * if (accessControl.anyAccess("dfelix", "admin-links", "buttons-for-ops")) {
+        *     // will be in here if dfelix has at least one matching resource
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param resources e.g. admin-links, ops-buttons
+        * @return true if the util has at least one of the passed-in util-defined resource labels
+        */
+       boolean anyAccess(final String username, final String... resources);
+       
+       /**
+        * Checks to see if the passed-in util has access to the
+        * util-defined resource label.
+        * 
+        * <pre>
+        * UserAccessControl accessControl = ...;
+        * boolean editAndAdminBtns = false;
+        * 
+        * if (accessControl.hasAccess("dfelix", "admin-buttons")) {
+        *     editAndAdminBtns = true;
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param resource e.g. admin-buttons
+        * @return true if util has access to the util-defined resource labels
+        */
+       boolean hasAccess(final String username, final String resource);
+       
+       /**
+        * Checks to see if the given util has the first resource label
+        * AND has at least one of the passed-in resource labels.
+        * 
+        * <pre>
+        * String resourceX = "phone-list";
+        * String[] resourceYs = new String[] {"staff-directory", "procedure-manual"};
+        * 
+        * if (accessControl.hasAccess("dfelix", resourceX, resourceYs)) {
+        *     // will be in here if dfelix has resourceX 
+        *     // AND has at least one of the resourceYs.
+        * }
+        * </pre>
+        * 
+        * @param username e.g. dfelix
+        * @param resourceX e.g. phone-list
+        * @param resourceYs e.g. staff-directory, procedure-manual, emergency-contact-list
+        * @return true if util has resourceX AND at least one the resourceYs
+        */
+       boolean hasAccess(final String username, final String resourceX, final String... resourceYs);
+       
+       /**
+        * Returns the util's info object for the given util.
+        * 
+        * @return the util's info object for the given util
+        */
+       UserInfo getUserInfo(final String username);
+      
+       /**
+        * Method is used for initialization prior to use/calling any other method. 
+        * 
+        * <p>
+        * Calling this method is an indication that this instance is in service/active
+        * and any method can be called at anytime for the purpose of servicing a request.
+        * </p>
+        * 
+        * <p>
+        * If this method has been called and a reference to the instance is 
+        * maintained, this method should not be called again unless the destroy 
+        * method is called first.
+        * </p>
+        */
+       void init(final Properties props); 
+}     

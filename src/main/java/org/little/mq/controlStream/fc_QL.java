@@ -12,12 +12,14 @@ import org.w3c.dom.NodeList;
 public class fc_QL extends fc_Q{
        private static final Logger logger = LoggerFactory.getLogger(fc_QL.class);
        
-       private String mq_host;
-       private int    mq_port;
-       private String mq_user;
-       private String mq_passwd;
-       private int    deep_alarm;
-       private String mq_channel;
+       private String    mq_host;
+       private int       mq_port;
+       private String    mq_user;
+       private String    mq_passwd;
+       private int       deep_alarm;
+       private String    mq_channel;
+
+       private mq_contrl cntrl;
 
        @Override
        public void   clear() {
@@ -28,6 +30,7 @@ public class fc_QL extends fc_Q{
               mq_passwd =null;
               deep_alarm=150;
               mq_channel="SYSTEM.ADMIN.SVRCONN";
+              cntrl     =new mq_contrl();
        }
 
        @Override
@@ -53,19 +56,29 @@ public class fc_QL extends fc_Q{
                 
                  return root;
        }
+       public void close() {
+              try {
+                   cntrl.close();
+              }
+              catch (mqExcept m){
+                    logger.error("work() ex:"+m);
+                    return;
+              }
+
+       }
+
        @Override
        public void work() {
               logger.info("1 work() queue:"+getNameQ()+" len:"+getDeepQ());
-              mq_contrl cntrl=new mq_contrl();
+              //mq_contrl cntrl=new mq_contrl();
               int len=0;
               try {
-                   cntrl.open(getNameMngr(),mq_host,mq_port,mq_channel,mq_user,mq_passwd);
+                   if(!cntrl.isOpen())cntrl.open(getNameMngr(),mq_host,mq_port,mq_channel,mq_user,mq_passwd);
                    len=cntrl.lengthLocalQueues(getNameQ());
 
                    if(deep_alarm<len)isAlarm(true);
                    else isAlarm(false);
 
-                   cntrl.close();
               }
               catch (mqExcept m){
                     logger.error("work() ex:"+m);

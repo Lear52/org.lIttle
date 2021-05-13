@@ -55,9 +55,9 @@ public class webMngr extends webRun{
 
               logger.trace("webAddr.doRun() path:"+path);
               if(path.startsWith("/http/")){
-                  String    _c = (String) request.getParameter("c");
-                  String auth_type = request.getAuthType();
-                  String user = request.getUserPrincipal().getName();
+                  //String    _c = (String) request.getParameter("c");
+                  //String auth_type = request.getAuthType();
+                  //String user = request.getUserPrincipal().getName();
                   
                   return;
               }

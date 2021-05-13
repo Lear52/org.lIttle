@@ -118,7 +118,7 @@ public class webRun extends HttpServlet {
                 
                 
                 cmd = (String) request.getParameter(webDef.request_cmd);
-                logger.trace("webaccess cmd:"+cmd);
+                logger.trace("webaccess cmd:"+cmd+" user:"+user);
                 //-------------------------------------------------------------------------------------
                 if (cmd == null) {
                         logger.error("error cmd:null");

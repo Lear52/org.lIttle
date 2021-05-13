@@ -1,4 +1,4 @@
-package org.little.web.filter;
+package org.little.web.filter.impl;
 
 import java.util.List;
 public interface UserInfo {
@@ -24,5 +24,5 @@ public interface UserInfo {
      * @param label e.g. mail, memberOf, displayName
      * @return true true if there is info with the passed-in label
      */
-    boolean hasInfo(final String label);
+    boolean     hasInfo(final String label);
 }

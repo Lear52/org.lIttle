@@ -1,8 +1,6 @@
 package org.little.mq.mqapi;
 
-import static com.ibm.mq.MQC.ASSOCIATE_NONE;
-import static com.ibm.mq.MQC.MQ_QMGR_ASSOCIATION_PROPERTY;
-
+//import com.ibm.mq.MQC;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -27,7 +25,6 @@ public class mq_mngr extends cfg_conn{
        private boolean         isUserIDPassword=false;
        private boolean         isTrace=true;//false
 
-       //@SuppressWarnings("unused")
        public  mq_mngr(){clear();}
       
        public mq_mngr(String _qmname) {
@@ -43,100 +40,6 @@ public class mq_mngr extends cfg_conn{
               setChannel(_channel);
               isLocal(false);
        }
-       /*
-       public int initJMS(String _jms_string) {
-              StringTokenizer          parser_str;
-              clear();
-              isLocal(true);
-              parser_str = new StringTokenizer(_jms_string, "/");
-
-              while(parser_str.hasMoreTokens()){
-                    String field=parser_str.nextToken();          
-
-                    StringTokenizer parser_field = new StringTokenizer(field, ":");
-
-                    if(parser_field.hasMoreTokens()==false)continue;
-
-                    field=parser_field.nextToken();
-
-                    if("JmsChannel".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-                          String _channel=parser_field.nextToken();
-                          setChannel(_channel);
-                          isLocal(false);
-                       }
-                       else{
-                           log.error("error parse channel:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-                    if("QM".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-                          String _queueManager=parser_field.nextToken();
-                          setQMName(_queueManager);
-                          //log.trace("QM:"+_queueManager);
-                       }
-                       else{
-                           log.error("error parse qm:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-                    if("Port".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-
-                          String _port=parser_field.nextToken();
-                          //log.trace("port:"+_port);
-                          try { 
-                               int port=Integer.parseInt(_port, 10);
-                               setPort(port);
-                          } 
-                          catch (Exception e) {
-                                log.error("error parse port:"+_port);
-                                return def.RET_ERROR;
-                          }
-                          isLocal(false);
-                          //client = true;
-                       }
-                       else{
-                           log.error("error parse port:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-                    if("Host".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-                          String _host=parser_field.nextToken();
-                          setHost(_host);
-                          isLocal(false);
-                       }
-                       else{
-                           log.error("error parse host:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-                    if("User".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-                          String _user=parser_field.nextToken();
-                          setUser(_user);
-                       }
-                       else{
-                           log.error("error parse util:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-                    if("Passwd".equalsIgnoreCase(field)){
-                       if(parser_field.hasMoreTokens()){
-                          String _password=parser_field.nextToken();
-                          setPassword(_password);
-                       }
-                       else{
-                           log.error("error parse passwd:"+field);
-                           return def.RET_ERROR;
-                       }
-                    }
-              }
-              return def.RET_OK;
-       }
-       */
        public synchronized void clear() {
               super.clear();
               qm        =null;
@@ -155,9 +58,9 @@ public class mq_mngr extends cfg_conn{
               MQException.log=null;/**/
               com.ibm.msg.client.commonservices.trace.Trace.isOn=isTrace;
 
-              //properties.put(com.ibm.mq.MQC.MQ_QMGR_ASSOCIATION_PROPERTY,com.ibm.mq.MQC.ASSOCIATE_NONE);//"QMgr_Association"
+             //properties.put(com.ibm.mq.MQC.MQ_QMGR_ASSOCIATION_PROPERTY,com.ibm.mq.MQC.ASSOCIATE_NONE);//"QMgr_Association"
              //properties.put(MQ_QMGR_ASSOCIATION_PROPERTY,ASSOCIATE_NONE);//"QMgr_Association"
-             properties.put(MQ_QMGR_ASSOCIATION_PROPERTY,ASSOCIATE_NONE);//"QMgr_Association"
+             //properties.put(MQC.MQ_QMGR_ASSOCIATION_PROPERTY,MQC.ASSOCIATE_NONE);//define
 
               if (isUserIDPassword){   
                   if(getUser()    !=null){

@@ -1,4 +1,7 @@
-package org.little.web.filter;
+package org.little.web.filter.access;
+
+import org.little.web.filter.UserAccessControl;
+import org.little.web.filter.impl.UserInfo;
 
 /**
  * Defines an object for performing util authorization (authZ). See the
@@ -193,117 +196,117 @@ package org.little.web.filter;
  */
 public interface SpnegoAccessControl {
 
-    /**
-     * Checks to see if the util has at least one of the passed-in attributes.
-     * 
-     * <pre>
-     * String[] attributes = new String[] {"Developer", "Los Angeles", "Manager"};
-     * 
-     * if (accessControl.anyRole(attributes)) {
-     *     // will be in here if the util has at least one matching attribute
-     * }
-     * </pre>
-     * 
-     * @param attributes e.g. Team Lead, IT, Developer
-     * @return true if the util has at least one of the passed-in roles/features
-     */
-    boolean anyRole(final String... attributes);
-    
-    /**
-     * Checks to see if the util has the passed-in attribute.
-     * 
-     * <pre>
-     * String attribute = "Developer";
-     * 
-     * if (accessControl.hasRole(attribute)) {
-     *     // will be in here if the util has the matching attribute
-     * }
-     * </pre>
-     * 
-     * @param attribute e.g. Team Lead, IT, Developer
-     * @return true if the util has at least one of the passed-in roles/features
-     */
-    boolean hasRole(final String attribute);
-
-    /**
-     * Checks to see if the util has the first attribute
-     * AND has at least one of the passed-in attributes.
-     * 
-     * <pre>
-     * String attributeX = "Los Angeles";
-     * String[] attributeYs = new String[] {"Developer", "Manager"};
-     * 
-     * if (accessControl.hasRole(attributeX, attributeYs)) {
-     *     // will be in here if the util has attributeX
-     *     // AND has at least one of the attributeYs.
-     * }
-     * </pre>
-     * 
-     * @param attributeX e.g. Information Technology
-     * @param attributeYs e.g. Team Lead, IT-Architecture-DL
-     * @return true if the util has featureX AND at least one the featureYs
-     */
-    boolean hasRole(final String attributeX, final String... attributeYs); 
-    
-    /**
-     * Checks to see if the util has at least one of the passed-in util-defined
-     * resource labels
-     * 
-     * <pre>
-     * String[] resources = new String[] {"admin-links", "ops-buttons"};
-     * 
-     * if (accessControl.anyAccess(resources)) {
-     *     // will be in here if the util has at least one matching resource
-     * }
-     * </pre>
-     * 
-     * @param resources e.g. admin-links, ops-buttons
-     * @return true if the util has at least one of the passed-in resources
-     */
-    boolean anyAccess(final String... resources);
-    
-    /**
-     * Checks to see if the util has access to the util-defined resource label.
-     * 
-     * <pre>
-     * boolean hasPermission = false;
-     * 
-     * if (request instanceof SpnegoAccessControl) {
-     *     SpnegoAccessControl accessControl = (SpnegoAccessControl) request;
-     *     
-     *     hasPermission = accessControl.hasAccess("finance-links");
-     * } 
-     * </pre>
-     * 
-     * @param resource e.g. admin-buttons
-     * @return true if the util has access to the util-defined resource
-     */
-    boolean hasAccess(final String resource);
-    
-    /**
-     * Checks to see if the util has the first util-defined resource label
-     * AND has at least one of the passed-in util-defined resource labels.
-     * 
-     * <pre>
-     * String resourceX = "finance-links";
-     * String[] resourceYs = new String[] {"admin-links", "accounting-buttons"};
-     * 
-     * if (accessControl.hasAccess(resourceX, resourceYs)) {
-     *     // will be in here if the util has resourceX
-     *     // AND has at least one of the resourceYs.
-     * }
-     * </pre>
-     * 
-     * @param resourceX e.g. finance-links
-     * @param resourceYs e.g. admin-links, accounting-buttons
-     * @return true if the util has resourceX AND at least one the resourceYs
-     */
-    boolean hasAccess(final String resourceX, final String... resourceYs);
-    
-    /**
-     * Returns the util's info object.
-     * 
-     * @return the util's info object
-     */
-    UserInfo getUserInfo();
+       /**
+        * Checks to see if the util has at least one of the passed-in attributes.
+        * 
+        * <pre>
+        * String[] attributes = new String[] {"Developer", "Los Angeles", "Manager"};
+        * 
+        * if (accessControl.anyRole(attributes)) {
+        *     // will be in here if the util has at least one matching attribute
+        * }
+        * </pre>
+        * 
+        * @param attributes e.g. Team Lead, IT, Developer
+        * @return true if the util has at least one of the passed-in roles/features
+        */
+       boolean anyRole(final String... attributes);
+       
+       /**
+        * Checks to see if the util has the passed-in attribute.
+        * 
+        * <pre>
+        * String attribute = "Developer";
+        * 
+        * if (accessControl.hasRole(attribute)) {
+        *     // will be in here if the util has the matching attribute
+        * }
+        * </pre>
+        * 
+        * @param attribute e.g. Team Lead, IT, Developer
+        * @return true if the util has at least one of the passed-in roles/features
+        */
+       boolean hasRole(final String attribute);
+      
+       /**
+        * Checks to see if the util has the first attribute
+        * AND has at least one of the passed-in attributes.
+        * 
+        * <pre>
+        * String attributeX = "Los Angeles";
+        * String[] attributeYs = new String[] {"Developer", "Manager"};
+        * 
+        * if (accessControl.hasRole(attributeX, attributeYs)) {
+        *     // will be in here if the util has attributeX
+        *     // AND has at least one of the attributeYs.
+        * }
+        * </pre>
+        * 
+        * @param attributeX e.g. Information Technology
+        * @param attributeYs e.g. Team Lead, IT-Architecture-DL
+        * @return true if the util has featureX AND at least one the featureYs
+        */
+       boolean hasRole(final String attributeX, final String... attributeYs); 
+       
+       /**
+        * Checks to see if the util has at least one of the passed-in util-defined
+        * resource labels
+        * 
+        * <pre>
+        * String[] resources = new String[] {"admin-links", "ops-buttons"};
+        * 
+        * if (accessControl.anyAccess(resources)) {
+        *     // will be in here if the util has at least one matching resource
+        * }
+        * </pre>
+        * 
+        * @param resources e.g. admin-links, ops-buttons
+        * @return true if the util has at least one of the passed-in resources
+        */
+       boolean anyAccess(final String... resources);
+       
+       /**
+        * Checks to see if the util has access to the util-defined resource label.
+        * 
+        * <pre>
+        * boolean hasPermission = false;
+        * 
+        * if (request instanceof SpnegoAccessControl) {
+        *     SpnegoAccessControl accessControl = (SpnegoAccessControl) request;
+        *     
+        *     hasPermission = accessControl.hasAccess("finance-links");
+        * } 
+        * </pre>
+        * 
+        * @param resource e.g. admin-buttons
+        * @return true if the util has access to the util-defined resource
+        */
+       boolean hasAccess(final String resource);
+       
+       /**
+        * Checks to see if the util has the first util-defined resource label
+        * AND has at least one of the passed-in util-defined resource labels.
+        * 
+        * <pre>
+        * String resourceX = "finance-links";
+        * String[] resourceYs = new String[] {"admin-links", "accounting-buttons"};
+        * 
+        * if (accessControl.hasAccess(resourceX, resourceYs)) {
+        *     // will be in here if the util has resourceX
+        *     // AND has at least one of the resourceYs.
+        * }
+        * </pre>
+        * 
+        * @param resourceX e.g. finance-links
+        * @param resourceYs e.g. admin-links, accounting-buttons
+        * @return true if the util has resourceX AND at least one the resourceYs
+        */
+       boolean hasAccess(final String resourceX, final String... resourceYs);
+       
+       /**
+        * Returns the util's info object.
+        * 
+        * @return the util's info object
+        */
+       UserInfo getUserInfo();
 }

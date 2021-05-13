@@ -1,6 +1,7 @@
 package org.little.syslog.impl;
 
-import org.productivity.java.syslog4j.server.SyslogServerIF;
+//import org.productivity.java.syslog4j.server.SyslogServerIF;
+//import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServer;
 import org.productivity.java.syslog4j.server.impl.net.tcp.TCPNetSyslogServerConfig;
 
 public class TCPSyslogServerConfig extends TCPNetSyslogServerConfig {
@@ -12,7 +13,7 @@ public class TCPSyslogServerConfig extends TCPNetSyslogServerConfig {
        }
 
        @Override
-       public Class<? extends SyslogServerIF> getSyslogServerClass() {
+       public Class getSyslogServerClass() {
               return TCPSyslogServer.class;
        }
        public printEvent getLog() {return log;};

@@ -27,6 +27,7 @@ public class mq_contrl{
        private mq_mngr         queueManager;
        private PCFMessageAgent agent;
        private boolean         isUsed;
+       private boolean         isOpen;
 
        public mq_contrl(){
               clear();
@@ -35,9 +36,12 @@ public class mq_contrl{
        public void clear() {
               queueManager   = new mq_mngr();
               isUsed           = false;
+              isOpen           = false;
        }
        public boolean isUse(){return isUsed;}
        public void    isUse(boolean is){isUsed=is;}
+       public boolean isOpen(){return isOpen;}
+       public void    isOpen(boolean is){isOpen=is;}
 
 
        public int open(String _qmname,String _host,int _port,String _channel,String user,String passwd) throws  mqExcept {
@@ -55,12 +59,13 @@ public class mq_contrl{
                  else       log.error("Error open mngr:"+queueManager.getQMName()+" ex:"+e1);
                  throw e1;
              }
-              
+             isOpen(true); 
              return 0;
        }
 
       
        public void close() throws  mqExcept{
+              isOpen(false); 
               try {
                   if(agent!=null)agent.disconnect();
               }
@@ -82,6 +87,7 @@ public class mq_contrl{
 
        }
        private PCFMessage[] sendCmd(String cmd,PCFMessage pcfCmd) throws  mqExcept{
+               isUse(true);
                PCFMessage[] pcfResponse =null;
                try {
                  pcfResponse=agent.send(pcfCmd);
@@ -116,6 +122,9 @@ public class mq_contrl{
                       else       log.error("Error open mngr:"+queueManager.getQMName()+" ex:"+e1);
                       throw e1;
                }
+               finally{
+                  isUse(false);
+               }
                return pcfResponse;
 
        }
@@ -129,17 +138,6 @@ public class mq_contrl{
        }
        public void alterChannel(String pcfChannel,String type,String ipChannel) throws  mqExcept{
               alterChannel(pcfChannel,type,ipChannel,null);
-       }
-       private int  typeChannel(String pcfChannel){
-              if("SENDER"   .equals(pcfChannel))return MQConstants.MQCHT_SENDER   ;
-              if("SERVER"   .equals(pcfChannel))return MQConstants.MQCHT_SERVER   ;
-              if("RECEIVER" .equals(pcfChannel))return MQConstants.MQCHT_RECEIVER ;
-              if("REQUESTER".equals(pcfChannel))return MQConstants.MQCHT_REQUESTER;
-              if("SVRCONN"  .equals(pcfChannel))return MQConstants.MQCHT_SVRCONN  ;
-              if("CLNTCONN" .equals(pcfChannel))return MQConstants.MQCHT_CLNTCONN ;
-              if("CLUSRCVR" .equals(pcfChannel))return MQConstants.MQCHT_CLUSRCVR ;
-              if("CLUSSDR"  .equals(pcfChannel))return MQConstants.MQCHT_CLUSSDR  ;
-              return MQConstants.MQCHT_SENDER;
        }
        public void alterChannel(String pcfChannel,String type,String ipChannel,String localChannel) throws  mqExcept{
 
@@ -174,7 +172,6 @@ public class mq_contrl{
               pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, pcfChannel);
               pcfCmd.addParameter(MQConstants.MQIACH_MSG_SEQUENCE_NUMBER,value);
               sendCmd("reset channel:"+pcfChannel,pcfCmd);
-
 
        }
 
@@ -319,6 +316,7 @@ public class mq_contrl{
      
        }
        public int lengthLocalQueues(String queue_name) throws mqExcept{
+              isUse(true);
               try{
             	  int op1=MQConstants.MQOO_INQUIRE;
             	  //int op2=MQC.MQOO_INQUIRE;
@@ -329,6 +327,9 @@ public class mq_contrl{
               }
               catch(Exception e){
                     return 0;
+              }
+              finally{
+                  isUse(false);
               }
      
        }
@@ -352,6 +353,7 @@ public class mq_contrl{
        }
 
        public void displayQueueManager(Hashtable <String,String> tab)   throws  mqExcept {
+              isUse(true);
               try {
                    int[] pcfParmAttrs = {MQConstants.MQIACF_ALL};
 
@@ -380,42 +382,60 @@ public class mq_contrl{
              catch (Exception ioe){
                      throw new mqExcept("display mqmngr",ioe); 
              }
+             finally{
+                isUse(false);
+             }
 
        }
        public void displayQueueManager()   throws  mqExcept {
+              isUse(true);
               try {
-              int[] pcfParmAttrs = {MQConstants.MQIACF_ALL};
-
-              PCFParameter[] pcfParameters = {new MQCFIL(MQConstants.MQIACF_Q_MGR_ATTRS, pcfParmAttrs)};
-              MQMessage[]    mqResponse    = agent.send(MQConstants.MQCMD_INQUIRE_Q_MGR, pcfParameters);
-
-              MQCFH        mqCFH   = new MQCFH(mqResponse[0]);
-              PCFParameter pcfParam;
-
-             if (mqCFH.getReason() == 0) {
-                 System.out.println("Queue manager attributes:");
-                 System.out.println("+--------------------------------+----------------------------------------------------------------+");
-                 System.out.println("|Attribute Name                  |                            Value                               |");
-                 System.out.println("+--------------------------------+----------------------------------------------------------------+");
-
-                 for (int index = 0; index < mqCFH.getParameterCount(); index++) {
-                      pcfParam = PCFParameter.nextParameter(mqResponse[0]);
-                      System.out.println("|" + pcfParam.getParameterName().toString() + "|" + pcfParam.getValue().toString() + "|" );   
-                 }
-
-                 System.out.println("+--------------------------------+----------------------------------------------------------------+");
-             }
-             else {
-                 System.out.println(" PCF error:\n" + mqCFH);
-                 for (int index = 0; index < mqCFH.getParameterCount(); index++) {
-                      System.out.println(PCFParameter.nextParameter(mqResponse[0]));
-                 }
-             }
+                   int[] pcfParmAttrs = {MQConstants.MQIACF_ALL};
+                  
+                   PCFParameter[] pcfParameters = {new MQCFIL(MQConstants.MQIACF_Q_MGR_ATTRS, pcfParmAttrs)};
+                   MQMessage[]    mqResponse    = agent.send(MQConstants.MQCMD_INQUIRE_Q_MGR, pcfParameters);
+                  
+                   MQCFH        mqCFH   = new MQCFH(mqResponse[0]);
+                   PCFParameter pcfParam;
+                  
+                   if (mqCFH.getReason() == 0) {
+                       System.out.println("Queue manager attributes:");
+                       System.out.println("+--------------------------------+----------------------------------------------------------------+");
+                       System.out.println("|Attribute Name                  |                            Value                               |");
+                       System.out.println("+--------------------------------+----------------------------------------------------------------+");
+                  
+                       for (int index = 0; index < mqCFH.getParameterCount(); index++) {
+                            pcfParam = PCFParameter.nextParameter(mqResponse[0]);
+                            System.out.println("|" + pcfParam.getParameterName().toString() + "|" + pcfParam.getValue().toString() + "|" );   
+                       }
+                  
+                       System.out.println("+--------------------------------+----------------------------------------------------------------+");
+                   }
+                   else {
+                       System.out.println(" PCF error:\n" + mqCFH);
+                       for (int index = 0; index < mqCFH.getParameterCount(); index++) {
+                            System.out.println(PCFParameter.nextParameter(mqResponse[0]));
+                       }
+                   }
              }
              catch (Exception ioe){
                      throw new mqExcept("display mqmngr",ioe); 
              }
+             finally{
+                isUse(false);
+             }
 
+       }
+       private int  typeChannel(String pcfChannel){
+              if("SENDER"   .equals(pcfChannel))return MQConstants.MQCHT_SENDER   ;
+              if("SERVER"   .equals(pcfChannel))return MQConstants.MQCHT_SERVER   ;
+              if("RECEIVER" .equals(pcfChannel))return MQConstants.MQCHT_RECEIVER ;
+              if("REQUESTER".equals(pcfChannel))return MQConstants.MQCHT_REQUESTER;
+              if("SVRCONN"  .equals(pcfChannel))return MQConstants.MQCHT_SVRCONN  ;
+              if("CLNTCONN" .equals(pcfChannel))return MQConstants.MQCHT_CLNTCONN ;
+              if("CLUSRCVR" .equals(pcfChannel))return MQConstants.MQCHT_CLUSRCVR ;
+              if("CLUSSDR"  .equals(pcfChannel))return MQConstants.MQCHT_CLUSSDR  ;
+              return MQConstants.MQCHT_SENDER;
        }
 
       

@@ -1,8 +1,7 @@
 
-package org.little.web.filter;
+package org.little.web.filter.impl;
 
 import javax.servlet.ServletRequest;
-
 import org.ietf.jgss.GSSCredential;
 
 /**
@@ -53,20 +52,19 @@ import org.ietf.jgss.GSSCredential;
  * target="_blank">credential delegation</a> example. 
  * </p>
  * 
- * @author Darwin V. Felix
- *
+ * 
  */
 public interface DelegateServletRequest extends ServletRequest {
 
-    /**
-     * Returns the requester's delegated credential.
-     * 
-     * <p>
-     * Returns null if request has no delegated credential 
-     * or if delegated credentials are not supported.
-     * </p>
-     * 
-     * @return delegated credential or null
-     */
-    GSSCredential getDelegatedCredential();
+       /**
+        * Returns the requester's delegated credential.
+        * 
+        * <p>
+        * Returns null if request has no delegated credential 
+        * or if delegated credentials are not supported.
+        * </p>
+        * 
+        * @return delegated credential or null
+        */
+       GSSCredential getDelegatedCredential();
 }

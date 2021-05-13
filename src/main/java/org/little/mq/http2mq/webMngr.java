@@ -1,4 +1,4 @@
-package org.little.auth;
+package org.little.mq.http2mq;
 
 import java.io.IOException;
 
@@ -9,8 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//import org.little.rcmd.rsh.rCP;
-//import org.little.rcmd.rsh.rCP_Remote2Buffer;
+import org.json.JSONObject;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
@@ -20,23 +19,25 @@ import org.little.web.webRun;
  *  
  */
 public class webMngr extends webRun{
-       /**
-	 * 
-	 */
-	private static final long serialVersionUID = 2810192641705865280L;
+	private static final long serialVersionUID = -8820420158454598488L;
 	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
-       private String xpath;
+
        @Override
        public void init() throws ServletException {
 
               logger.trace("start"+":"+getServletInfo());
               
               
-              xpath=this.getServletContext().getRealPath("")+getParametr("config");
+              String xpath=this.getServletContext().getRealPath("");
 
+              String _xpath=getParametr("config");
+              xpath+=_xpath;
 
-              logger.info("START LITTLE.AUTH config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
-
+                 if(commonMQ.loadCFG(xpath)==false){
+                    logger.error("error read config file:"+xpath);
+                    return;
+                 }
+                 logger.info("START LITTLE.SYSLOG config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
@@ -45,7 +46,19 @@ public class webMngr extends webRun{
 
        @Override
        public String getServletInfo() {
-              return "Show state queue";
+              return "syslog server";
+       }
+       private void doGetList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+           logger.trace("begin doGetList");
+
+           JSONObject  root=new JSONObject();
+
+           response.setContentType("application/json");
+           response.setContentType("text/html; charset=UTF-8");
+           
+           root.write(response.getWriter());
+
+           logger.trace("end doGetList");
        }
 
        @Override
@@ -54,19 +67,15 @@ public class webMngr extends webRun{
               String    path = (String) request.getPathInfo();
               String    page=null;
 
-              logger.trace("webAddr.doRun() path:"+path);
-              if(path.startsWith("/auth/")){
-                  //String    _u = (String) request.getParameter("u");
-                  //String    _p1 = (String) request.getParameter("p1");
-                  //String    _p2 = (String) request.getParameter("p2");
+              logger.trace("webMngr.doRun() path:"+path);
 
-
-                  
-                  return;
+              if(path.startsWith("/list")){
+                 doGetList(request,response);
+                 return;
               }
   
-              page = "index.html";
-
+              if(page==null)page = commonMQ.get().getDefPage();
+              logger.trace("webMngr.doRun() page:"+page);
               //-----------------------------------------------------------------------------------------
               if(page!=null)
               try {

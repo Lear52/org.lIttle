@@ -76,6 +76,7 @@ public class AppendCommand  extends ImapCommand {
 
               if(flag!=null) {}
               if(size!=null) {try{_size=Integer.parseInt(size);}catch(Exception e) {_size=0;}}
+              if(date!=null) {}
 
               if(_size==0){
                  logger.error("size literal data is 0");

@@ -6,7 +6,7 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
 
 import org.little.mq.mqapi.*;
 
-import org.w3c.dom.Document;
+//import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList ;
 
