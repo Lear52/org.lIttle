@@ -12,8 +12,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList ;
 
-public class commonMQ   {
-       private static Logger logger = LoggerFactory.getLogger(commonMQ.class);
+public class commonMQ1   {
+       private static Logger logger = LoggerFactory.getLogger(commonMQ1.class);
        private String   mq_mngr     ;
        private String   mq_host     ;
        private int      mq_port     ;
@@ -24,12 +24,12 @@ public class commonMQ   {
        private String        def_page;
        private String        error_page;
 
-       private static commonMQ cfg = new commonMQ();
-       public  static commonMQ get(){ if(cfg==null)cfg=new commonMQ();return cfg;};
+       private static commonMQ1 cfg = new commonMQ1();
+       public  static commonMQ1 get(){ if(cfg==null)cfg=new commonMQ1();return cfg;};
        private static String getDefNodeName(){ return "little";};
        private static String getNodeName()   { return "littlesyslog";}
 
-       public commonMQ(){
+       public commonMQ1(){
               mq_mngr     ="QM";
               mq_host     ="localhost";
               mq_port     =1414;
@@ -94,7 +94,7 @@ public class commonMQ   {
        public static boolean loadCFG(String cfg_filename) {
               Node _node_cfg = findCFG(cfg_filename);
               if(_node_cfg==null)return false;
-              return commonMQ.get().init(_node_cfg);
+              return commonMQ1.get().init(_node_cfg);
        }
        private static Node findCFG(String cfg_filename) {
                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

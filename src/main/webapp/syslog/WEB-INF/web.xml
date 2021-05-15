@@ -14,7 +14,7 @@
      <servlet-class>org.little.syslog.webMngr</servlet-class>
      <init-param>
          <param-name>config</param-name>
-         <param-value>littleproxy_syslog.xml </param-value>
+         <param-value>WEB-INF/conf/littleproxy_syslog.xml </param-value>
      </init-param>
      <load-on-startup>10</load-on-startup> 
   </servlet>

@@ -37,6 +37,15 @@ public class scheduler extends tfork{
 
        private int                process_sleep = 1;
 
+       public scheduler(){
+              init(10,10);
+       }
+       public scheduler(int _n_task){
+              init(_n_task,_n_task);
+       }
+       public scheduler(int _n_task,int _n_thread){
+              init(_n_task,_n_thread);
+       }
  
        public void init(int _n_task,int _n_thread) {
               // контейнер под ссылки на задачи
@@ -59,15 +68,6 @@ public class scheduler extends tfork{
               if(list_task!=null)list_task.clear();
               list_task=null;
               id_scheduler=0;
-       }
-       public scheduler(){
-              init(10,10);
-       }
-       public scheduler(int _n_task){
-              init(_n_task,_n_task);
-       }
-       public scheduler(int _n_task,int _n_thread){
-              init(_n_task,_n_thread);
        }
                                           
        /**

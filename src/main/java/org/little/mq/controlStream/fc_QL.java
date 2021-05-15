@@ -12,24 +12,24 @@ import org.w3c.dom.NodeList;
 public class fc_QL extends fc_Q{
        private static final Logger logger = LoggerFactory.getLogger(fc_QL.class);
        
-       private String    mq_host;
-       private int       mq_port;
-       private String    mq_user;
-       private String    mq_passwd;
+       //private String    mq_host;
+       //private int       mq_port;
+       //private String    mq_user;
+       //private String    mq_passwd;
        private int       deep_alarm;
-       private String    mq_channel;
+       //private String    mq_channel;
 
        private mq_contrl cntrl;
 
        @Override
        public void   clear() {
     	      super.clear();
-              mq_host   =null;
-              mq_port   =1414;
-              mq_user   =null;
-              mq_passwd =null;
+              //mq_host   =null;
+              //mq_port   =1414;
+              //mq_user   =null;
+              //mq_passwd =null;
               deep_alarm=150;
-              mq_channel="SYSTEM.ADMIN.SVRCONN";
+              //mq_channel="SYSTEM.ADMIN.SVRCONN";
               cntrl     =new mq_contrl();
        }
 
@@ -42,13 +42,13 @@ public class fc_QL extends fc_Q{
        @Override
        protected JSONObject ClearQ(){
                  JSONObject root=new JSONObject();
-                 if(mq_host==null){
+                 if(cfg.getHost()==null){
                     logger.trace("QL.ClearQ(mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
                     clearQ.clear(getNameMngr(),getNameQ());
                  }
                  else{
-                    logger.trace("QL.ClearQ(host:"+mq_host+":"+mq_port+",mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
-                    clearQ.clear(getNameMngr(),mq_host,mq_port,mq_channel,getNameQ(),mq_user,mq_passwd);
+                    logger.trace("QL.ClearQ(host:"+cfg.getHost()+":"+cfg.getPort()+",mngr:"+cfg.getNameMngr()+",q:"+cfg.getNameQ()+") ");
+                    clearQ.clear(getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),getNameQ(),cfg.getUser(),cfg.getPasswd());
                  }
                  root.put("clear","Ok");
 
@@ -73,7 +73,7 @@ public class fc_QL extends fc_Q{
               //mq_contrl cntrl=new mq_contrl();
               int len=0;
               try {
-                   if(!cntrl.isOpen())cntrl.open(getNameMngr(),mq_host,mq_port,mq_channel,mq_user,mq_passwd);
+                   if(!cntrl.isOpen())cntrl.open(getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
                    len=cntrl.lengthLocalQueues(getNameQ());
 
                    if(deep_alarm<len)isAlarm(true);
@@ -94,18 +94,20 @@ public class fc_QL extends fc_Q{
               if(node_cfg==null)return;
               logger.info("The configuration node:"+node_cfg.getNodeName());
 
+              cfg.init(node_cfg);
+              
               NodeList glist=node_cfg.getChildNodes();
               if(glist==null) return;
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("mngr"    .equals(n.getNodeName())){String mq_mngr   =n.getTextContent();logger.info("mngr:"    +mq_mngr   );setNameMngr(mq_mngr);}else
-                  if("queue"   .equals(n.getNodeName())){String mq_queue  =n.getTextContent();logger.info("queue:"   +mq_queue  );setNameQ(mq_queue);  }else
-                  if("host"    .equals(n.getNodeName())){mq_host          =n.getTextContent();logger.info("host:"    +mq_host   );                     }else
-                  if("port"    .equals(n.getNodeName())){String          s=n.getTextContent();try{mq_port=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set port:"+s);mq_port=1414;}logger.info("port:"+mq_port        );}else
-                  if("user"    .equals(n.getNodeName())){mq_user          =n.getTextContent();logger.info("user:"    +mq_user   );                     }else
-                  if("password".equals(n.getNodeName())){mq_passwd        =n.getTextContent();logger.info("password:"+mq_passwd );                     }else
-                  if("deep"    .equals(n.getNodeName())){String          s=n.getTextContent();try{deep_alarm=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set deep:"+s);deep_alarm=150;}logger.info("deep:"+deep_alarm);}else
-                  if("channel" .equals(n.getNodeName())){String mq_channel=n.getTextContent();logger.info("channel:" +mq_channel  );}
+                  //if("mngr"    .equals(n.getNodeName())){String mq_mngr   =n.getTextContent();logger.info("mngr:"    +mq_mngr   );setNameMngr(mq_mngr);}else
+                  //if("queue"   .equals(n.getNodeName())){String mq_queue  =n.getTextContent();logger.info("queue:"   +mq_queue  );setNameQ(mq_queue);  }else
+                  //if("host"    .equals(n.getNodeName())){mq_host          =n.getTextContent();logger.info("host:"    +mq_host   );                     }else
+                  //if("port"    .equals(n.getNodeName())){String          s=n.getTextContent();try{mq_port=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set port:"+s);mq_port=1414;}logger.info("port:"+mq_port        );}else
+                  //if("user"    .equals(n.getNodeName())){mq_user          =n.getTextContent();logger.info("user:"    +mq_user   );                     }else
+                  //if("password".equals(n.getNodeName())){mq_passwd        =n.getTextContent();logger.info("password:"+mq_passwd );                     }else
+                  if("deep"    .equals(n.getNodeName())){String          s=n.getTextContent();try{deep_alarm=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set deep:"+s);deep_alarm=150;}logger.info("deep:"+deep_alarm);}
+                  //if("channel" .equals(n.getNodeName())){mq_channel       =n.getTextContent();logger.info("channel:" +mq_channel  );}
               }
 
 

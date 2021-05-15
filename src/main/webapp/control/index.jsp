@@ -149,7 +149,7 @@
                              }
                          }
                          txt+='</td>';
-                         txt+='<td '+_cl+'> alarm:'+flow.alarm+'<br>flag:'+flow.control.is_flag+"<br>manual:"+flow.control.is_manual+'</td>';
+                         txt+='<td '+_cl+'> alarm:'+flow.alarm+' flag:'+flow.control.is_flag+" manual:"+flow.control.is_manual+'</td>';
                          txt+='</tr>';
                          //------------------------------------------------------------------------------------------------------------------------
                          flow=null;

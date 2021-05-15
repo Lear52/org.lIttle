@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+    <littlestat>
+        <global>
+            <run_timeout>10</run_timeout>
+            <control_stream>false</control_stream>
+            <min_count_group>2</min_count_group>
+            <def_page>/index.jsp</def_page>
+            <error_page>/error.jsp</error_page>
+        </global>
+
+        <local id="1" name="Тушино">
+               <flow id="11" name="СИТ ЦОД 01">                                                                                                                    
+                   <q><mngr>SBPBACK_SIT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SIT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="12" name="СИТ ЦОД 02">
+                   <q><mngr>SBPBACK_SIT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.84</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SIT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.83</host><port>1616</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="13" name="СНТ ЦОД 01">
+                   <q><mngr>SBPBACK_SNT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SNT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="14" name="СНТ ЦОД 02">
+                   <q><mngr>SBPBACK_SNT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.84</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SNT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.83</host><port>1818</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+               <flow id="15" name="ССТ ЦОД 01">
+                   <q><mngr>SBPBACK_SCT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SCT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="16" name="ССТ ЦОД 02">
+                   <q><mngr>SBPBACK_SCT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.84</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SCT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.83</host><port>1717</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+        </local>
+
+        <local id="2" name="Нудоль">
+               <flow id="21" name="СИТ ЦОД 01">
+                   <q><mngr>SBPBACK_SIT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SIT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="22" name="СИТ ЦОД 02">
+                   <q><mngr>SBPBACK_SIT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SIT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.184</host><port>1616</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SIT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SIT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.183</host><port>1616</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="23" name="СНТ ЦОД 01">
+                   <q><mngr>SBPBACK_SNT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SNT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="24" name="СНТ ЦОД 02">
+                   <q><mngr>SBPBACK_SNT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SNT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.184</host><port>1818</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SNT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SNT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.183</host><port>1818</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+               <flow id="25" name="ССТ ЦОД 01">
+                   <q><mngr>SBPBACK_SCT</mngr><queue>IN1.SLA</queue>           <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>OUT1.SLA</queue>          <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>SBPFRONT1.SLA</queue>     <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>IN1.SLA</queue>          <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>OUT1.SLA</queue>         <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>SBPBACK1.SLA</queue>     <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SCT</mngr><queue>HEARTBEAT_DC1</queue><host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+              
+               <flow id="26" name="ССТ ЦОД 02">
+                   <q><mngr>SBPBACK_SCT</mngr><queue>IN2.SLA</queue>           <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>OUT2.SLA</queue>          <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPBACK_SCT</mngr><queue>SBPFRONT2.SLA</queue>     <host>172.16.17.184</host><port>1717</port><user>mbadmin2</user><password></password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>IN2.SLA</queue>          <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>OUT2.SLA</queue>         <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+                   <q><mngr>SBPFRONT_SCT</mngr><queue>SBPBACK2.SLA</queue>     <host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password><channel>SYSTEM.DEF.SVRCONN</channel><deep>150</deep></q>
+              
+                   <cntrl><mngr>SBPFRONT_SCT</mngr><queue>HEARTBEAT_DC2</queue><host>172.16.17.183</host><port>1717</port><user>adm</user><password>12345678</password></cntrl>
+               </flow>
+        </local>
+
+        <remote id="3" name="Н. Новгород" remote_id="3">
+            <url_user>user</url_user>
+            <url_passwd>passwd</url_passwd>
+            <url_state>http://172.16.37.210:8080/control2/cmd/state</url_state>
+            <url_contrl>http://172.16.37.210:8080/control2/cmd/cntrl</url_contrl>
+        </remote>
+
+        <remote id="4" name="Д. Константиново" remote_id="4">
+            <url_user>user</url_user>
+            <url_passwd>passwd</url_passwd>
+            <url_state>http://172.16.37.210:8080/control2/cmd/state</url_state>
+            <url_contrl>http://172.16.37.210:8080/control2/cmd/cntrl</url_contrl>
+        </remote>
+
+    </littlestat>
+</little>

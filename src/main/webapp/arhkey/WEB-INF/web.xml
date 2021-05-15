@@ -14,7 +14,7 @@
      <servlet-class>org.little.mailWeb.webMngr</servlet-class>
      <init-param>
          <param-name>config</param-name>
-         <param-value>littleproxy_key.xml</param-value>
+         <param-value>WEB-INF/conf/littleproxy_key.xml</param-value>
      </init-param>
      <load-on-startup>20</load-on-startup> 
   </servlet>
@@ -24,9 +24,19 @@
      <servlet-class>org.little.mailWeb.loadMngr</servlet-class>
      <init-param>
          <param-name>config</param-name>
-         <param-value>littleproxy_key.xml</param-value>
+         <param-value>WEB-INF/conf/littleproxy_key.xml</param-value>
      </init-param>
      <load-on-startup>10</load-on-startup> 
+  </servlet>
+
+  <servlet>
+     <servlet-name>arhalarm</servlet-name>
+     <servlet-class>org.little.mailWeb.alarmMngr</servlet-class>
+     <init-param>
+         <param-name>config</param-name>
+         <param-value>WEB-INF/conf/littleproxy_key.xml</param-value>
+     </init-param>
+     <load-on-startup>30</load-on-startup> 
   </servlet>
 
   <servlet-mapping>

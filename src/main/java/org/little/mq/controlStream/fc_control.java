@@ -2,15 +2,14 @@ package org.little.mq.controlStream;
         
 import org.json.JSONObject;
 import org.w3c.dom.Node;
-
+import org.little.mq.mqapi.commonMQ;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 
 public class fc_control {
        private static final Logger logger = LoggerFactory.getLogger(fc_control.class);
 
-       private String        mq_mngr;
-       private String        mq_queue;
+       protected commonMQ      cfg;
        private boolean       is_manual;
        private boolean       is_set_flag;
 
@@ -21,16 +20,15 @@ public class fc_control {
               clear();
        }
        protected void   clear() {
-              mq_mngr   =null;
-              mq_queue  =null;
+    	      cfg=new commonMQ(); 
               is_manual  =false;
               is_set_flag=false;
        }
 
-       protected String getNameQ   ()         {return mq_queue;}
-       protected void   setNameQ   (String q) {this.mq_queue = q;}
-       protected String getNameMngr()         {return mq_mngr;}
-       protected void   setNameMngr(String m) {this.mq_mngr = m;}
+       //protected String getNameQ   ()         {return cfg.getNameQ();}
+       //protected void   setNameQ   (String q) {cfg.setNameQ(q);}
+       //protected String getNameMngr()         {return cfg.getNameMngr();}
+       //protected void   setNameMngr(String m) {cfg.setNameMngr(m);}
 
 
        public void setState(JSONObject root) {
@@ -42,8 +40,8 @@ public class fc_control {
               root.put("type"     ,"cntrl");
               root.put("is_manual",isManual());
               root.put("is_flag"  ,isFlag());
-              root.put("queue"    ,getNameQ());
-              root.put("mngr"     ,getNameMngr());
+              root.put("queue"    ,cfg.getNameQ());
+              root.put("mngr"     ,cfg.getNameMngr());
 
               return root;
        };

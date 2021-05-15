@@ -1,5 +1,6 @@
 package org.little.mailWeb;
              
+import org.little.mailWeb.alarm.commonAlarm;
 import org.little.mailWeb.folder.commonX509DB;
 import org.little.mailWeb.folder.folderARH;
 import org.little.util.Logger;
@@ -12,6 +13,7 @@ public class commonArh  extends common{
        private static final Logger logger = LoggerFactory.getLogger(commonArh.class);
 
        private commonX509DB  db_cfg;
+       private commonAlarm   alarm_cfg;
        private Node          node_box;
        private String        def_page;
        private String        error_page;
@@ -27,6 +29,7 @@ public class commonArh  extends common{
               super.clear();          
               node_box    =null;
               db_cfg      =new commonX509DB();
+              alarm_cfg   =new commonAlarm();
               def_page    ="index.jsp";
               error_page  ="error.jsp";
        }
@@ -35,6 +38,7 @@ public class commonArh  extends common{
        public String       getDefPage        () {return def_page;          }
        public String       getErrorPage      () {return error_page;        }
        public Node         getNodeBox        () {return node_box;          }
+       public commonAlarm  getAlarm          () {return alarm_cfg;         }
 
 
        @Override
@@ -53,6 +57,8 @@ public class commonArh  extends common{
                      if("log_arh"      .equalsIgnoreCase(n.getNodeName())){db_cfg.init(n);}
                      else
                      if("load"         .equalsIgnoreCase(n.getNodeName())){node_box=n;}
+                     else
+                     if("alarm_option" .equalsIgnoreCase(n.getNodeName())){alarm_cfg.init(n);}
                  }
               }
               else{

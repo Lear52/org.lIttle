@@ -1,4 +1,4 @@
-package org.little.mailWeb;
+package org.little.mailWeb.imap;
        
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -46,15 +46,15 @@ public class ImapLoadBox extends task{
         private IMAPFolder          folder_outbox;
         private Session             session;
         
-        private boolean       debug      ;
-        private String        userName   ;
-        private String        password   ;
-        private String        local_bind_client;
-        private String        client_host;
-        private int           client_port;
-        private int           task_timeout;
-        private String        imap_inbox_folder;
-        private String        imap_outbox_folder;
+        private boolean             debug      ;
+        private String              userName   ;
+        private String              password   ;
+        private String              local_bind_client;
+        private String              client_host;
+        private int                 client_port;
+        private int                 task_timeout;
+        private String              imap_inbox_folder;
+        private String              imap_outbox_folder;
 
             
         public ImapLoadBox() {
@@ -64,8 +64,17 @@ public class ImapLoadBox extends task{
                folder_outbox   = null;
                session         = null;
                //cfg             = new commonArh();
+               debug            =false;        
+               userName         ="av";        
+               password         ="";        
+               local_bind_client="*";  
+               client_host      ="";        
+               client_port      =143;        
+               task_timeout     =10000;       
+               imap_inbox_folder="inbox";  
+               imap_outbox_folder=""; 
         }
-
+        
         public boolean      isDebug           () {return debug;             }
         public String       getUser           () {return userName;          }
         public String       getPasswd         () {return password;          }
@@ -76,6 +85,76 @@ public class ImapLoadBox extends task{
         public String       getInboxFolder    () {return imap_inbox_folder; }
         public String       getOutboxFolder   () {return imap_outbox_folder;}
 
+        public void         setFolder         (folderARH f) {log_arh=f;}
+
+        public void work() {
+
+               logger.trace("begin work");
+               open();
+               if(session     ==null)return;
+               if(folder_inbox==null)return;
+
+               try {
+                    if(folder_inbox.getMessageCount()>0) {
+                       int count = 0;
+                       Message messages[] = folder_inbox.getMessages();
+                       for(Message message : messages) {
+                           count++;
+                           parseMessage(message,count);
+
+                           if(folder_outbox!=null) {
+                              Message[] tempMessageArray=new Message[1];
+                              tempMessageArray[0]=message;
+                              folder_inbox.copyMessages(tempMessageArray, folder_outbox); 
+                              message.setFlag(Flags.Flag.DELETED, true);
+                           }
+                           //logger.trace("Has this message been read?  flag:" + mes_flag.contains(Flag.SEEN));
+                       }
+                    }
+               } 
+               catch (Exception e) {
+                 Except ex=new Except(e);
+                 logger.error("ex:" + ex);
+                       // System.exit(0);
+               } 
+               finally {
+                  close();
+               }
+               logger.trace("end work");
+        }
+
+        public void init(Node _node_cfg) {
+              if(_node_cfg!=null){
+                 logger.info("The configuration node:"+_node_cfg.getNodeName());
+                 NodeList glist=_node_cfg.getChildNodes();     
+                 for(int i=0;i<glist.getLength();i++){
+                     Node n=glist.item(i);
+                     if("user"              .equalsIgnoreCase(n.getNodeName())){userName          =n.getTextContent(); logger.info("user:"+userName);}
+                     else
+                     if("password"          .equalsIgnoreCase(n.getNodeName())){password          =n.getTextContent(); logger.info("password:"+password);}
+                     else
+                     if("client_port"       .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{client_port=Integer.parseInt(s, 10);}catch(Exception e){ client_port=143;logger.error("client_port:"+s);} logger.info("client_port:"+client_port);}
+                     else                   
+                     if("client_host"       .equalsIgnoreCase(n.getNodeName())){client_host       =n.getTextContent(); logger.info("client_host:"+client_host);}
+                     else
+                     if("local_bind_client" .equalsIgnoreCase(n.getNodeName())){local_bind_client =n.getTextContent(); logger.info("local_bind_client:"+local_bind_client);}
+                     else
+                     if("is_debug"          .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{debug=Boolean.parseBoolean(s);}catch(Exception e){ debug=false;logger.error("is_debug:"+s);} logger.info("is_debug:"+debug);}
+                     else
+                     if("run_timeout"       .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{task_timeout=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set run_timeout:"+s);task_timeout=10;}logger.info("run_timeout:"+task_timeout);}
+                     else
+                     if("inbox_folder"      .equalsIgnoreCase(n.getNodeName())){imap_inbox_folder =n.getTextContent(); logger.info("inbox_folder:"+imap_inbox_folder);}
+                     else
+                     if("outbox_folder"     .equalsIgnoreCase(n.getNodeName())){imap_outbox_folder=n.getTextContent(); logger.info("outbox_folder:"+imap_outbox_folder);}
+                 }
+                 if(stringTransform.isEmpty(local_bind_client))local_bind_client="*";
+              }
+              else{
+                  logger.error("The configuration node:null");
+              }                 
+              setDelay(getTimeout());
+        }
+
         protected boolean  open(){
                 props = System.getProperties();
                 /*
@@ -83,14 +162,15 @@ public class ImapLoadBox extends task{
                  * while(en.hasMoreElements()){ String s=(String)en.nextElement();
                  * logger.trace(s+":" +prop.getProperty(s)); } }
                  */
-                if(isDebug())props.setProperty("mail.debug"               , "true");
-                else         props.setProperty("mail.debug"               , "false");
-                props.setProperty("mail.imap.ssl.enable"     , "false");
-                props.setProperty("mail.imap.starttls.enable", "false");
-                props.setProperty("mail.imap.sasl.enable"    , "false");
-                props.setProperty("mail.debug.auth.username" , "true");
-                props.setProperty("mail.debug.auth.password" , "true");
-                props.setProperty("mail.socket.debug"        , "true");
+                if(isDebug())props.setProperty("mail.debug"       , "true");
+                else         props.setProperty("mail.debug"       , "false");
+                props.setProperty("mail.imap.ssl.enable"          , "false");
+                props.setProperty("mail.imap.starttls.enable"     , "false");
+                props.setProperty("mail.imap.sasl.enable"         , "false");
+                props.setProperty("mail.debug.auth.username"      , "true");
+                props.setProperty("mail.debug.auth.password"      , "true");
+                if(isDebug())props.setProperty("mail.socket.debug", "true");
+                else         props.setProperty("mail.socket.debug", "false");
                 Authenticator auth=new Authenticator() {
                           @Override
                           protected PasswordAuthentication getPasswordAuthentication() {
@@ -110,11 +190,12 @@ public class ImapLoadBox extends task{
 
                 } catch (Exception e) {
                      Except ex=new Except(e);
-                     logger.error("error open connection ex:" + ex);
+                     logger.error("error open connection "+getHost()+","+getPort()+","+getUser()+","+getPasswd()+" ex:" + ex);
                      store   = null;
                      session = null;
                      return false;
                 }
+                //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                 try {
                      folder_inbox = (IMAPFolder) store.getFolder(getInboxFolder()); // Get the inbox
                      logger.trace("getInboxFolder "+getInboxFolder());
@@ -124,27 +205,29 @@ public class ImapLoadBox extends task{
 
                 } catch (Exception e) {
                      Except ex=new Except(e);
-                     logger.error("error open input folder ex:" + ex);
+                     logger.error("error open  folder:"+getInboxFolder()+" ex:" + ex);
                      store  = null;
                      session = null;
                      folder_inbox = null;
                      return false;
                 }
                 logger.trace("Folder:"+getInboxFolder()+" open!");
+                //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                 try {
                      folder_outbox = (IMAPFolder) store.getFolder(getOutboxFolder()); // Get the inbox
                      logger.trace("getOutboxFolder "+getOutboxFolder());
 
                      if (!folder_outbox.isOpen())folder_outbox.open(Folder.READ_WRITE);
-                     logger.trace("openOutboxFolder "+getInboxFolder()+" No of Messages:" + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
+                     logger.trace("openOutboxFolder "+getOutboxFolder()+" No of Messages:" + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
 
                 } catch (Exception e) {
                      Except ex=new Except(e);
-                     logger.error("error open output folder ex:" + ex);
+                     logger.error("error open folder:"+getOutboxFolder()+" ex:" + ex);
                      folder_outbox = null;
                      //return false;
                 }
                 logger.trace("Folder:"+getOutboxFolder()+" open!");
+                //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
                 return true;
 
@@ -230,32 +313,32 @@ public class ImapLoadBox extends task{
         }
         private void ParsePart(BodyPart bodyPart,lMessage msg) {
                 try {
-                        lMessage _msg=new lMessage(msg);
+                     lMessage _msg=new lMessage(msg);
                    
-                        _msg.setFilename(bodyPart.getFileName());
+                     _msg.setFilename(bodyPart.getFileName());
                    
-                        byte [] buf=null;
-                        InputStream is=null;
-                        _ByteBuilder b=new _ByteBuilder();
-                        try {
-                           is = bodyPart.getInputStream();
-                           //buf=_ByteBuilder.toByte(is);
-                           int c;
-                           while ((c = is.read()) > -1) {
-                                   b.append(c);
-                           }
-                   
+                     byte [] buf=null;
+                     InputStream is=null;
+                     _ByteBuilder b=new _ByteBuilder();
+                     try {
+                        is = bodyPart.getInputStream();
+                        //buf=_ByteBuilder.toByte(is);
+                        int c;
+                        while ((c = is.read()) > -1) {
+                                b.append(c);
                         }
-                        finally { try {if(is!=null)is.close();} catch(Exception e){}}
                    
-                        buf=b.getBytes();
-                        if(buf==null) {
-                           logger.trace("buffer is null");
-                           return;
-                        }
-                        logger.trace("buffer length:" + buf.length);
+                     }
+                     finally { try {if(is!=null)is.close();} catch(Exception e){}}
+                   
+                     buf=b.getBytes();
+                     if(buf==null) {
+                        logger.trace("buffer is null");
+                        return;
+                     }
+                     logger.trace("buffer length:" + buf.length);
 
-                        ParsePart(buf,msg,bodyPart.getFileName(),true);
+                     ParsePart(buf,msg,bodyPart.getFileName(),true);
 
                 }
                 catch(Exception e){
@@ -316,73 +399,6 @@ public class ImapLoadBox extends task{
                      logger.error("ex:"+e);
                      return;
                }
-        }
-        public void work() {
-
-               logger.trace("begin work");
-               open();
-               if(session     ==null)return;
-               if(folder_inbox==null)return;
-
-               try {
-                    if(folder_inbox.getMessageCount()>0) {
-                       int count = 0;
-                       Message messages[] = folder_inbox.getMessages();
-                       for(Message message : messages) {
-                           count++;
-                           parseMessage(message,count);
-
-                           if(folder_outbox!=null) {
-                              Message[] tempMessageArray=new Message[1];
-                              tempMessageArray[0]=message;
-                              folder_inbox.copyMessages(tempMessageArray, folder_outbox); 
-                              message.setFlag(Flags.Flag.DELETED, true);
-                           }
-                           //logger.trace("Has this message been read?  flag:" + mes_flag.contains(Flag.SEEN));
-                       }
-                    }
-               } 
-               catch (Exception e) {
-                 Except ex=new Except(e);
-                 logger.error("ex:" + ex);
-                       // System.exit(0);
-               } 
-               finally {
-                  close();
-               }
-               logger.trace("end work");
-        }
-
-        public void init(Node _node_cfg) {
-              if(_node_cfg!=null){
-                 logger.info("The configuration node:"+_node_cfg.getNodeName());
-                 NodeList glist=_node_cfg.getChildNodes();     
-                 for(int i=0;i<glist.getLength();i++){
-                     Node n=glist.item(i);
-                     if("user"              .equalsIgnoreCase(n.getNodeName())){userName          =n.getTextContent(); logger.info("user:"+userName);}
-                     else
-                     if("password"          .equalsIgnoreCase(n.getNodeName())){password          =n.getTextContent(); logger.info("password:"+password);}
-                     else
-                     if("client_port"       .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{client_port=Integer.parseInt(s, 10);}catch(Exception e){ client_port=143;logger.error("client_port:"+s);} logger.info("client_port:"+client_port);}
-                     else                   
-                     if("client_host"       .equalsIgnoreCase(n.getNodeName())){client_host       =n.getTextContent(); logger.info("client_host:"+client_host);}
-                     else
-                     if("local_bind_client" .equalsIgnoreCase(n.getNodeName())){local_bind_client =n.getTextContent(); logger.info("local_bind_client:"+local_bind_client);}
-                     else
-                     if("is_debug"          .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{debug=Boolean.parseBoolean(s);}catch(Exception e){ debug=false;logger.error("is_debug:"+s);} logger.info("is_debug:"+debug);}
-                     else
-                     if("run_timeout"       .equalsIgnoreCase(n.getNodeName())){String s          =n.getTextContent(); try{task_timeout=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set run_timeout:"+s);task_timeout=10;}logger.info("run_timeout:"+task_timeout);}
-                     else
-                     if("inbox_folder"      .equalsIgnoreCase(n.getNodeName())){imap_inbox_folder =n.getTextContent(); logger.info("inbox_folder:"+imap_inbox_folder);}
-                     else
-                     if("outbox_folder"     .equalsIgnoreCase(n.getNodeName())){imap_outbox_folder=n.getTextContent(); logger.info("outbox_folder:"+imap_outbox_folder);}
-                 }
-                 if(stringTransform.isEmpty(local_bind_client))local_bind_client="*";
-              }
-              else{
-                  logger.error("The configuration node:null");
-              }                 
-              setDelay(getTimeout());
         }
 
 

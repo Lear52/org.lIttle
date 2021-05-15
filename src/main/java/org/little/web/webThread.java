@@ -21,7 +21,17 @@ public class webThread extends HttpServlet{
        private static final Logger logger = LoggerFactory.getLogger(webThread.class);
 
         //     Создание нового пула потоков 
-        protected scheduler runner = new scheduler(10);
+        protected int       size_runner;
+        protected scheduler runner;
+
+        public webThread(){
+               preinit();
+        }
+
+        protected void preinit(){
+               size_runner=10;
+               runner = new scheduler(size_runner);
+        }
      
         @Override
         public void init() throws ServletException {

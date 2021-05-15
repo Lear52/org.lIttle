@@ -1,6 +1,7 @@
 package org.little.mq.controlStream;
 
 import org.json.JSONObject;
+import org.little.mq.mqapi.commonMQ;
 import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
@@ -10,8 +11,9 @@ import org.w3c.dom.Node;
 public class fc_Q {
        private static final Logger logger = LoggerFactory.getLogger(fc_Q.class);
 
-       private String mq_mngr;
-       private String mq_queue;
+       protected commonMQ  cfg;
+       //private String mq_mngr;
+       //private String mq_queue;
        private int    deepQ;
        private boolean is_alarm;
 
@@ -19,16 +21,18 @@ public class fc_Q {
     	      clear();
        }
        protected void   clear() {
-    	       this.mq_mngr = "noname_mngr";
-    	       this.mq_queue= "noname_queue";
+      	       cfg=new commonMQ(); 
+  
+    	       //this.mq_mngr = "noname_mngr";
+    	       //this.mq_queue= "noname_queue";
     	       this.deepQ   = 0;
     	       this.is_alarm=false;
        }
        
-       public String  getNameQ()           {return mq_queue;}
-       public void    setNameQ(String q)   {this.mq_queue = q;}
-       public String  getNameMngr()        {return mq_mngr;}
-       public void    setNameMngr(String m){this.mq_mngr = m;}
+       public String  getNameQ()           {return cfg.getNameQ();}
+       //public void    setNameQ(String q)   {this.mq_queue = q;}
+       public String  getNameMngr()        {return cfg.getNameMngr();}
+       //public void    setNameMngr(String m){this.mq_mngr = m;}
                      
        public int     getDeepQ()           {return deepQ;}
        public void    setDeepQ(int _deepQ) {this.deepQ = _deepQ;}
@@ -40,8 +44,8 @@ public class fc_Q {
               JSONObject root=new JSONObject();
 
               root.put("type" ,"q");
-              root.put("queue",getNameQ());
-              root.put("mngr" ,getNameMngr());
+              root.put("queue",cfg.getNameQ());
+              root.put("mngr" ,cfg.getNameMngr());
               root.put("len"  ,getDeepQ());
               root.put("alarm",isAlarm());
 
@@ -52,8 +56,8 @@ public class fc_Q {
        protected void setState(JSONObject root) {
                  logger.trace("setStat json:"+root); 
                  try{
-                    setNameMngr(root.getString ("mngr"  ));
-                    setNameQ   (root.getString ("queue" ));
+                    cfg.setNameMngr(root.getString ("mngr"  ));
+                    cfg.setNameQ   (root.getString ("queue" ));
                     setDeepQ   (root.getInt    ("len"   ));
                     isAlarm    (root.getBoolean("alarm" ));
                  }

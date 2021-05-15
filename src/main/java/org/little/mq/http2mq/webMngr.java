@@ -33,7 +33,7 @@ public class webMngr extends webRun{
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-                 if(commonMQ.loadCFG(xpath)==false){
+                 if(commonMQ1.loadCFG(xpath)==false){
                     logger.error("error read config file:"+xpath);
                     return;
                  }
@@ -74,7 +74,7 @@ public class webMngr extends webRun{
                  return;
               }
   
-              if(page==null)page = commonMQ.get().getDefPage();
+              if(page==null)page = commonMQ1.get().getDefPage();
               logger.trace("webMngr.doRun() page:"+page);
               //-----------------------------------------------------------------------------------------
               if(page!=null)

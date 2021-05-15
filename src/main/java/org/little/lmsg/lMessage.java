@@ -43,7 +43,8 @@ public class lMessage{
     private   ArrayList<String>  x509_serial     ;
     private   String             x509_subject    ;
     private   String             x509_issuer     ;
-    private   Date               x509_date_rl    ;
+    private   Date               x509_date_sr    ;//time  SRL
+    private   Date               x509_date_fr    ;//time  info overdate live
     
     
 
@@ -88,7 +89,8 @@ public class lMessage{
               msg_uid          = 0;
               expunged         = false;
               x509_id          = -1;
-              x509_date_rl     =null;
+              x509_date_sr     =null;
+              x509_date_fr     =null;
 
     }
     public static String getNewID(String id){
@@ -119,90 +121,95 @@ public class lMessage{
            return msg_from+"@"+_domain;
     }
     
-    public int           getNum          (){return msg_num;         }
-    public int           getUID          (){return msg_uid;         }
-    public String        getFrom         (){return msg_from;        }
-    public String        getId           (){return msg_id;          }
-    public String        getSubject      (){return msg_subject;     }
-    public String        getFilename     (){return msg_filename;    }
-    public Date          getCreateDate   (){return msg_create_date; }
-    public Date          getSentDate     (){return msg_sent_date;   }
-    public Date          getReceiveDate  (){return msg_receive_date;}
-    public Date          getDelDate      (){return msg_del_date;    }
-    public Date          getAnswerDate   (){return msg_answer_date; }
+    public int                getNum           (){return msg_num;         }
+    public int                getUID           (){return msg_uid;         }
+    public String             getFrom          (){return msg_from;        }
+    public String             getId            (){return msg_id;          }
+    public String             getSubject       (){return msg_subject;     }
+    public String             getFilename      (){return msg_filename;    }
+    public Date               getCreateDate    (){return msg_create_date; }
+    public Date               getSentDate      (){return msg_sent_date;   }
+    public Date               getReceiveDate   (){return msg_receive_date;}
+    public Date               getDelDate       (){return msg_del_date;    }
+    public Date               getAnswerDate    (){return msg_answer_date; }
     public java.sql.Timestamp _getCreateDate   (){if(msg_create_date !=null)return new java.sql.Timestamp(msg_create_date.getTime()); else return null;}
     public java.sql.Timestamp _getSentDate     (){if(msg_sent_date   !=null)return new java.sql.Timestamp(msg_sent_date.getTime());   else return null;}
     public java.sql.Timestamp _getReceiveDate  (){if(msg_receive_date!=null)return new java.sql.Timestamp(msg_receive_date.getTime());else return null;}
     public java.sql.Timestamp _getDelDate      (){if(msg_del_date    !=null)return new java.sql.Timestamp(msg_del_date.getTime());    else return null;}
     public java.sql.Timestamp _getAnswerDate   (){if(msg_answer_date !=null)return new java.sql.Timestamp(msg_answer_date.getTime()); else return null;}
 
-    public String        getMime         (){return msg_mime;        }
-    public int           getSize         (){return msg_size;        }
+    public String             getMime          (){return msg_mime;        }
+    public int                getSize          (){return msg_size;        }
 
-    public int           getX509ID       (){return x509_id;         }
+    public int                getX509ID        (){return x509_id;         }
 
     
-    public String        getX509Type     (){return x509_type        ;}    
-    public String        getX509TypeFile (){return x509_type_file   ;}    
-    public Date          getX509BeginDate(){return x509_begin_date  ;}
-    public Date          getX509EndDate  (){return x509_end_date    ;}
-    public Date          getX509DateRL   (){return x509_date_rl     ;}
+    public String             getX509Type      (){return x509_type        ;}    
+    public String             getX509TypeFile  (){return x509_type_file   ;}    
+    public Date               getX509BeginDate (){return x509_begin_date  ;}
+    public Date               getX509EndDate   (){return x509_end_date    ;}
+    public Date               getX509DateSR    (){return x509_date_sr     ;}
+    public Date               getX509DateFR    (){return x509_date_fr     ;}
+
     public java.sql.Timestamp _getX509BeginDate(){if(x509_begin_date!=null)return new java.sql.Timestamp(x509_begin_date.getTime());else return null;}
     public java.sql.Timestamp _getX509EndDate  (){if(x509_end_date  !=null)return new java.sql.Timestamp(x509_end_date.getTime());  else return null;}
-    public java.sql.Timestamp _getX509DateRL   (){if(x509_date_rl   !=null)return new java.sql.Timestamp(x509_date_rl.getTime());  else return null;}
-    public String[]      getX509Serial    (){String[] arr_s=(String[])x509_serial.toArray(new String[x509_serial.size()]);return arr_s;}  
-    public String        getX509Serial    (int i){return x509_serial.get(i);}  
-    public int           getX509SizeSerial(){return x509_serial.size();}  
-    public String        getX509Serials   (){StringBuilder buf=new StringBuilder();for(int i=0;i<x509_serial.size();i++){if(i>0)buf.append(", "); buf.append(x509_serial.get(i));}return buf.toString();}  
-    public String        getX509Subject  (){return x509_subject     ;} 
-    public String        getX509Issuer   (){return x509_issuer      ;}  
-                        
-    public String        getBodyTxt      (){return body_txt;         }
-    public byte[]        getBodyBin      (){return body_bin;         }
-    public String        getBodyBin76    (){return body_bin_txt76;   }
-    public String        getBodyBin64    (){return body_bin_txt;     }
-                        
-    public boolean       isSEEN() {return !isUNSEEN();}
-    public boolean       isUNSEEN() {return msg_receive_date==null;}
-    public boolean       isDELETE() {return msg_del_date==null;}
-    public boolean       isDRAFT() {return false;}
-    public boolean       isANSWERED() {return false;}
-                        
-                        
-    public void          setTO           (String address) {msg_to=new ArrayList<String>();addTO(address);   }
-    public void          addTO           (String address) {msg_to.add(address);       }
+    public java.sql.Timestamp _getX509DateRL   (){if(x509_date_sr   !=null)return new java.sql.Timestamp(x509_date_sr.getTime());   else return null;}
+    public java.sql.Timestamp _getX509DateFL   (){if(x509_date_fr   !=null)return new java.sql.Timestamp(x509_date_fr.getTime());   else return null;}
 
-    public void     setNum          (int n)          {msg_num         =n;        }
-    public void     setUID          (int id)         {msg_uid         =id;       }
-    public void     setFrom         (String address) {msg_from        =address;  }
-    public void     setId           (String _id)     {msg_id          =_id;      }
-    public void     setSubject      (String subject) {msg_subject     =subject;  }
-    public void     setFilename     (String filename){msg_filename    =filename; }
-    public void     setCreateDate   (Date date)      {msg_create_date =date;     }
-    public void     setCreateDate   ()               {setCreateDate(new Date ());}
-    public void     setSentDate     (Date date)      {msg_sent_date   =date;     }
-    public void     setSentDate     ()               {setSentDate(new Date ());  }
-    public void     setReceiveDate  (Date date)      {msg_receive_date=date;     }
-    public void     setReceiveDate  ()               {setReceiveDate(new Date());}
-    public void     setDelDate      (Date date)      {msg_del_date    =date;     }
-    public void     setAnswerDate   (Date date)      {msg_answer_date=date;      }
-    public void     setDelDate      ()               {setDelDate(new Date ());   }
-    public void     setAnswerDate   ()               {setAnswerDate(new Date ());}
-    public void     setMime         (String mime)    {msg_mime        =mime;     }
-    public void     setSize         (int  _size)     {msg_size        =_size;    }
+    public String[]           getX509Serial    (){String[] arr_s=(String[])x509_serial.toArray(new String[x509_serial.size()]);return arr_s;}  
+    public String             getX509SerialN   (int i){return x509_serial.get(i);}  
+    public int                getX509SizeSerial(){return x509_serial.size();}  
+    public String             getX509Serials   (){StringBuilder buf=new StringBuilder();for(int i=0;i<x509_serial.size();i++){if(i>0)buf.append(", "); buf.append(x509_serial.get(i));}return buf.toString();}  
+    public String             getX509Subject   (){return x509_subject     ;} 
+    public String             getX509Issuer    (){return x509_issuer      ;}  
+                             
+    public String             getBodyTxt       (){return body_txt;         }
+    public byte[]             getBodyBin       (){return body_bin;         }
+    public String             getBodyBin76     (){return body_bin_txt76;   }
+    public String             getBodyBin64     (){return body_bin_txt;     }
+                             
+    public boolean            isSEEN           () {return !isUNSEEN();}
+    public boolean            isUNSEEN         () {return msg_receive_date==null;}
+    public boolean            isDELETE         () {return msg_del_date==null;}
+    public boolean            isDRAFT          () {return false;}
+    public boolean            isANSWERED       () {return false;}
+                        
+                        
+    public void               setTO           (String address) {msg_to=new ArrayList<String>();addTO(address);   }
+    public void               addTO           (String address) {msg_to.add(address);       }
 
-    public void     setX509ID       (int id)         {x509_id         =id;       }
-    public void     setX509Type     (String s)       {x509_type       =s;        }    
-    public void     setX509TypeFile (String s)       {x509_type_file  =s;        }    
-    public void     setX509BeginDate(Date   s)       {x509_begin_date =s;        }
-    public void     setX509EndDate  (Date   s)       {x509_end_date   =s;        }
-    public void     addX509Serial   (String s)       {x509_serial.add(s);        }  
-    public void     setX509Serial   (String s)       {x509_serial=new ArrayList<String>();addX509Serial(s);}/**/  
-    public void     setX509Subject  (String s)       {x509_subject    =s;        } 
-    public void     setX509Issuer   (String s)       {x509_issuer     =s;        }  
-    public void     setX509DateRL   (Date   s)       {x509_date_rl    =s;        }
+    public void               setNum          (int n)          {msg_num         =n;        }
+    public void               setUID          (int id)         {msg_uid         =id;       }
+    public void               setFrom         (String address) {msg_from        =address;  }
+    public void               setId           (String _id)     {msg_id          =_id;      }
+    public void               setSubject      (String subject) {msg_subject     =subject;  }
+    public void               setFilename     (String filename){msg_filename    =filename; }
+    public void               setCreateDate   (Date date)      {msg_create_date =date;     }
+    public void               setCreateDate   ()               {setCreateDate(new Date ());}
+    public void               setSentDate     (Date date)      {msg_sent_date   =date;     }
+    public void               setSentDate     ()               {setSentDate(new Date ());  }
+    public void               setReceiveDate  (Date date)      {msg_receive_date=date;     }
+    public void               setReceiveDate  ()               {setReceiveDate(new Date());}
+    public void               setDelDate      (Date date)      {msg_del_date    =date;     }
+    public void               setAnswerDate   (Date date)      {msg_answer_date=date;      }
+    public void               setDelDate      ()               {setDelDate(new Date ());   }
+    public void               setAnswerDate   ()               {setAnswerDate(new Date ());}
+    public void               setMime         (String mime)    {msg_mime        =mime;     }
+    public void               setSize         (int  _size)     {msg_size        =_size;    }
+                             
+    public void               setX509ID       (int id)         {x509_id         =id;       }
+    public void               setX509Type     (String s)       {x509_type       =s;        }    
+    public void               setX509TypeFile (String s)       {x509_type_file  =s;        }    
+    public void               setX509BeginDate(Date   s)       {x509_begin_date =s;        }
+    public void               setX509EndDate  (Date   s)       {x509_end_date   =s;        }
+    public void               addX509Serial   (String s)       {x509_serial.add(s);        }  
+    public void               setX509Serial   (String s)       {x509_serial=new ArrayList<String>();addX509Serial(s);}/**/  
+    public void               setX509Subject  (String s)       {x509_subject    =s;        } 
+    public void               setX509Issuer   (String s)       {x509_issuer     =s;        }  
+    public void               setX509DateSR   (Date   s)       {x509_date_sr    =s;        }
+    public void               setX509DateFR   (Date   s)       {x509_date_fr    =s;        }
 
-    public void     setBodyTxt      (String b)       {body_txt=b;                }
+    public void               setBodyTxt      (String b)       {body_txt=b;                }
     private void    setBodyBin76    ()       {
                     int len_txt=body_bin_txt.length();
                     StringBuilder out_buf=new StringBuilder();
@@ -319,6 +326,8 @@ public class lMessage{
                    +"\n"+x509_serial     
                    +"\n"+x509_subject    
                    +"\n"+x509_issuer 
+                   +"\n"+x509_date_sr
+                   +"\n"+x509_date_fr
                    +"\n"
                    ;
     }

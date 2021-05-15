@@ -34,7 +34,7 @@ public class webMngr extends webRun{
        public void init() throws ServletException {
 
               logger.trace("start"+":"+getServletInfo());
-              String xpath=this.getServletContext().getRealPath("");
+              String xpath =this.getServletContext().getRealPath("");
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
@@ -73,10 +73,9 @@ public class webMngr extends webRun{
        private void doGetFileID(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
                logger.trace("begin doGetFileID:"+_uid);
               
-               lMessage  msg=cfg.getFolder().loadArray(_uid);
-
-               byte [] buf=null;
-               int     buf_size=0;
+               lMessage  msg     =cfg.getFolder().loadArray(_uid);
+               byte []   buf     =null;
+               int       buf_size=0;
                if(msg!=null){
                   buf=msg.getBodyBin();
                   buf_size=buf.length;
@@ -104,9 +103,9 @@ public class webMngr extends webRun{
        private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
                logger.trace("begin doGetX509ID:"+_x509_id);
               
-               lMessage  msg=cfg.getFolder().loadArrayX509(_x509_id);
-               byte [] buf=null;
-               int     buf_size=0;
+               lMessage  msg     =cfg.getFolder().loadArrayX509(_x509_id);
+               byte []   buf     =null;
+               int       buf_size=0;
                if(msg!=null){
                   buf=msg.getBodyBin();
                   buf_size=buf.length;
@@ -164,6 +163,21 @@ public class webMngr extends webRun{
               
                logger.trace("end doGetX509 type:"+prn_type);
        }
+       private void doGetAlarm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+           logger.trace("begin doGetAlarm");
+           
+           JSONObject  root=cfg.getFolder().loadJSONAlarm(cfg.getAlarm().getTimeAlarm());
+          
+           logger.trace("getStatAll() :"+root);
+          
+           response.setContentType("application/json");
+           response.setContentType("text/html; charset=UTF-8");
+          
+           root.write(response.getWriter());
+          
+           logger.trace("end doGetAlarm");
+       }
 
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -180,6 +194,10 @@ public class webMngr extends webRun{
               if(path.startsWith("/x509")){
                   String    _type = (String) request.getParameter("type");
                   doGetX509(request,response,_type);
+                  return;
+              }
+              if(path.startsWith("/alarm")){
+                  doGetAlarm(request,response);
                   return;
               }
               if(path.startsWith("/get")){

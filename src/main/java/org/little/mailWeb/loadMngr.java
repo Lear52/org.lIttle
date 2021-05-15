@@ -7,19 +7,30 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.little.mailWeb.imap.ImapListBox;
+import org.little.mailWeb.imap.ImapLoadBox;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
 import org.little.web.webThread;
+import org.little.util.run.scheduler;
 /**
  * @author av
  *  
  */
 public class loadMngr extends webThread{
-       private static final long serialVersionUID = -8857423924701221546L;
-       private static final Logger logger = LoggerFactory.getLogger(loadMngr.class);
-       private static ImapListBox client=new ImapListBox();
+       private static final long   serialVersionUID = -8857423924701221546L;
+       private static final Logger logger           = LoggerFactory.getLogger(loadMngr.class);
+       private static ImapListBox  client           = new ImapListBox();
 
+       public loadMngr(){
+              logger.info("create object loadMngr runner:"+size_runner);
+       } 
+       @Override
+       protected void preinit(){
+           size_runner=5;
+           runner = new scheduler(size_runner);
+       }
        @Override
        public void init() throws ServletException {
 

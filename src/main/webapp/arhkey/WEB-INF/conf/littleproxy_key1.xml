@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<little>
+	<littlekey>
+		<global_option>
+		        <def_page>/index.html</def_page>
+		        <error_page>/error.jsp</error_page>
+		</global_option>
+		<load>
+			<box>
+                                <client_host>172.16.37.213</client_host>
+				<local_bind_client>*</local_bind_client>
+				<user>allletters</user>
+				<password>@(Fduecnf2019</password>
+				<is_debug>false</is_debug>
+			        <run_timeout>100</run_timeout>
+			        <inbox_folder>inbox</inbox_folder>
+			        <outbox_folder>outbox</outbox_folder>
+			</box>
+			<box>
+                                <client_host>172.16.17.213</client_host>
+                                <client_port>143</client_port>
+				<local_bind_client>*</local_bind_client>
+				<user>allletters</user>
+				<password>@(Fduecnf2019</password>
+				<is_debug>false</is_debug>
+			        <run_timeout>100</run_timeout>
+			        <inbox_folder>outbox</inbox_folder>
+			        <outbox_folder>arhbox</outbox_folder>
+			</box>
+		</load>
+
+		<log_arh type0="log" type="db">
+                        <drv1>oracle.jdbc.driver.OracleDriver</drv1>
+                        <url1>jdbc:oracle:thin:@10.93.128.14:1521:xe</url1>
+                        <drv2>com.ibm.db2.jcc.DB2Driver</drv2>
+                        <url2>jdbc:db2://172.16.37.210:50000/DB2INST1</url2>
+
+                        <db_drv>org.apache.derby.jdbc.ClientDriver</db_drv>
+                        <db_url>jdbc:derby://localhost:1527/xe;create=true</db_url>
+			<user>av</user>
+			<password>123</password>
+                        <db_table_eml>arh_eml</db_table_eml>			
+                        <db_table_x509>arh_eml</db_table_x509>			
+                        <db_table_serial>arh_serial</db_table_serial>			
+                        <db_seq>arh_seq</db_seq>
+                </log_arh>
+		<alarm_option>
+                        <send_alarm>false</send_alarm>
+                        <alarm text="day">5</alarm>			
+			<mngr>SBPFRONT_SNT_TU</mngr><queue>TEST</queue><host>10.70.112.150</host><port>2701</port><user>av</user><password>483886416409</password><channel>MONITOR</channel>
+		</alarm_option>
+
+	</littlekey>
+
+</little>

@@ -49,6 +49,7 @@ String  go_url;
                  if(type_page==="1")getStateType('X509 CRL');
                  if(type_page==="2")getStateType('CERTIFICATE REQUEST');
                  if(type_page==="3")getStateType('CERTIFICATE');
+                 if(type_page==="4")getAlarm();
         }
 
         function showState(){
@@ -96,6 +97,10 @@ String  go_url;
         }
         function getStateType(type){
             var req_url='<%=req_url%>?type='+type;
+            _getState(req_url);
+        }
+        function getAlarm(){
+            var req_url='arh/alarm';
             _getState(req_url);
         }
 
@@ -197,6 +202,7 @@ String  go_url;
                <input class="ts" name="radio" type="radio" id="r1" value="1">X509 CRL
                <input class="ts" name="radio" type="radio" id="r2" value="2">CERTIFICATE REQUEST
                <input class="ts" name="radio" type="radio" id="r3" value="3">CERTIFICATE
+               <input class="ts" name="radio" type="radio" id="r3" value="4">ALARM
             </div>
           </td>
         </tr>
