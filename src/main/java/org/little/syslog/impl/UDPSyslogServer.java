@@ -35,6 +35,7 @@ public class UDPSyslogServer extends UDPNetSyslogServer {
                      this.ds = createDatagramSocket();
               } catch (Exception e) {
                      logger.error("ex:"+new Except("Creating DatagramSocket failed",e));
+                     return;
                      //e.printStackTrace();
                      //throw new SyslogRuntimeException(e);
               }
@@ -52,8 +53,10 @@ public class UDPSyslogServer extends UDPNetSyslogServer {
 
                      } catch (SocketException se) {
                               logger.error("ex:"+new Except("read DatagramSocket failed",se));
+                              return;
                      } catch (IOException ioe) {
                               logger.error("ex:"+new Except("read DatagramSocket failed",ioe));
+                              return;
                      }
               }
        }
