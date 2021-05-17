@@ -44,6 +44,7 @@ public class webMngr extends webThread{
 
               mngr.init();
               mngr.setDelay(1);
+
               ArrayList<task> _task=mngr.getListTask();
               runner.add(mngr);
               for(int i=0;i<_task.size();i++){
@@ -52,11 +53,31 @@ public class webMngr extends webThread{
                   runner.add(t);
               }
 
+              logger.info("RUN LITTLE.CONTROLSTREAM "+Version.getVer()+"("+Version.getDate()+")");
 
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
               logger.trace("run:"+getServletInfo());
+       }
+       @Override
+       public void destroy() {
+              mngr.KILL();
+              ArrayList<task> _task=mngr.getListTask();
+              runner.add(mngr);
+              for(int i=0;i<_task.size();i++){
+                  task t=_task.get(i);
+                  t.KILL();
+                  runner.del(t);
+              }
+              _task.clear();
+
+              runner.stop();
+              runner=null;
+              mngr.close();
+              mngr=null;
+              super.destroy();
+              logger.info("STOP LITTLE.CONTROLSTREAM "+Version.getVer()+"("+Version.getDate()+")");
        }
 
        @Override

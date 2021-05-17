@@ -52,6 +52,15 @@ public class fc_flow{
                                 
        public    boolean         getState()          {return state;}
 
+       public    void            close() {
+                 if(q_list==null)return;
+                 for(int i=0;i<q_list.size();i++){
+                     fc_Q q=q_list.get(i);
+                     q.close();
+                 }
+                 q_list.clear();
+                 q_list=null;
+       }
 
        
 }

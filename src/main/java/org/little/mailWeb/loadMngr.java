@@ -1,19 +1,17 @@
 package org.little.mailWeb;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.little.mailWeb.imap.ImapListBox;
-import org.little.mailWeb.imap.ImapLoadBox;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
-import org.little.web.webThread;
 import org.little.util.run.scheduler;
+import org.little.web.webThread;
 /**
  * @author av
  *  
@@ -28,7 +26,7 @@ public class loadMngr extends webThread{
        } 
        @Override
        protected void preinit(){
-           size_runner=5;
+           size_runner=2;
            runner = new scheduler(size_runner);
        }
        @Override
@@ -45,7 +43,8 @@ public class loadMngr extends webThread{
                  return;
               }
               logger.info("START LITTLE.IMAPWEB(LOAD) config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
-
+              client.start(runner);
+              /*
               ArrayList<ImapLoadBox> list=client.get();
               for(int i=0;i<list.size();i++) {
             	  ImapLoadBox cln = list.get(i);
@@ -53,6 +52,7 @@ public class loadMngr extends webThread{
             	  cln.setStart(st);
             	  runner.add(cln);
               }
+              */
               //-------------------------------------------------------------------------------------------------------
               super.init();
               //-------------------------------------------------------------------------------------------------------
@@ -60,9 +60,13 @@ public class loadMngr extends webThread{
        }
        @Override
        public void destroy() {
-               super.destroy();
-               client=null;
-               logger.info("STOP LITTLE.IMAPWEB(LOAD) "+Version.getVer()+"("+Version.getDate()+")");
+
+              client.stop(runner);
+              runner.stop();
+              runner=null;
+              client=null;
+              super.destroy();
+              logger.info("STOP LITTLE.IMAPWEB(LOAD) "+Version.getVer()+"("+Version.getDate()+")");
        }
 
 

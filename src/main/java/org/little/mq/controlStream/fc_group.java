@@ -19,13 +19,13 @@ public interface fc_group {
 
        public JSONObject getStat();
 
-
        public void       work();
        
        public JSONObject setFlag(String flow_id,boolean is_flag);
 
        public JSONObject ClearQ(String flow_id,String mngr_id,String q_id);
 
+       public void       close();
        
 
 }

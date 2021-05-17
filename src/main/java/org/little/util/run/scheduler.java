@@ -76,7 +76,12 @@ public class scheduler extends tfork{
        public void add(task t) {
               if(list_task==null)return;
               list_task.add(t);
-               log.trace("add task for scheduler_id:"+id_scheduler+" identification:" +t.getIdentification()+" task_period:"+t.getPeriod());
+              log.trace("add task for scheduler_id:"+id_scheduler+" identification:" +t.getIdentification()+" task_period:"+t.getPeriod());
+       }
+       public void del(task t) {
+              if(list_task==null)return;
+              list_task.remove(t);
+              log.trace("del task for scheduler_id:"+id_scheduler+" identification:" +t.getIdentification()+" task_period:"+t.getPeriod());
        }
 
        public task getZomby() {

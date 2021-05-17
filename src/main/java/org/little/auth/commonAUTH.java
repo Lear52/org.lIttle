@@ -88,7 +88,7 @@ public class commonAUTH{
               
        }
 
-       public int           getTypeAuthenticateUser(){return type_authenticateUser;       }
+       public int           getTypeAuthenticateUser(){return type_authenticateUser;             }
        public String        getLdapUrl                (){return ldap_url;                       }
        public String        getRealm                  (){return realm;                          }
        public String        getLdapUsername           (){return ldap_ad_username;               }

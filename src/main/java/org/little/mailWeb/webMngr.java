@@ -1,6 +1,8 @@
 package org.little.mailWeb;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -33,6 +35,8 @@ public class webMngr extends webRun{
        @Override
        public void init() throws ServletException {
 
+              if(cfg==null)return;
+
               logger.trace("start"+":"+getServletInfo());
               String xpath =this.getServletContext().getRealPath("");
               String _xpath=getParametr("config");
@@ -61,6 +65,8 @@ public class webMngr extends webRun{
         }
         @Override
         public void destroy() {
+               if(cfg!=null)cfg.clear();
+               cfg=null;
                super.destroy();
                //client=null;
                logger.info("STOP LITTLE.IMAPWEB(VIEW) "+Version.getVer()+"("+Version.getDate()+")");
@@ -99,6 +105,36 @@ public class webMngr extends webRun{
                response.getOutputStream().flush();;
               
                logger.trace("end doGetFileID:"+_uid+" filename="+filename);
+       }
+       private void doGetSRL(HttpServletRequest request, HttpServletResponse response,int _uid) throws ServletException, IOException{
+               logger.trace("begin doGetSRLID:"+_uid);
+              
+               lMessage  msg     =cfg.getFolder().loadSRL(_uid);
+               byte []   buf     =null;
+               int       buf_size=0;
+               if(msg!=null){
+                  buf=msg.getBodyBin();
+                  buf_size=buf.length;
+                  logger.trace("load buf:"+buf.length);
+               }
+
+               String filename=msg.getFilename();
+               if(filename==null)filename="cert_"+_uid+".cer";
+               if(filename.equals(""))filename="cert_"+_uid+".cer";
+
+               response.setContentType("application/octet-stream");
+               response.addHeader("Accept-Ranges","bytes");
+               response.setHeader("Content-Type","application/octet-stream");
+               response.setHeader("Content-Transfer-Encoding", "Binary");
+               response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+               response.setContentLength(buf_size);
+               logger.trace("set header");
+              
+               response.getOutputStream().write(buf,0,buf_size);
+               logger.trace("write buf");
+               response.getOutputStream().flush();;
+              
+               logger.trace("end doGetSRLID:"+_uid+" filename="+filename);
        }
        private void doGetX509ID(HttpServletRequest request, HttpServletResponse response,int _x509_id) throws ServletException, IOException{
                logger.trace("begin doGetX509ID:"+_x509_id);
@@ -167,7 +203,7 @@ public class webMngr extends webRun{
 
            logger.trace("begin doGetAlarm");
            
-           JSONObject  root=cfg.getFolder().loadJSONAlarm(cfg.getAlarm().getTimeAlarm());
+           JSONObject  root=cfg.getFolder().loadJSONAlarm(cfg.getAlarm().getTimeAlarm(),new Timestamp(new Date().getTime()));
           
            logger.trace("getStatAll() :"+root);
           
@@ -182,24 +218,38 @@ public class webMngr extends webRun{
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
+              if(cfg==null)return;
+
               String    path = (String) request.getPathInfo();
               String    page=null;
 
               logger.trace("webAddr.doRun() path:"+path);
+
               if(path.startsWith("/list")){
                   String    _type = (String) request.getParameter("type");
                   doGetList(request,response,_type);
                   return;
               }
+              else
               if(path.startsWith("/x509")){
                   String    _type = (String) request.getParameter("type");
                   doGetX509(request,response,_type);
                   return;
               }
+              else
               if(path.startsWith("/alarm")){
                   doGetAlarm(request,response);
                   return;
               }
+              else
+              if(path.startsWith("/srl")){
+                  String    _id = (String) request.getParameter("uid");
+                  int id    =-1;
+                  if(_id    !=null)try {id    =Integer.parseInt(_id, 10);    } catch(Exception e) {id=-1;}
+                  doGetSRL(request,response,id);
+                  return;
+              }
+              else
               if(path.startsWith("/get")){
                   String    _uid     = (String) request.getParameter("uid");
                   String    _x509_id = (String) request.getParameter("x509_id");

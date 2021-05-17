@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.little.mailWeb.commonArh;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.util.run.scheduler;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -43,7 +44,24 @@ public class ImapListBox{
                
                return ret;
         }
-
+        public void start(scheduler runner){
+               for(int i=0;i<list_box.size();i++) {
+                   ImapLoadBox cln = list_box.get(i);
+                   int st=(cln.getTimeout()*i)/(list_box.size());
+                   cln.setStart(st);
+                   runner.add(cln);
+               }
+        }
+        public void stop(scheduler runner){
+               for(int i=0;i<list_box.size();i++) {
+                   ImapLoadBox cln = list_box.get(i);
+                   cln.KILL();
+                   runner.del(cln);
+               }
+               list_box.clear();
+               cfg.getFolder().close();
+               cfg=null;
+        }
         public static void main(String[] args) {
 
             System.setProperty("java.net.preferIPv4Stack", "true");

@@ -9,7 +9,7 @@ import org.little.util.LoggerFactory;
 public class fc_control {
        private static final Logger logger = LoggerFactory.getLogger(fc_control.class);
 
-       protected commonMQ      cfg;
+       protected commonMQ    cfg;
        private boolean       is_manual;
        private boolean       is_set_flag;
 
@@ -63,5 +63,7 @@ public class fc_control {
        }
        public void init(Node node_cfg) {}
        public    void       work(){}
+       public    void       close(){
+       }
 
 }

@@ -156,8 +156,10 @@ public class folderDB implements folderARH{
            //                              1                 2                      3                       4                     5                   6                    7                   8               
                                    +"WHERE X.X509_TYPE=? and X.X509_TYPE_FILE=? and X.X509_BEGIN_DATE=? and X.X509_END_DATE=? and X.X509_SERIAL=? and X.X509_SUBJECT=? and X.X509_ISSUER=? and X.X509_BIN=?";
 
-           querySelectX509ALARMID ="SELECT X.X509_ID FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NOT NULL and X.X509_DATE_FR IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE<=? ";
-           querySelectX509ALARM   ="SELECT "+fields_select_x509+" FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NOT NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE<=? ";
+           // X.X509_DATE_RL IS NULL sertificat is OK
+           // X.X509_DATE_FR IS NULL sertificat no send alarm
+           querySelectX509ALARMID ="SELECT X.X509_ID FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_DATE_FR IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE>=? ";
+           querySelectX509ALARM   ="SELECT "+fields_select_x509+" FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE>=? and X.X509_END_DATE>=? ";
 
            queryUpdateRL          = "UPDATE "+cfg.getTableX509()+" SET X509_DATE_RL=? WHERE X509_SERIAL = ? AND X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"'";
                                   //
@@ -232,6 +234,7 @@ public class folderDB implements folderARH{
            else          list=loadArrayX509(querySelectX509ID,_x509_id,null);
 
            if(list.size()>0)return list.get(0);
+
            logger.error("msg not find for x509_id:"+_x509_id);
            return new lMessage();
        }
@@ -291,7 +294,7 @@ public class folderDB implements folderARH{
        }
 
        @Override
-       public JSONObject loadJSONAlarm(Timestamp alarm) {
+       public JSONObject loadJSONAlarm(Timestamp alarm,Timestamp curent) {
                JSONObject root=new JSONObject();
                if(db==null){
                   logger.error("db is not init");
@@ -300,12 +303,14 @@ public class folderDB implements folderARH{
                else{
                   JSONArray list=new JSONArray();
                   query           q=null;
+                  //logger.trace("db search alarm t1:"+alarm+" t2:"+curent+" sql:"+querySelectX509ALARM);
                   try{
                       // 
                        q=db.open();
                        q.creatPreSt(querySelectX509ALARM);
                        
                        q.setTimestamp( 1,alarm);
+                       q.setTimestamp( 2,curent);
  
                        q.executeQuery();
                        int s=0;
@@ -315,6 +320,7 @@ public class folderDB implements folderARH{
                             list.put(s,obj);
                             s++;
                        } 
+                       //logger.trace("db search alarm t1:"+alarm+" t2:"+curent+" size:"+s);
                        root.put("list",list);
                        root.put("size",s);
                   }catch(dbExcept ex){
@@ -665,7 +671,7 @@ public class folderDB implements folderARH{
        }
        private JSONObject loadJSONX509(String _select,int _uid,String _type) {
 
-               logger.trace("select:"+_select+" _uid:"+ _uid+" type:"+ _type);
+               //logger.trace("select:"+_select+" _uid:"+ _uid+" type:"+ _type);
 
                JSONObject root=new JSONObject();
                if(db==null){
@@ -771,7 +777,8 @@ public class folderDB implements folderARH{
                finally{
                     db.close(q);
                }
-               logger.trace("insert x509 to db q_id:"+q.getId()+" X509ID:"+msg.getX509ID());
+               //logger.trace("insert x509 to db q_id:"+q.getId()+" X509ID:"+msg.getX509ID());
+               logger.trace("saveX509 ID:"+msg.getX509ID());
 
        }
        private void saveSerialX509(lMessage msg) throws dbExcept {
@@ -798,7 +805,8 @@ public class folderDB implements folderARH{
                     db.close(q1);
                     db.close(q2);
                }
-               logger.trace("insert serial("+msg.getX509SizeSerial()+") to db");
+               //logger.trace("insert serial("+msg.getX509SizeSerial()+") to db");
+               logger.trace("saveSerialX509 ID:"+msg.getX509ID());
        }
        private void saveEml(lMessage msg) throws dbExcept {
                query  q=null;
@@ -807,13 +815,20 @@ public class folderDB implements folderARH{
                    q.creatPreSt(queryInsertEml);
                    setEml(q,msg);
                    q.execute();
-                   logger.trace("insert eml to  db q_id:"+q.getId());
+                   logger.trace("save Eml to  db");
                }
                finally{
                     db.close(q);
                }
        }
 
+       @Override
+       public lMessage  loadSRL(int   _id   ) {
+
+
+
+              return new lMessage();             
+       }
 
 
 }

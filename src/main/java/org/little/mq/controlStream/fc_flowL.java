@@ -136,5 +136,12 @@ public class fc_flowL  extends fc_flow{
                  
                  
        }
+       @Override
+       public    void close() {
+                 super.close();
+                 if(flow_contrl!=null)flow_contrl.close();
+                 flow_contrl=null;
+                 mngr=null;
+       }
        
 }

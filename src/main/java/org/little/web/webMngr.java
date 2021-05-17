@@ -1,4 +1,4 @@
-package org.little.auth;
+package org.little.web;
 
 import java.io.IOException;
 
@@ -9,12 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//import org.little.rcmd.rsh.rCP;
-//import org.little.rcmd.rsh.rCP_Remote2Buffer;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
-import org.little.web.webRun;
 /**
  * @author av
  *  

@@ -68,5 +68,8 @@ public class fc_Q {
        }
        public void work(){}
        public void init(Node n){}
+       public void close() {
+              clear();
+       }
 
 }

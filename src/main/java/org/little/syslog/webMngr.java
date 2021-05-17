@@ -25,9 +25,13 @@ import org.productivity.java.syslog4j.server.SyslogServerEventIF;
  *  
  */
 public class webMngr extends webRun{
-	private static final long serialVersionUID = -8820420158454598488L;
-	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
-	private static Server server=null;
+       private static final long serialVersionUID = -8820420158454598488L;
+       private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+       private static Server server;
+
+       public webMngr(){
+              server=null;
+       }
 
        @Override
        public void init() throws ServletException {
@@ -70,6 +74,17 @@ public class webMngr extends webRun{
        public String getServletInfo() {
               return "syslog server";
        }
+
+       @Override
+       public void destroy() {
+              if(server!=null){
+                 server.stop();
+              }
+              server=null;
+              super.destroy();
+              logger.info("STOP LITTLE.SYSLOG "+Version.getVer()+"("+Version.getDate()+")");
+       }
+
        private void doGetList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
            logger.trace("begin doGetList");
 

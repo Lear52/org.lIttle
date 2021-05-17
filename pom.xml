@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210505-SNAPSHOT</version>
+        <version>20210517-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
@@ -166,7 +166,7 @@
            <dependency>
                <groupId>com.ibm.mq</groupId>
                <artifactId>com.ibm.mq.allclient</artifactId>
-               <version>9.1.0.0</version>
+               <version>9.2.2.0</version>
            </dependency>
            <dependency>
              <groupId>javax.jms</groupId>

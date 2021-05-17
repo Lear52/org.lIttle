@@ -141,5 +141,14 @@ public class fc_groupL extends task implements fc_group{
               return root;
 
        }
+       @Override
+       public void close() {
+              if(flow_list==null)return;
+              for(int i=0;i<flow_list.size();i++){
+                  flow_list.get(i).close();
+              }
+              flow_list.clear();
+              flow_list=null;
+       }
 
 }

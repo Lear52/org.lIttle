@@ -12,11 +12,26 @@ public class authUserLDAP implements authUser {
        private String   ldap_url;
        private String   domain;
     
-       public authUserLDAP(commonAUTH cfg_auth){
-              realm=cfg_auth.getRealm();
-              ldap_url=cfg_auth.getLdapUrl();
-              domain=cfg_auth.getDefaultDomain();
+       public authUserLDAP(){
+              clear();
               logger.info("create authUserLDAP");
+       }
+       public authUserLDAP(String _ldap_url,String _realm,String _domain){
+              realm   =_realm;
+              ldap_url=_ldap_url;
+              domain  =_domain;
+              logger.info("create authUserLDAP");
+       }
+       public authUserLDAP(commonAUTH cfg_auth){
+              realm   =cfg_auth.getRealm();
+              ldap_url=cfg_auth.getLdapUrl();
+              domain  =cfg_auth.getDefaultDomain();
+              logger.info("create authUserLDAP");
+       }
+       private void clear(){
+               realm="";   
+               ldap_url="";
+               domain="";         
        }
        public String    getRealm(){return realm;}
        public void      setRealm(String r){realm=r;}
@@ -29,7 +44,7 @@ public class authUserLDAP implements authUser {
     
        @Override
        public boolean   checkUser(String user,String passwd){
-              boolean ret= serviceLDAP.auth(user,passwd,getRealm(),ldap_url);
+              boolean ret = serviceLDAP.auth(user,passwd,getRealm(),ldap_url);
               return ret;
        }
        public boolean   isUser(String user){

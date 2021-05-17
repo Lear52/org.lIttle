@@ -445,7 +445,8 @@ public class kMessageX509 {
               msg.setBodyBin(buf);
               msg=parse(msg);
               //---------------------------------------------------------------------------------------------------
-              System.out.println("msg:"+msg.printx509());
+              if(msg!=null)System.out.println("msg:"+msg.printx509());
+              else         System.out.println("msg:null");
 
        }
 

@@ -45,6 +45,7 @@ public class ImapLoadBox extends task{
         private IMAPFolder          folder_inbox;
         private IMAPFolder          folder_outbox;
         private Session             session;
+        private Authenticator       auth;
         
         private boolean             debug      ;
         private String              userName   ;
@@ -62,7 +63,9 @@ public class ImapLoadBox extends task{
                store           = null;
                folder_inbox    = null;
                folder_outbox   = null;
+               props           = null;
                session         = null;
+               auth            = null;
                //cfg             = new commonArh();
                debug            =false;        
                userName         ="av";        
@@ -90,7 +93,9 @@ public class ImapLoadBox extends task{
         public void work() {
 
                logger.trace("begin work");
+
                open();
+
                if(session     ==null)return;
                if(folder_inbox==null)return;
 
@@ -114,7 +119,7 @@ public class ImapLoadBox extends task{
                } 
                catch (Exception e) {
                  Except ex=new Except(e);
-                 logger.error("ex:" + ex);
+                 logger.error("work() ex:" + ex);
                        // System.exit(0);
                } 
                finally {
@@ -153,34 +158,35 @@ public class ImapLoadBox extends task{
                   logger.error("The configuration node:null");
               }                 
               setDelay(getTimeout());
+
+              props = System.getProperties();
+              /*
+               * if(false){ Enumeration en = prop.propertyNames();
+               * while(en.hasMoreElements()){ String s=(String)en.nextElement();
+               * logger.trace(s+":" +prop.getProperty(s)); } }
+               */
+              if(isDebug())props.setProperty("mail.debug"       , "true");
+              else         props.setProperty("mail.debug"       , "false");
+              props.setProperty("mail.imap.ssl.enable"          , "false");
+              props.setProperty("mail.imap.starttls.enable"     , "false");
+              props.setProperty("mail.imap.sasl.enable"         , "false");
+              props.setProperty("mail.debug.auth.username"      , "true");
+              props.setProperty("mail.debug.auth.password"      , "true");
+              if(isDebug())props.setProperty("mail.socket.debug", "true");
+              else         props.setProperty("mail.socket.debug", "false");
+              auth=new Authenticator() {
+                  @Override
+                  protected PasswordAuthentication getPasswordAuthentication() {
+                          logger.trace("l:p    "+getUser()+":"+getPasswd());
+                          return new PasswordAuthentication(getUser(),getPasswd());
+                  }
+               };
+
+        
         }
 
         protected boolean  open(){
-                props = System.getProperties();
-                /*
-                 * if(false){ Enumeration en = prop.propertyNames();
-                 * while(en.hasMoreElements()){ String s=(String)en.nextElement();
-                 * logger.trace(s+":" +prop.getProperty(s)); } }
-                 */
-                if(isDebug())props.setProperty("mail.debug"       , "true");
-                else         props.setProperty("mail.debug"       , "false");
-                props.setProperty("mail.imap.ssl.enable"          , "false");
-                props.setProperty("mail.imap.starttls.enable"     , "false");
-                props.setProperty("mail.imap.sasl.enable"         , "false");
-                props.setProperty("mail.debug.auth.username"      , "true");
-                props.setProperty("mail.debug.auth.password"      , "true");
-                if(isDebug())props.setProperty("mail.socket.debug", "true");
-                else         props.setProperty("mail.socket.debug", "false");
-                Authenticator auth=new Authenticator() {
-                          @Override
-                          protected PasswordAuthentication getPasswordAuthentication() {
-                                  logger.trace("l:p    "+getUser()+":"+getPasswd());
-                                  return new PasswordAuthentication(getUser(),getPasswd());
-                          }
-                };
-        
                 session = Session.getInstance(props, auth);
-
                 session.setDebug(isDebug());
                 try {
                      // Try to initialise session with given credentials
@@ -208,7 +214,8 @@ public class ImapLoadBox extends task{
                      logger.error("error open  folder:"+getInboxFolder()+" ex:" + ex);
                      store  = null;
                      session = null;
-                     folder_inbox = null;
+                     //folder_inbox = null;
+                     close();
                      return false;
                 }
                 logger.trace("Folder:"+getInboxFolder()+" open!");
@@ -217,18 +224,20 @@ public class ImapLoadBox extends task{
                      folder_outbox = (IMAPFolder) store.getFolder(getOutboxFolder()); // Get the inbox
                      logger.trace("getOutboxFolder "+getOutboxFolder());
 
-                     if (!folder_outbox.isOpen())folder_outbox.open(Folder.READ_WRITE);
+                     if (!folder_outbox.isOpen()){
+                         folder_outbox.open(Folder.READ_WRITE);
+                     }
                      logger.trace("openOutboxFolder "+getOutboxFolder()+" No of Messages:" + folder_inbox.getMessageCount()+" No of Unread Messages : " + folder_inbox.getUnreadMessageCount());
 
                 } catch (Exception e) {
                      Except ex=new Except(e);
                      logger.error("error open folder:"+getOutboxFolder()+" ex:" + ex);
-                     folder_outbox = null;
-                     //return false;
+                     //folder_outbox = null;
+                     close();
+                     return false;
                 }
                 logger.trace("Folder:"+getOutboxFolder()+" open!");
                 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
                 return true;
 
         }
@@ -252,7 +261,10 @@ public class ImapLoadBox extends task{
                        store=null;
                   } catch (Exception e) {}
 
+                  session = null;
+                  
         }
+        //----------------------------------------------------------------------------------------------------------------
         private void ParsePart(byte [] buf,lMessage msg,String filename,boolean is_check_zip) {
                 if(is_check_zip){
                    try{
@@ -293,10 +305,10 @@ public class ImapLoadBox extends task{
                    try {
                         _msg.setBodyBin(buf);
                         _msg=lMessageX509.parse(_msg);
-                        logger.trace("letter:" + _msg);
+                        //logger.trace("letter:" + _msg);
                    }
                    catch(Exception e){
-                         logger.error("ex:"+new Except("parse no zip part",e));
+                         logger.error("lMessageX509.parse() ex:"+new Except("parse no zip part",e));
                          return;
                    }
                    try {
@@ -305,7 +317,7 @@ public class ImapLoadBox extends task{
                         }
                    }
                    catch(Exception e){
-                         logger.error("ex:"+new Except("save no zip part",e));
+                         logger.error("log_arh.save() ex:"+new Except("save no zip part",e));
                          return;
                    }
                    logger.trace("parse:" + filename+" ok!");
@@ -342,7 +354,7 @@ public class ImapLoadBox extends task{
 
                 }
                 catch(Exception e){
-                      logger.error("ex:"+e);
+                      logger.error("ParsePart ex:"+e);
                       return;
                 }
                
@@ -377,7 +389,7 @@ public class ImapLoadBox extends task{
                    } 
                }
                catch(Exception e){
-                     logger.error("ex:"+e);
+                     logger.error("parseMessage() ex:"+e);
                      return;
                }
                //
@@ -396,7 +408,8 @@ public class ImapLoadBox extends task{
                    }
                }
                catch(Exception e){
-                     logger.error("ex:"+e);
+                     //java.lang.ClassCastException: java.lang.String incompatible with javax.mail.Multipart
+                     logger.error("Multipart parse ex:"+e);
                      return;
                }
         }

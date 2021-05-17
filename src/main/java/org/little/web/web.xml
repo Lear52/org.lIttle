@@ -1,12 +1,38 @@
+
+<web-app>
+
+  <display-name>auth</display-name>
+
+  <description>
+     Welcome auth
+  </description>
+
+
 <filter>
-    <filter-name>MyFilterName</filter-name>
-    <filter-class>my.package.MyBasicAuthFilter</filter-class>
+     <filter-name>BasicAuthFilter</filter-name>
+     <filter-class>org.little.web.BasicAuthFilter</filter-class>
+     <init-param>
+         <param-name>LDAP_URL</param-name>
+         <param-value>ldap://rdc22-vip01.vip.cbr.ru:3268</param-value>
+     </init-param>
+     <init-param>
+         <param-name>REALM</param-name>
+         <param-value>vip.cbr.ru</param-value>
+     </init-param>
+     <init-param>
+         <param-name>DOMAIN</param-name>
+         <param-value>vip.cbr.ru</param-value>
+     </init-param>
+
+
 </filter>
 <filter-mapping>
-    <filter-name>MyFilterName</filter-name>
-    <url-pattern>/my/path/*</url-pattern>
+    <filter-name>BasicAuthFilter</filter-name>
+    <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
     <dispatcher>INCLUDE</dispatcher>
     <dispatcher>ERROR</dispatcher>
 </filter-mapping>
+
+</web-app>

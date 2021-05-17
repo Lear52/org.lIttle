@@ -23,6 +23,8 @@ public class Server extends tfork{
        public  int           SYSLOG_PORT;
        private printEventSet log;
        private printEventBuf last;
+       private SyslogServerIF server1;
+       private SyslogServerIF server2;
        //private String     syslogProtocol;
 
        public Server(){
@@ -32,6 +34,8 @@ public class Server extends tfork{
               last= new printEventBuf();
               log.add(new printEventLog());
               log.add(last);
+              server1=null;
+              server2=null;
        }
        public void printConsole() {
               addPrintEvent(new printEventConsole());
@@ -74,8 +78,8 @@ public class Server extends tfork{
               logger.info("Port:         " + config2.getPort());
 
               // start syslog server
-              SyslogServerIF server1=SyslogServer.createThreadedInstance("udp", config1);
-              SyslogServerIF server2=SyslogServer.createThreadedInstance("tcp", config2);
+              server1=SyslogServer.createThreadedInstance("udp", config1);
+              server2=SyslogServer.createThreadedInstance("tcp", config2);
               if(server1.getThread() == null) {
                  Thread thread = new Thread(server1);
                  thread.setName("SyslogServer:udp");
@@ -107,10 +111,17 @@ public class Server extends tfork{
                     //logger.trace("loop");
                     try {Thread.sleep(100);}catch(Exception e){}
               }
-              server1.shutdown();
-              server2.shutdown();
+              stop();
+       }
+       @Override
+       public void stop(){
+              if(server1!=null)server1.shutdown();
+              if(server2!=null)server2.shutdown();
+              server1=null;
+              server2=null;
               SyslogServer.shutdown();
               logger.info("End Syslog Server");
+              super.stop();
        }
 
        public static void main(String[] args) throws SyslogRuntimeException, UnknownHostException {

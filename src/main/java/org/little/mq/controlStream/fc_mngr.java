@@ -123,6 +123,17 @@ public class fc_mngr  extends task{
                   count_active_group=_count;
               }
        }
+       public void close() {
+              if(group_list!=null){
+                 for(int i=0;i<group_list.size();i++) {
+                     fc_group gr=group_list.get(i);
+                     gr.close();
+                 }       
+                 group_list.clear();
+              }
+              group_list=null;
+
+       }
        
        public ArrayList<task> getListTask() {return task_list;}
 

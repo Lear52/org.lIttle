@@ -14,47 +14,30 @@ import org.w3c.dom.Node;
 public class fc_controlL extends fc_control{
        private static final Logger logger = LoggerFactory.getLogger(fc_controlL.class);
 
-       //private String mq_host;
-       //private int    mq_port;
-       //private String mq_user;
-       //private String mq_passwd;
-       //private String mq_channel;
-       
+       private mq_util cntrl;
 
        public fc_controlL(){
               clear();
+              cntrl=null;
        }
 
 
        @Override
        protected void   clear() {
               super.clear();
-              //mq_host   =null;
-              //mq_port   =1414;
-              //mq_user   =null;
-              //mq_passwd =null;
-              //mq_channel=null;
        }
        @Override
        public void init(Node node_cfg) {
-           cfg.init(node_cfg);
-           /*
-    	   if(node_cfg==null)return;
-              logger.info("The configuration node:"+node_cfg.getNodeName());
-
-              NodeList glist=node_cfg.getChildNodes();
-              if(glist==null) return;
-              for(int i=0;i<glist.getLength();i++){
-                  Node n=glist.item(i);
-                  if("mngr"    .equals(n.getNodeName())){String mq_mngr   =n.getTextContent();logger.info("mngr:"    +mq_mngr   );setNameMngr(mq_mngr);}else
-                  if("queue"   .equals(n.getNodeName())){String mq_queue  =n.getTextContent();logger.info("queue:"   +mq_queue  );setNameQ(mq_queue);  }else
-                  if("host"    .equals(n.getNodeName())){mq_host   =n.getTextContent();logger.info("host:"    +mq_host   );}else
-                  if("port"    .equals(n.getNodeName())){String    s=n.getTextContent();try{mq_port=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set deep:"    +s);mq_port=1414;}logger.info("port:"    +mq_port   );}else
-                  if("user"    .equals(n.getNodeName())){mq_user   =n.getTextContent();logger.info("user:"    +mq_user   );}else
-                  if("password".equals(n.getNodeName())){mq_passwd =n.getTextContent();logger.info("password:"+mq_passwd );}else
-                  if("channel" .equals(n.getNodeName())){mq_channel       =n.getTextContent();logger.info("channel:" +mq_channel  );}
-             }
-            */
+              cntrl=new mq_util();
+              cfg.init(node_cfg);
+              try {
+                   cntrl.open(cfg.getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
+              }
+              catch (mqExcept m){
+                     logger.error("cntrl.open ex:"+m);
+                     try {cntrl.close();}catch (mqExcept m1){}
+                     cntrl=null;
+              }
 
        }
        @Override
@@ -65,21 +48,22 @@ public class fc_controlL extends fc_control{
 
     	         mq_util cntrl=new mq_util();
 
-                 if(isManual()){
+                 if(isManual()||cntrl==null){
                     logger.error("can't set flag is_manual:"+isManual());
                     root.put("control", "MANUAL");
                     return root;
                  }
                  else
                  try {
-                      cntrl.open(cfg.getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
+                      //cntrl.open(cfg.getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
                       if(isFlag())cntrl.putMsg(cfg.getNameQ(),"cuntrol q "+ new Date());
                       else        cntrl.clear (cfg.getNameQ());
-                      cntrl.close();
+                      //cntrl.close();
                  }
                  catch (mqExcept m){
                        logger.error("setFlag("+flag+") ex:"+m);
                        try {cntrl.close();}catch (mqExcept m1){}
+                       cntrl=null;
                        isFlag(false);
                        root.put("control", "ERROR");
                        return root;
@@ -96,13 +80,14 @@ public class fc_controlL extends fc_control{
               mq_contrl cntrl=new mq_contrl();
               int len=0;
               try {
-                   cntrl.open(cfg.getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
+                   //cntrl.open(cfg.getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
                    len=cntrl.lengthLocalQueues(cfg.getNameQ());
-                   cntrl.close();
+                   //cntrl.close();
               }
               catch (mqExcept m){
                     logger.error("work() ex:"+m);
                     try {cntrl.close();}catch (mqExcept m1){}
+                    cntrl=null;
                     isFlag(false);
                     return;
               }
@@ -118,6 +103,13 @@ public class fc_controlL extends fc_control{
               }
               logger.info("2 work() queue:"+cfg.getNameQ()+" flag:"+isFlag());
 
+       }
+       @Override
+       public void close(){
+              super.close();
+              if(cntrl==null)return;
+              try {cntrl.close();}catch (mqExcept m1){}
+              cntrl=null;
        }
 
 }

@@ -43,11 +43,11 @@ public class fc_QL extends fc_Q{
        protected JSONObject ClearQ(){
                  JSONObject root=new JSONObject();
                  if(cfg.getHost()==null){
-                    logger.trace("QL.ClearQ(mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
+                    //logger.trace("QL.ClearQ(mngr:"+getNameMngr()+",q:"+getNameQ()+") ");
                     clearQ.clear(getNameMngr(),getNameQ());
                  }
                  else{
-                    logger.trace("QL.ClearQ(host:"+cfg.getHost()+":"+cfg.getPort()+",mngr:"+cfg.getNameMngr()+",q:"+cfg.getNameQ()+") ");
+                    //logger.trace("QL.ClearQ(host:"+cfg.getHost()+":"+cfg.getPort()+",mngr:"+cfg.getNameMngr()+",q:"+cfg.getNameQ()+") ");
                     clearQ.clear(getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),getNameQ(),cfg.getUser(),cfg.getPasswd());
                  }
                  root.put("clear","Ok");
@@ -56,24 +56,28 @@ public class fc_QL extends fc_Q{
                 
                  return root;
        }
+       @Override
        public void close() {
               try {
-                   cntrl.close();
+                   if(cntrl!=null)cntrl.close();
+
               }
               catch (mqExcept m){
                     logger.error("work() ex:"+m);
                     return;
               }
-
+              cntrl=null;
+              clear();
        }
 
        @Override
        public void work() {
-              logger.info("1 work() queue:"+getNameQ()+" len:"+getDeepQ());
+              //logger.info("1 work() queue:"+getNameQ()+" len:"+getDeepQ());
               //mq_contrl cntrl=new mq_contrl();
               int len=0;
               try {
                    if(!cntrl.isOpen())cntrl.open(getNameMngr(),cfg.getHost(),cfg.getPort(),cfg.getChannel(),cfg.getUser(),cfg.getPasswd());
+
                    len=cntrl.lengthLocalQueues(getNameQ());
 
                    if(deep_alarm<len)isAlarm(true);
@@ -87,7 +91,7 @@ public class fc_QL extends fc_Q{
                     return;
               }
               setDeepQ(len);
-              logger.info("2 work() queue:"+getNameQ()+" len:"+getDeepQ());
+              //logger.info("2 work() queue:"+getNameQ()+" len:"+getDeepQ());
        }
        @Override
        public void init(Node node_cfg) {

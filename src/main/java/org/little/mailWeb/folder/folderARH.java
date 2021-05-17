@@ -21,8 +21,10 @@ public interface folderARH{
        public JSONObject          loadJSONX509(int    _x509_id);//load object with  x509_id
        public lMessage            loadArrayX509(int   _x509_id);//load object with  x509_id
 
-       public JSONObject          loadJSONAlarm (Timestamp alarm);//load all object "CERTIFICATE" 
+       public JSONObject          loadJSONAlarm (Timestamp alarm,Timestamp curent);//load all object "CERTIFICATE" 
        public ArrayList<lMessage> loadArrayAlarm(Timestamp alarm);//load all object "CERTIFICATE" 
        public void                setSend(int   _x509_id);
+
+       public lMessage            loadSRL(int   _id);
 
 }
