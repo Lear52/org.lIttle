@@ -63,7 +63,7 @@ public class folderDB implements folderARH{
                queryUpdateRL          ="ERROR";          
                queryUpdateFR          ="ERROR";          
                cfg=_cfg;
-               logger.trace("create object folderDB");
+               logger.trace("clear sql object folderDB");
        }
 
        private boolean _create(String query,String name_obj,String msg){
@@ -75,8 +75,8 @@ public class folderDB implements folderARH{
             try {
                  q=db.open();
                  q.execute(query);
-                 logger.trace("create "+msg+":"+name_obj);
-                 return true;
+                 //logger.trace("create "+msg+":"+name_obj);
+                 //return true;
             } catch (dbExcept ex1) {   
                if(logger.isTrace()) {
                   logger.error("create "+msg+":"+name_obj+" ex:"+ex1);
@@ -91,7 +91,10 @@ public class folderDB implements folderARH{
             finally{
                  db.close(q);
             }
-               return true;   
+
+            logger.info("create object folderDB msg:"+msg+" db_obj:"+name_obj+" sql:"+query);
+
+            return true;   
        }
        @Override
        public  boolean create(){
@@ -100,10 +103,14 @@ public class folderDB implements folderARH{
                boolean ret3;
                boolean ret4;
 
+               logger.info("create object folderDB");
+
                ret1=_create(queryCreateSeq    ,cfg.getSeq()        ,"seq"  );
                ret2=_create(queryCreateEml    ,cfg.getTableEml()   ,"table_eml");
                ret3=_create(queryCreateX509   ,cfg.getTableX509()  ,"table_x509");
                ret4=_create(queryCreateSerialR,cfg.getTableSerial(),"table_serial");
+
+               logger.info("create object folderDB :"+(ret1&&ret2&&ret3&&ret4));
 
                return ret1&&ret2&&ret3&&ret4;
        }
@@ -146,8 +153,8 @@ public class folderDB implements folderARH{
            queryInsertX509        = "INSERT INTO "+cfg.getTableX509()  +" ( "+fields_values_x509  +" ) VALUES ("+fields_insert_x509+" ) ";
                                 
            querySelect            = "SELECT "+fields_select_eml+","+fields_select_x509+" FROM "+cfg.getTableEml()+" E,"+cfg.getTableX509()+" X WHERE E.X509_ID=X.X509_ID ORDER BY E.CREATE_DATE ";
-           querySelectID          = "SELECT "+fields_select_eml+","+fields_select_x509+" FROM "+cfg.getTableEml()+" E,"+cfg.getTableX509()+" X WHERE E.X509_ID=X.X509_ID AND E.MAIL_UID  = ? ORDER BY E.CREATE_DATE ";
-           querySelectType        = "SELECT "+fields_select_eml+","+fields_select_x509+" FROM "+cfg.getTableEml()+" E,"+cfg.getTableX509()+" X WHERE E.X509_ID=X.X509_ID AND X.X509_TYPE  = ? ORDER BY E.CREATE_DATE ";
+           querySelectID          = "SELECT "+fields_select_eml+","+fields_select_x509+" FROM "+cfg.getTableEml()+" E,"+cfg.getTableX509()+" X WHERE E.X509_ID=X.X509_ID AND E.MAIL_UID = ? ORDER BY E.CREATE_DATE ";
+           querySelectType        = "SELECT "+fields_select_eml+","+fields_select_x509+" FROM "+cfg.getTableEml()+" E,"+cfg.getTableX509()+" X WHERE E.X509_ID=X.X509_ID AND X.X509_TYPE = ? ORDER BY E.CREATE_DATE ";
 
            querySelectX509        ="SELECT "+fields_select_x509 +" FROM "+cfg.getTableX509()+" X ORDER BY X.X509_BEGIN_DATE";
            querySelectX509Type    ="SELECT "+fields_select_x509 +" FROM "+cfg.getTableX509()+" X WHERE X.X509_TYPE = ? ORDER BY X.X509_BEGIN_DATE";
@@ -158,14 +165,17 @@ public class folderDB implements folderARH{
 
            // X.X509_DATE_RL IS NULL sertificat is OK
            // X.X509_DATE_FR IS NULL sertificat no send alarm
-           querySelectX509ALARMID ="SELECT X.X509_ID FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_DATE_FR IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE>=? ";
-           querySelectX509ALARM   ="SELECT "+fields_select_x509+" FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE>=? and X.X509_END_DATE>=? ";
+           //querySelectX509ALARMID ="SELECT X.X509_ID FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_DATE_FR IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_END_DATE>=? ";
+           querySelectX509ALARMID ="SELECT "+fields_select_x509+" FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_DATE_FR IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_BEGIN_DATE<=? and X.X509_END_DATE>=? and X.X509_END_DATE<=? ";
+
+           querySelectX509ALARM   ="SELECT "+fields_select_x509+" FROM "+cfg.getTableX509()+" X WHERE X.X509_DATE_RL IS NULL and X.X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"' and X.X509_BEGIN_DATE<=? and X.X509_END_DATE>=? and X.X509_END_DATE<=? ";
 
            queryUpdateRL          = "UPDATE "+cfg.getTableX509()+" SET X509_DATE_RL=? WHERE X509_SERIAL = ? AND X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"'";
                                   //
            queryUpdateFR          = "UPDATE "+cfg.getTableX509()+" SET X509_DATE_FR=? WHERE X509_ID = ? AND X509_TYPE='"+lMessageX509.X509_CERTIFICATE+"'";
 
            queryCreateSeq  = "CREATE SEQUENCE "+cfg.getSeq()+"  START WITH 1000 INCREMENT BY 1  "; //CREATE SEQUENCE ARH_SEQ START WITH 1000 INCREMENT BY 1  NOCYCLE    
+
            queryCreateEml  = "CREATE TABLE "   +cfg.getTableEml()+" ( "+
                          "MAIL_UID          INTEGER,"+      
                          "MAIL_ID           VARCHAR(512),"+ 
@@ -198,7 +208,10 @@ public class folderDB implements folderARH{
                          "X509_SERIAL       VARCHAR(64)"+
                          ")";
 
-           //logger.trace("1querySelectX509:"+querySelectX509);
+           logger.trace(queryCreateSeq);
+           logger.trace(queryCreateEml);
+           logger.trace(queryCreateX509);
+           logger.trace(queryCreateSerialR);
 
        }
 
@@ -309,13 +322,18 @@ public class folderDB implements folderARH{
                        q=db.open();
                        q.creatPreSt(querySelectX509ALARM);
                        
-                       q.setTimestamp( 1,alarm);
+                       q.setTimestamp( 1,curent);
                        q.setTimestamp( 2,curent);
+                       q.setTimestamp( 3,alarm);
  
                        q.executeQuery();
                        int s=0;
                        while(q.isNextResult()) {
-                            lMessage msg=getAll(q);
+                            //lMessage msg=getAll(q);
+                            lMessage msg=getX509(q);
+
+                            logger.trace("alarm:"+alarm+ " begin:"+msg._getX509BeginDate()+" end:"+msg._getX509EndDate  ()+" SR:"+msg.getX509DateSR()+" FR:"+msg.getX509DateFR());  
+
                             JSONObject obj=lMessage2JSON.MSG2OBJ(msg);
                             list.put(s,obj);
                             s++;
@@ -338,7 +356,7 @@ public class folderDB implements folderARH{
        }
 
        @Override
-       public ArrayList<lMessage> loadArrayAlarm(Timestamp alarm) {
+       public ArrayList<lMessage> loadArrayAlarm(Timestamp alarm,Timestamp curent) {
                ArrayList<lMessage> list=new ArrayList<lMessage>(100);
                if(db==null){
                   logger.error("db is not init");
@@ -350,7 +368,9 @@ public class folderDB implements folderARH{
                        q=db.open();
                        logger.trace("open db q_id:"+q.getId());
                        q.creatPreSt(querySelectX509ALARMID);
-                       q.setTimestamp( 1,alarm);
+                       q.setTimestamp( 1,curent);
+                       q.setTimestamp( 2,curent);
+                       q.setTimestamp( 3,alarm);
                        q.executeQuery();
                        while(q.isNextResult()) {
                             lMessage msg=getX509(q);
@@ -723,12 +743,14 @@ public class folderDB implements folderARH{
                    while(q.isNextResult()) {
                          try {
                               msg.setX509ID(q.Result().getInt(1));
+                              logger.trace("find OK X509ID:"+msg.getX509ID());
                               break;
                          } catch (SQLException e) {
                               if(q!=null){
                                  logger.error("db q_id:"+q.getId()+" ex:"+new dbExcept ("get X509ID",e));
                               }
                               msg.setX509ID(-1);
+                              logger.trace("find BAD X509ID:"+msg.getX509ID());
                               break;
                          } 
                    }
@@ -736,6 +758,7 @@ public class folderDB implements folderARH{
                finally{
                     db.close(q);
                }
+               logger.trace("find X509ID:"+msg.getX509ID());
                return msg.getX509ID();
        }
        private int getNewX509ID() throws dbExcept {
@@ -753,6 +776,7 @@ public class folderDB implements folderARH{
                              if(q!=null){
                                 logger.error("db q_id:"+q.getId()+" ex:"+new dbExcept ("get X509ID",e));
                              }
+                             logger.trace("create new X509ID:"+x509_id);
                              return x509_id;
                          } 
                    }

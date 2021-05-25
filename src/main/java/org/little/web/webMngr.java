@@ -17,11 +17,8 @@ import org.little.util.Version;
  *  
  */
 public class webMngr extends webRun{
-       /**
-	 * 
-	 */
-	private static final long serialVersionUID = 2810192641705865280L;
-	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+       private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+       private static final long serialVersionUID = 2810192641705865280L;
        private String xpath;
        @Override
        public void init() throws ServletException {

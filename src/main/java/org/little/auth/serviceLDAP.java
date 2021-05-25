@@ -15,19 +15,31 @@ import javax.naming.ldap.InitialLdapContext;
 
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
+import org.little.util.Except;
 
 /**
  * @author av
  *  
  */
 public class serviceLDAP {
+       private static final Logger log = LoggerFactory.getLogger(serviceLDAP.class);
 
        private String                                    searchBase;
        private DirContext                                ctx;
        private NamingEnumeration<SearchResult>           answer;
        private SearchResult                              searchR;
        private NamingEnumeration<? extends Attribute>    n_attrs;
-       private static final Logger log = LoggerFactory.getLogger(serviceLDAP.class);
+
+       private static final String CN = "cn";
+       private static final String SN = "sn";
+       private static final String UID = "uid";
+       private static final String USER_PASSWORD = "userPassword";
+       private static final String USER_DIG_PASSWORD = "title";
+       private static final String USER_CLASS = "inetOrgPerson";
+       private static final String GROUP_CLASS = "groupOfUniqueNames";
+       private static final String UNIQUE_MEMBER = "uniqueMember";
+       private static final String PERSON="person";
+       private static final String ORG_PERSON="organizationalPerson";
 
         private void _clear(){
              ctx          = null;
@@ -52,6 +64,9 @@ public class serviceLDAP {
         }
         protected  boolean  connect(String    ldapURL,String _searchBase,String userName,String userPassword){
                searchBase   = _searchBase;
+               return connect(ldapURL,userName,userPassword);
+        }
+        protected  boolean  connect(String    ldapURL,String userName,String userPassword){
                Hashtable<String, String> env = new Hashtable<String, String>();
 
                 env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -61,10 +76,10 @@ public class serviceLDAP {
                 env.put(Context.PROVIDER_URL           , ldapURL);
 
                 try {
-                     ctx        = new InitialLdapContext(env, null);
+                     ctx = new InitialLdapContext(env, null);
                 }
                 catch (NamingException ex3) {
-                       log.error("error init connection LDAP (userName:"+userName+" userPassword:"+userPassword+" ldapURL:"+ldapURL+") ex:"+ex3);
+                       log.error("error init connection LDAP (userName:"+userName+" userPassword:"+userPassword+" ldapURL:"+ldapURL+") ex:"+new Except("connect ",ex3));
                        _clear();
                        clear();
                        return false;
@@ -74,7 +89,7 @@ public class serviceLDAP {
         }
 
         protected  void  close(){
-               if(ctx!=null) try{ ctx.close(); } catch (NamingException ex){}
+               if(ctx!=null) try{ ctx.close(); } catch (Exception ex){}
                _clear();
                clear();
         }
@@ -318,6 +333,17 @@ public class serviceLDAP {
                ldap.close();
                return ret;
         }
+        protected  static boolean _auth(String fullusername, String password, String ldapURL){
+               if (password == null || password.trim().length() == 0) {
+                   return false;
+               }
+               //--------------------------------------------------------------------------------------
+               serviceLDAP ldap=new serviceLDAP();
+               boolean ret=ldap.connect(ldapURL,fullusername,password);
+               //log.trace("LDAP (URL:"+ldapURL+") username:"+fullusername+" auth:"+ret);
+               ldap.close();
+               return ret;
+        }
 
         protected  static void getTEST_Id(String id){
                 serviceLDAP ldap=new serviceLDAP();
@@ -343,18 +369,18 @@ public class serviceLDAP {
          * 
          *  
          */
-        protected  static void main(String[] args) throws Exception {
+        public  static void main(String[] args) throws Exception {
                boolean ret;
-               ret= serviceLDAP.auth("ShadrinAV@vip.cbr.ru","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
+               ret= serviceLDAP.auth("ShadrinAV@vip.cbr.ru","Biglear14@","dc=vip,dc=cbr,dc=ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
                System.out.println("auth:"+ret);
-               ret= serviceLDAP.auth("ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
-               System.out.println("auth:"+ret);
-               ret= serviceLDAP.auth("VIP\\ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
-               System.out.println("auth:"+ret);
-               ret= serviceLDAP.auth("\\ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
-               System.out.println("auth:"+ret);
-               ret= serviceLDAP.auth("ShadrinAV@","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
-               System.out.println("auth:"+ret);
+               //ret= serviceLDAP.auth("ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
+               //System.out.println("auth:"+ret);
+               //ret= serviceLDAP.auth("VIP\\ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
+               //System.out.println("auth:"+ret);
+               //ret= serviceLDAP.auth("\\ShadrinAV","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
+               //System.out.println("auth:"+ret);
+               //ret= serviceLDAP.auth("ShadrinAV@","Andrey14@","vip.cbr.ru","ldap://rdc22-vip01.vip.cbr.ru:3268");
+               //System.out.println("auth:"+ret);
                 //LDAP ldap=new LDAP();
                 //boolean ret=ldap.connect("ldap://rdc22-vip01.vip.cbr.ru:3268","dc=vip,dc=cbr,dc=ru","ShadrinAV@vip.cbr.ru","Andrey14@-");
                 //boolean ret=ldap.connect("ldap://rdc22-vip01.vip.cbr.ru:3268","dc=vip,dc=cbr,dc=ru","ShadrinAV","Andrey14@");

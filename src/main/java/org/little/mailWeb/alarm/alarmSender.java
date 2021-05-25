@@ -32,7 +32,9 @@ public class alarmSender extends task{
               logger.info("Start Servers");
               folderARH folder = all_cfg.getFolder();
               Timestamp alarm=cfg.getTimeAlarm();
-              ArrayList<lMessage> list = folder.loadArrayAlarm(alarm);
+
+              ArrayList<lMessage> list = folder.loadArrayAlarm(alarm,new Timestamp(new Date().getTime()));
+
               for(int i=0;i<list.size();i++) {
             	  lMessage msg=list.get(i);
                   send(msg,alarm);

@@ -29,6 +29,7 @@ import org.little.util.LoggerFactory;
 import org.little.util._ByteBuilder;
 import org.little.util.run.task;
 import org.little.util.string.stringTransform;
+//import org.little.util.*;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -275,11 +276,24 @@ public class ImapLoadBox extends task{
                         int            size;
                         int            COUNT=0;
                         while((entry=zin.getNextEntry())!=null){
-                              
                             name = entry.getName(); // получим название файла
                             size = (int)entry.getSize();  // получим его размер в байтах
                             byte [] _buf=new byte[size]; 
-                            zin.read(_buf,0,size);
+                            {
+                              int ret=0;
+                              int p=0;
+                              int s=size;
+                              do{ 
+                                 ret=zin.read(_buf,p,s);
+                                 s-=ret;
+                                 p+=ret;
+                              }while(ret>0);
+                             
+                            }
+                            //logger.trace("1------------------------------------------ zip entry:" + filename+"|"+name+" size:"+size);
+                            //try{LogHexDump.dump(_buf);}catch (Exception e111){}
+                            //logger.trace("1------------------------------------------ zip entry:" + filename+"|"+name);
+
                             zin.closeEntry();
                             logger.trace("zip entry:" + filename+"|"+name);
                             ParsePart(_buf,msg,filename+"|"+name,false) ;
@@ -302,10 +316,17 @@ public class ImapLoadBox extends task{
                    logger.trace("no zip parse:" + filename);
                    lMessage _msg=new lMessage(msg);
                    _msg.setFilename(filename);
+
+                            //logger.trace("2------------------------------------------ zip entry:" + filename+" size:"+buf.length);
+                            //try{LogHexDump.dump(buf);}catch (Exception e111){}
+                            //logger.trace("2------------------------------------------ zip entry:" + filename);
+
                    try {
                         _msg.setBodyBin(buf);
+                        logger.trace("_msg.setBodyBin(buf)");
                         _msg=lMessageX509.parse(_msg);
-                        //logger.trace("letter:" + _msg);
+                        if(_msg!=null)logger.trace("ok letter parse:" + _msg);
+                        else          logger.trace("letter filename:"+filename +" is empty");
                    }
                    catch(Exception e){
                          logger.error("lMessageX509.parse() ex:"+new Except("parse no zip part",e));
@@ -314,6 +335,7 @@ public class ImapLoadBox extends task{
                    try {
                         if(_msg!=null){
                            log_arh.save(_msg);
+                           logger.trace("letter save:" + _msg);
                         }
                    }
                    catch(Exception e){

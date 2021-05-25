@@ -19,7 +19,7 @@ public class commonX509DB extends commonDB{
 
        public commonX509DB() {
               clear();
-              logger.info("create commonX509DB");
+              logger.info("create object commonX509DB");
        }
 
        public void clear() {
@@ -54,13 +54,13 @@ public class commonX509DB extends commonDB{
                  NodeList glist=_node_cfg.getChildNodes();     
                  for(int i=0;i<glist.getLength();i++){
                      Node n=glist.item(i);
-                     if("db_table_eml"    .equalsIgnoreCase(n.getNodeName())){db_table_eml=n.getTextContent(); logger.info("db_table_eml:"+db_table_eml);}
+                     if("db_table_eml"    .equalsIgnoreCase(n.getNodeName())){db_table_eml=n.getTextContent();    logger.info("db_table_eml:"+db_table_eml);}
                      else
-                     if("db_table_x509"   .equalsIgnoreCase(n.getNodeName())){db_table_eml=n.getTextContent(); logger.info("db_table_x509:"+db_table_x509);}
+                     if("db_table_x509"   .equalsIgnoreCase(n.getNodeName())){db_table_x509=n.getTextContent();    logger.info("db_table_x509:"+db_table_x509);}
                      else
                      if("db_table_serial" .equalsIgnoreCase(n.getNodeName())){db_table_serial=n.getTextContent(); logger.info("db_table_serial:"+db_table_serial);}
                      else
-                     if("db_seq"          .equalsIgnoreCase(n.getNodeName())){db_seq=n.getTextContent(); logger.info("db_seq:"+db_seq);}
+                     if("db_seq"          .equalsIgnoreCase(n.getNodeName())){db_seq=n.getTextContent();          logger.info("db_seq:"+db_seq);}
                  }
               }
               else{

@@ -28,11 +28,12 @@ public class commonAlarm extends commonMQ{
 
        
        public boolean isSendAlarm() {return send_alarm;}
+
        public Timestamp getTimeAlarm() {
     	      Date date_alarm;
     	      Calendar cal = Calendar.getInstance();
     	      cal.setTime(new Date());
-    	      cal.add(Calendar.DAY_OF_MONTH, -alarm);   
+    	      cal.add(Calendar.DAY_OF_MONTH, alarm);   
     	      date_alarm=cal.getTime();
     	      return new Timestamp(date_alarm.getTime());
        }

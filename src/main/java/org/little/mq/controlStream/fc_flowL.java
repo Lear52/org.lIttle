@@ -120,13 +120,13 @@ public class fc_flowL  extends fc_flow{
               if(glist==null) return;
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("q".equals(n.getNodeName()) ){           
+                  if("q".equalsIgnoreCase(n.getNodeName()) ){           
                      fc_Q q=new fc_QL();
                      q.init(n);
                      q_list.add(q);
                   }
                   else
-                  if("cntrl".equals(n.getNodeName()) ){           
+                  if("cntrl".equalsIgnoreCase(n.getNodeName()) ){           
                      flow_contrl=new fc_controlL();
                      flow_contrl.init(n);
                   }

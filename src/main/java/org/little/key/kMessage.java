@@ -12,6 +12,8 @@ public class kMessage{
     private   String             x509_serial     ;
     private   String             x509_subject    ;
     private   String             x509_issuer     ;
+
+    public    StringBuffer       attrib          ;
     
     public    kMessage() {clear();}
 
@@ -25,7 +27,7 @@ public class kMessage{
               x509_serial      ="";    
               x509_subject     ="";   
               x509_issuer      ="";    
-              
+              attrib           = new StringBuffer();
 
     }
 
@@ -47,6 +49,7 @@ public class kMessage{
     public void     setX509Serial   (String s)       {x509_serial    =s;}  
     public void     setX509Subject  (String s)       {x509_subject   =s;} 
     public void     setX509Issuer   (String s)       {x509_issuer    =s;}  
+    public void     appendX509attrib(String s)       {attrib.append(s).append(";");}  
 
     public void     setBodyBin      (byte[] b)       {
                     body_bin=b;
@@ -60,6 +63,7 @@ public class kMessage{
                    +" "+x509_serial     
                    +" "+x509_subject    
                    +" "+x509_issuer      
+                   +" "+attrib.toString() 
                    ;
     }
     public String  printx509() {return  
@@ -70,6 +74,7 @@ public class kMessage{
                    +"\nx509_serial    :"+x509_serial     
                    +"\nx509_subject   :"+x509_subject    
                    +"\nx509_issuer    :"+x509_issuer 
+                   +"\nx509attr       :"+attrib.toString() 
                    +"\n"
                    ;
     }

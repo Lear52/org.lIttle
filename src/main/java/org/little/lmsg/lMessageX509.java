@@ -18,7 +18,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CRLEntryHolder;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
-//import org.bouncycastle.jce.provider.X509CertParser;
+import org.bouncycastle.jce.provider.X509CertParser;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
@@ -29,7 +29,9 @@ import org.little.util.Except;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util._ByteBuilder;
+import org.little.util.string.*;
 
+//import org.bouncycastle.jce.provider.X509CertParser;
 //import sun.security.pkcs10.PKCS10;
 //import sun.security.pkcs10.PKCS10Attribute;
 
@@ -185,8 +187,8 @@ public class lMessageX509 {
                                
                           msg.setX509Type     (type);
                           msg.setX509TypeFile ("PEM");
-                          msg.setX509BeginDate(new Date());
-                          msg.setX509EndDate  (new Date());
+                          msg.setX509BeginDate(stringDate.str2date("1980-01-01_00:00:00"));
+                          msg.setX509EndDate  (stringDate.str2date("1980-01-01_00:00:00"));
                           msg.setX509Serial   ("0");
                           msg.setX509Subject  (subject);
                           msg.setX509Issuer   ("");
@@ -228,6 +230,7 @@ public class lMessageX509 {
                           if(logger.isTrace()&&debug) {
                              Except ex=new Except(e);
                              logger.error("DER NO! ex:"+ex);
+                             //try{LogHexDump.dump(buf);}catch (Exception e111){}
                           }
                           return null;
                    }
@@ -266,6 +269,58 @@ public class lMessageX509 {
                logger.trace(type+" DER Ok!");
                return msg;
               
+       }
+       private static lMessage parseX509CERDER2MSG1(lMessage msg,byte[] buf){
+              String type="CERTIFICATE";
+              InputStream in=null;
+              try {
+                   X509Certificate cert=null;
+                   in=new ByteArrayInputStream(buf);
+                   try{
+                       X509CertParser parser = new X509CertParser();
+                       parser.engineInit(in);
+                       cert = (X509Certificate)parser.engineRead();
+                   }
+                   catch (Exception e){
+                         //if(logger.isTrace()&&debug) {
+                            Except ex=new Except(e);
+                            logger.error("DER NO! e:"+e.getClass().getName());
+                            logger.error("DER NO! ex:"+ex);
+                         //}
+                         return null;
+                   }
+                   try {      
+                       BigInteger n      =cert.getSerialNumber();
+                       String     issuer;
+                       issuer  = cert.getIssuerX500Principal().toString();
+                       issuer  = cert.getIssuerDN().toString().toString();
+                       String    subject;
+                       subject = cert.getSubjectX500Principal().toString();
+                       subject = cert.getSubjectDN().toString();
+                       Date       start  =cert.getNotBefore();
+                       Date       end    =cert.getNotAfter();   
+                        
+                       msg.setX509Type     (type              );
+                       msg.setX509TypeFile ("DER");
+                       msg.setX509BeginDate(start             );
+                       msg.setX509EndDate  (end               );
+                       msg.setX509Serial   (n.toString      ());
+                       msg.setX509Subject  (subject           ); 
+                       msg.setX509Issuer   (issuer            );
+                   }
+                   catch (Exception e){
+                         if(logger.isTrace()&&debug) {
+                            Except ex=new Except(e);
+                            logger.error("DER NO! ex:"+ex);
+                         }
+                         return null;
+                   }
+              }    
+              finally {
+                  if(in!=null)try {in.close();     } catch (Exception e){}
+              }
+              logger.trace(type+" DER Ok!");
+              return msg;
        }
        
        //Certificate Revocation List (CRL)
@@ -349,8 +404,8 @@ public class lMessageX509 {
                       
                       msg.setX509Type     (type      );
                       msg.setX509TypeFile ("DER"     );
-                      msg.setX509BeginDate(new Date());
-                      msg.setX509EndDate  (new Date());
+                      msg.setX509BeginDate(stringDate.str2date("1980-01-01_00:00:00"));
+                      msg.setX509EndDate  (stringDate.str2date("1980-01-01_00:00:00"));
                       msg.setX509Serial   ("0");
                       msg.setX509Subject  (subject   ); 
                       msg.setX509Issuer   (" "       );
@@ -395,59 +450,8 @@ public class lMessageX509 {
                return msg;
           
        }
-       /*
-       protected static lMessage b_parseDER2MSG(lMessage msg,byte[] buf){
-              String type="CERTIFICATE";
-              InputStream in=null;
-              try {
-                   X509Certificate cert=null;
-                   in=new ByteArrayInputStream(buf);
-                   try{
-                       X509CertParser parser = new X509CertParser();
-                       parser.engineInit(in);
-                       cert = (X509Certificate)parser.engineRead();
-                   }
-                   catch (Exception e){
-                         if(logger.isTrace()&&debug) {
-                            Except ex=new Except(e);
-                            logger.error("DER NO! ex:"+ex);
-                         }
-                         return null;
-                   }
-                   try {      
-                       BigInteger n      =cert.getSerialNumber();
-                       String     issuer;
-                       issuer  = cert.getIssuerX500Principal().toString();
-                       issuer  = cert.getIssuerDN().toString().toString();
-                       String    subject;
-                       subject = cert.getSubjectX500Principal().toString();
-                       subject = cert.getSubjectDN().toString();
-                       Date       start  =cert.getNotBefore();
-                       Date       end    =cert.getNotAfter();   
-                        
-                       msg.setX509Type     (type              );
-                       msg.setX509TypeFile ("DER");
-                       msg.setX509BeginDate(start             );
-                       msg.setX509EndDate  (end               );
-                       msg.setX509Serial   (n.toString      ());
-                       msg.setX509Subject  (subject           ); 
-                       msg.setX509Issuer   (issuer            );
-                   }
-                   catch (Exception e){
-                         if(logger.isTrace()&&debug) {
-                            Except ex=new Except(e);
-                            logger.error("DER NO! ex:"+ex);
-                         }
-                         return null;
-                   }
-              }    
-              finally {
-                  if(in!=null)try {in.close();     } catch (Exception e){}
-              }
-              logger.trace(type+" DER Ok!");
-              return msg;
-       }
-       */
+       
+       
        private static lMessage parsePEM2MSG(lMessage msg,final InputStream in){
                byte[] buf=null;
                try{buf=_ByteBuilder.toByte(in);}
@@ -500,11 +504,12 @@ public class lMessageX509 {
         public static lMessage parse(lMessage msg) {
                byte[]   bin_buffer=msg.getBodyBin();
                lMessage ret;
-               ret=parsePEM2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CERDER2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CRLDER2MSG(msg,bin_buffer);
-               if(ret==null)ret=parseX509CSRDER2MSG(msg,bin_buffer);
+               ret=parsePEM2MSG(msg,bin_buffer);                    logger.trace("parsePEM2MSG ret:"+(ret!=null));
+               if(ret==null)ret=parseX509CERDER2MSG(msg,bin_buffer);logger.trace("parseX509CERDER2MSG ret:"+(ret!=null));
+               if(ret==null)ret=parseX509CRLDER2MSG(msg,bin_buffer);logger.trace("parseX509CRLDER2MSG ret:"+(ret!=null));
+               if(ret==null)ret=parseX509CSRDER2MSG(msg,bin_buffer);logger.trace("parseX509CSRDER2MSG ret:"+(ret!=null));
                if(ret!=null){
+                  logger.trace("ret.setBodyTxt(ret.printx509())");
                   ret.setBodyTxt(ret.printx509());
                }
               

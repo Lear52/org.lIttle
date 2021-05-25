@@ -5,7 +5,7 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210517-SNAPSHOT</version>
+        <version>20210524-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
@@ -214,12 +214,12 @@
            <dependency>
                <groupId>org.bouncycastle</groupId>
                <artifactId>bcpkix-jdk15on</artifactId>
-               <version>1.67</version>
+               <version>1.68</version>
            </dependency>
            <dependency>
                <groupId>org.bouncycastle</groupId>
                <artifactId>bcprov-jdk15on</artifactId>
-               <version>1.67</version>
+               <version>1.68</version>
            </dependency>
 
            <!-- mail -->

@@ -38,7 +38,7 @@ public class folderLogFile implements folderARH{
        @Override
        public JSONObject          loadJSONAlarm (Timestamp alarm,Timestamp curent){return new JSONObject();           }
        @Override
-       public ArrayList<lMessage> loadArrayAlarm(Timestamp alarm){return new ArrayList<lMessage>();  }
+       public ArrayList<lMessage> loadArrayAlarm(Timestamp alarm,Timestamp curent){return new ArrayList<lMessage>();  }
        @Override
        public void                setSend       (int _x509_id) {                                   }    
        @Override

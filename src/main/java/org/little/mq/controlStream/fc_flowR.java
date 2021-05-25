@@ -45,7 +45,7 @@ public class fc_flowR extends fc_flow{
                  try{
                     String  type=root.getString("type");
 
-                    if("flow".equals(type)==false){
+                    if("flow".equalsIgnoreCase(type)==false){
                        logger.trace("setStat error type ("+type+"!=flow) for json:"+root); 
                        return;
                     }

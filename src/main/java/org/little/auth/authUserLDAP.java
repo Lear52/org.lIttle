@@ -44,7 +44,7 @@ public class authUserLDAP implements authUser {
     
        @Override
        public boolean   checkUser(String user,String passwd){
-              boolean ret = serviceLDAP.auth(user,passwd,getRealm(),ldap_url);
+              boolean ret = serviceLDAP._auth(getFullUserName(user,getDomain()),passwd,ldap_url);
               return ret;
        }
        public boolean   isUser(String user){
@@ -53,11 +53,20 @@ public class authUserLDAP implements authUser {
        }
        @Override
        public String getFullUserName(String username){
-              return serviceLDAP.getFullName(username,getRealm());
+              return serviceLDAP.getFullName(username,getDomain());
        }
        @Override
-       public String    getFullUserName(String username,String domain){
-              return serviceLDAP.getFullName(username,domain);
+       public String  getFullUserName(String username,String domain){
+              int id=domain.indexOf("{}");
+              String ret;
+              if(id>=0){
+                 if(id+2>=domain.length()) ret=new StringBuilder().append(domain.substring(0,id)).append(username).toString();
+                 else{
+                      ret=new StringBuilder().append(domain.substring(0,id)).append(username).append(domain.substring(id+2)).toString();
+                 }
+              }
+              else ret=new StringBuilder().append(username).append(domain).toString();
+              return ret;
        }
        @Override
        public String    getShortUserName(String username){

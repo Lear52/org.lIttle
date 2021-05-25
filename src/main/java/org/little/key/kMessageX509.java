@@ -13,8 +13,14 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.pkcs.Attribute;
+import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CRLEntryHolder;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -166,9 +172,22 @@ public class kMessageX509 {
                           PKCS10CertificationRequest csr = (PKCS10CertificationRequest) parsedObj;
                           //System.out.println("PKCS10CertificationRequest:"+csr);
                           String subject =csr.getSubject().toString();
+                          
                           Attribute []  attr=csr.getAttributes();
-                          for(int i=0;i<attr.length;i++)logger.trace("attr["+i+"]"+attr[i].toString());
-                               
+                          for(int i=0;i<attr.length;i++) {
+                        	  Attribute att=attr[i];
+                        	  ASN1ObjectIdentifier t = att.getAttrType();
+                        	  ASN1Set v = att.getAttrValues();
+                        	  String txt="type:"+t.getId()+" v:"+v.toString();
+                        	  msg.appendX509attrib(txt);
+                        	  logger.trace("attr["+i+"]="+txt);
+                                  System.out.println("A>>"+txt);
+                          }
+                          byte [] b_en=csr.getEncoded();
+                          byte [] b_si=csr.getSignature();
+                          msg.appendX509attrib("Encoded:"+stringTransform.getHex(b_en));
+                          msg.appendX509attrib("Signature:"+stringTransform.getHex(b_si));
+                          
                           msg.setX509Type     (type);
                           msg.setX509TypeFile ("PEM");
                           msg.setX509BeginDate(new Date());
@@ -327,6 +346,22 @@ public class kMessageX509 {
                return msg;
        }
 
+       public static String getX500Field(String asn1ObjectIdentifier, X500Name x500Name) {
+    	    RDN[] rdnArray = x500Name.getRDNs(new ASN1ObjectIdentifier(asn1ObjectIdentifier));
+
+    	    String retVal = null;
+    	    for (RDN item : rdnArray) {
+    	        retVal = item.getFirst().getValue().toString();
+    	    }
+    	    return retVal;
+       }
+       private static final String COUNTRY = "2.5.4.6";
+       private static final String STATE = "2.5.4.8";
+       private static final String LOCALE = "2.5.4.7";
+       private static final String ORGANIZATION = "2.5.4.10";
+       private static final String ORGANIZATION_UNIT = "2.5.4.11";
+       private static final String COMMON_NAME = "2.5.4.3";
+       private static final String EMAIL = "2.5.4.9";       
        //  Certificate Request Message
        private static kMessage parseX509CSRDER2MSG(kMessage msg,byte [] buf){
                String type="CERTIFICATE REQUEST";
@@ -335,7 +370,81 @@ public class kMessageX509 {
                       JcaPKCS10CertificationRequest csr = new JcaPKCS10CertificationRequest(buf);
                       String subject=csr.getSubject().toString();
 
-                      Attribute []  attr=csr.getAttributes();for(int i=0;i<attr.length;i++)logger.trace("attr["+i+"]"+attr[i].toString());
+                      csr.getSubjectPublicKeyInfo();
+
+                      X500Name x500Name = csr.getSubject();
+                      System.out.println("x500Name is: " + x500Name + "\n");
+                      RDN[] _cn = x500Name.getRDNs(BCStyle.EmailAddress);
+                      if(_cn==null) {
+                    	  System.out.println("getRDNs is null");
+                      }
+                      else 
+                      if(_cn.length>0){
+                    	  System.out.println("getRDNs is "+_cn.length);	  
+                          RDN c_cn = _cn[0];
+                          if(c_cn!=null)System.out.println(c_cn.getFirst().getValue().toString());
+                      }
+                      
+                      //System.out.println("COUNTRY: " + getX500Field(COUNTRY, x500Name));
+                      //System.out.println("STATE: " + getX500Field(STATE, x500Name));
+                      //System.out.println("LOCALE: " + getX500Field(LOCALE, x500Name));
+                      //System.out.println("ORGANIZATION: " + getX500Field(ORGANIZATION, x500Name));
+                      //System.out.println("ORGANIZATION_UNIT: " + getX500Field(ORGANIZATION_UNIT, x500Name));
+                      //System.out.println("COMMON_NAME: " + getX500Field(COMMON_NAME, x500Name));
+                      //System.out.println("EMAIL: " + getX500Field(EMAIL, x500Name));
+                      
+                      
+                      Attribute []  attr=csr.getAttributes();
+
+                      for(int i=0;i<attr.length;i++) {
+                      	  Attribute att=attr[i];
+                          System.out.println("attr["+i+"]"+att.getClass().getName());
+
+                      	  ASN1ObjectIdentifier t = att.getAttrType();
+                      	  ASN1Set v = att.getAttrValues();
+                      	  String txt="type:"+t.getId()+" v:"+v.toString();
+
+                          ASN1Encodable[]  arr_v=v.toArray();System.out.println("attr["+i+"].v len:"+arr_v.length);
+
+
+                      	  //msg.appendX509attrib(txt);
+                      	  //logger.trace("attr["+i+"]="+txt);
+                          //System.out.println("A>>"+txt);
+                          System.out.println("______________________________");
+                      	 
+                      	  Iterator<ASN1Encodable> list = v.iterator();
+                      	  while(list.hasNext()) {
+                      		  ASN1Encodable a = list.next();
+                      		  System.out.println("a class:"+a.getClass().getName());
+                      		  DERSequence aa=(DERSequence)a;
+                      		  System.out.println("a class:"+aa.getClass().getName()+" size:"+aa.size());
+                                  ASN1Encodable[]  arr_aa=aa.toArray();
+                                  for(int ii=0;ii<arr_aa.length;ii++){
+                                      ASN1Encodable aaa=arr_aa[ii];
+                                      System.out.println("aaa class:"+aaa.getClass().getName()+"  txt:"+aaa.toString());
+                      		      DERSequence aaaa=(DERSequence)aaa;
+                                      System.out.println("aaaa class:"+aaaa.getClass().getName()+" size:"+aaaa.size());
+                                      ASN1Encodable[]  arr_aaaa=aaaa.toArray();
+                                      for(int iii=0;iii<aaaa.size();iii++){
+                                          ASN1Encodable aaaaa=arr_aaaa[ii];
+                                          System.out.println("aaaaa class:"+aaaaa.getClass().getName());
+                                          System.out.println("txt:"+aaaaa.toString());
+                                          DEROctetString aaaaaa=(DEROctetString)aaaaa;
+                                          //ASN1Primitive a7=aaaaaa.toDERObject();
+                                          //System.out.println("a7 class:"+a7.getClass().getName()+"txt:"+a7.toString());
+
+                                      }
+                                  }
+                      		  
+                      	  }
+                          System.out.println("______________________________");
+                      	  
+                          //System.out.println("A>>"+txt);
+                      }
+                      byte [] b_en=csr.getEncoded();
+                      byte [] b_si=csr.getSignature();
+                      String en=stringTransform.getHex(b_en);   msg.appendX509attrib("Encoded:"+en);   logger.trace("attr[Encoded]="+en);
+                      String si=stringTransform.getHex(b_si);   msg.appendX509attrib("Signature:"+si); logger.trace("attr[Signature]="+si);
                       
                       msg.setX509Type     (type      );
                       msg.setX509TypeFile ("DER"     );
@@ -350,6 +459,7 @@ public class kMessageX509 {
                         Except ex=new Except(e);
                         logger.error("DER NO! ex:"+ex);
                      }
+             		 System.out.println("ex:"+e);
                      return null;
                }
                logger.trace(type+" DER Ok!");

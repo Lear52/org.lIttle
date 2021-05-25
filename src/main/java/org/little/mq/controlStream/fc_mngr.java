@@ -1,5 +1,5 @@
 package org.little.mq.controlStream;
-       
+              
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -55,16 +55,16 @@ public class fc_mngr  extends task{
                if(glist==null) return;
                for(int i=0;i<glist.getLength();i++){
                    Node n=glist.item(i);
-                   if("default_page".equals(n.getNodeName()) ){           
-                	   default_page=n.getTextContent();logger.info("default_page:"+default_page);
-                    }else
-                   if("run_timeout".equals(n.getNodeName()) ){           
+                   if("default_page".equalsIgnoreCase(n.getNodeName()) ){           
+                      default_page=n.getTextContent();logger.info("default_page:"+default_page);
+                   }else
+                   if("run_timeout".equalsIgnoreCase(n.getNodeName()) ){           
                       String s=n.getTextContent();try{task_timeout=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set run_timeout:"+s);task_timeout=10;}logger.info("run_timeout:"+task_timeout);
                    }else
-                   if("control_stream".equals(n.getNodeName()) ){           
+                   if("control_stream".equalsIgnoreCase(n.getNodeName()) ){           
                       String s=n.getTextContent();try{is_control_stream=Boolean.parseBoolean(s);}catch(Exception e){logger.error("error set control_stream:"+s);is_control_stream=false;}logger.info("control_stream:"+is_control_stream);
                    }else
-                   if("min_count_group".equals(n.getNodeName()) ){           
+                   if("min_count_group".equalsIgnoreCase(n.getNodeName()) ){           
                       String s=n.getTextContent();try{min_count_group=Integer.parseInt(s,10);}catch(Exception e){logger.error("error set min_count_group:"+s);min_count_group=2;}logger.info("min_count_group:"+min_count_group);
                    }
                }
@@ -86,17 +86,17 @@ public class fc_mngr  extends task{
 
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("global".equals(n.getNodeName()) ){
+                  if("global".equalsIgnoreCase(n.getNodeName()) ){
                      init_global(n);
                   }
-                  if("local".equals(n.getNodeName()) ){
+                  if("local".equalsIgnoreCase(n.getNodeName()) ){
                      fc_groupL fc_grp=new fc_groupL(this);
                      fc_grp.init(n);
                      group_list.add(fc_grp);
                      task_list.add(fc_grp);
                   }
                   else
-                  if("remote".equals(n.getNodeName())){
+                  if("remote".equalsIgnoreCase(n.getNodeName())){
                      fc_groupR fc_grp=new fc_groupR();
                      fc_grp.init(n);
                      group_list.add(fc_grp);
@@ -141,7 +141,7 @@ public class fc_mngr  extends task{
               JSONObject root=new JSONObject();
               root.put("type", "clear");
               for(int i=0;i<group_list.size();i++){
-                  if(group_list.get(i).getID().equals(group_id)) {
+                  if(group_list.get(i).getID().equalsIgnoreCase(group_id)) {
                      JSONObject ret=group_list.get(i).ClearQ(flow_id,mngr_id,q_id); 
                      root.put("resp", ret);
                      break;
@@ -153,7 +153,7 @@ public class fc_mngr  extends task{
               JSONObject root=new JSONObject();
               root.put("type", "flag");
               for(int i=0;i<group_list.size();i++){
-                  if(group_list.get(i).getID().equals(group_id)) {
+                  if(group_list.get(i).getID().equalsIgnoreCase(group_id)) {
                      JSONObject ret=group_list.get(i).setFlag(flow_id,is_flag); 
                      root.put("resp", ret);
                      break;
@@ -163,6 +163,9 @@ public class fc_mngr  extends task{
 
               return root;
        }
+       /**
+              local group to JSON 
+       */
        public JSONObject getStat() {
               JSONObject root=new JSONObject();
               JSONArray  list=new JSONArray();
@@ -170,12 +173,15 @@ public class fc_mngr  extends task{
               int count=0;
               for(int i=0;i<group_list.size();i++) {
                   fc_group group=group_list.get(i);
-                  if(group instanceof fc_groupL){list.put(count,group.getStat());count++;}
+                  if(group instanceof fc_groupL){
+                     list.put(count,group.getStat());
+                     count++;
+                  }
               }
               root.put("list", list);
               root.put("size", count);
 
-              logger.trace("fc_mnmr getStat() size:"+group_list.size());
+              logger.trace("fc_mnmr getStat() group_list.size(local):"+count+" group_list.size(all):"+group_list.size());
               
               return root;
        }

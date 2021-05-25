@@ -85,12 +85,20 @@ public class fc_groupL extends task implements fc_group{
                  logger.error("The configuration group id:noname");
                  return;
               }
-              else  id=node_cfg.getAttributes().getNamedItem("id").getNodeValue();
+              else{
+                 id=node_cfg.getAttributes().getNamedItem("id").getNodeValue();
+                 logger.info("group(l) id:"+id);
+
+              }
 
               if(node_cfg.getAttributes().getNamedItem("name")==null) {
-                   name="";
+                 name="NO NAME";
+                 logger.info("group(l) name:"+name);
               }
-              else name=node_cfg.getAttributes().getNamedItem("name").getNodeValue();
+              else{
+                 name=node_cfg.getAttributes().getNamedItem("name").getNodeValue();
+                 logger.info("group(l) name:"+name);
+              }
 
               flow_list=new ArrayList<fc_flow>();
               logger.info("The configuration node:"+node_cfg.getNodeName()+" id:"+id+" name:"+name);
@@ -99,7 +107,7 @@ public class fc_groupL extends task implements fc_group{
               if(glist==null) return;
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("flow".equals(n.getNodeName()) ){           
+                  if("flow".equalsIgnoreCase(n.getNodeName()) ){           
                      fc_flow flow=new fc_flowL(mngr);
                      flow.init(n);
                      flow_list.add(flow);
@@ -114,7 +122,7 @@ public class fc_groupL extends task implements fc_group{
               JSONObject root=new JSONObject();
 
               for(int i=0;i<flow_list.size();i++){
-                  if(flow_list.get(i).getID().equals(flow_id)) {
+                  if(flow_list.get(i).getID().equalsIgnoreCase(flow_id)) {
                      JSONObject ret=flow_list.get(i).setFlag(is_flag); 
                      root.put("resp", ret);
                      break;

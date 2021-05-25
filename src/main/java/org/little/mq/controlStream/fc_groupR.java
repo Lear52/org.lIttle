@@ -31,14 +31,14 @@ public class fc_groupR  extends task implements fc_group{
 
        @Override
        public void clear() {
-              flow_list=new ArrayList<fc_flow>();
-              state_group      =false;
+              flow_list  =new ArrayList<fc_flow>();
+              state_group=false;
               url_state  =null;  
               url_control=null;
               userURL    =null;    
               passwordURL=null;
               id         =null;  
-              remote_id =null;
+              remote_id  =null;
               name       =null;
        }
        @Override
@@ -60,59 +60,65 @@ public class fc_groupR  extends task implements fc_group{
 
               state_group      =false;
 
-              lHttpCLN cln=new lHttpCLN(url_state);
+              String _url_state=url_state+"?group="+getRID()+"&_="+System.currentTimeMillis();
+              lHttpCLN cln=new lHttpCLN(_url_state);
 
-              logger.trace("new lHttpCLN("+url_state+")");
+              logger.trace("new lHttpCLN("+_url_state+")");
 
               JSONObject root=null;
               try{
                   root=cln.getJSON();
               } 
               catch (Exception ex) {
-                    logger.error("ex:"+new Except("cln.getJSON("+url_state+")",ex));
+                    logger.error("ex:"+new Except("cln.getJSON("+_url_state+")",ex));
                     return;
               }
 
-              logger.trace("getJSON("+url_state+")");
+              logger.trace("getJSON("+_url_state+")");
 
               if(root==null)return;
 
-              JSONArray list=root.getJSONArray("list");//group 
-              if(list.length()<1){
+              JSONArray glist=root.getJSONArray("list");//group 
+
+              logger.trace("getJSON("+_url_state+")  size list group json:"+glist.length());
+
+              if(glist.length()<1){
 
                  return;
               }
 
-              root=list.getJSONObject(0);
-
-              //setID  (root.getString("id"));
-              //setName(root.getString("name"));
-              list=root.getJSONArray("list");// flow
-
-              logger.trace("getJSON("+url_state+") group id:"+getID()+" name:"+getName() +" list flow json:"+list);
-
-              for(int i=0;i<list.length();i++) {
-                  fc_flow    flow;
-                  if(i>=flow_list.size()){
-                     flow=new fc_flowR();
-                     flow_list.add(flow);
+              for(int ii=0;ii<glist.length();ii++) {
+                  JSONObject groot=glist.getJSONObject(ii);
+                  String _rid=groot.getString("id");
+                  if(_rid.equalsIgnoreCase(getRID())==false)continue;
+                  //setID  (root.getString("id"));
+                  //setName(root.getString("name"));
+                  JSONArray flist=groot.getJSONArray("list");// list flow
+                 
+                  logger.trace("getJSON("+_url_state+") group id:"+getID()+" name:"+getName() +" list flow json:"+flist);
+                 
+                  for(int i=0;i<flist.length();i++) {
+                      fc_flow    flow;
+                      if(i>=flow_list.size()){
+                         flow=new fc_flowR();
+                         flow_list.add(flow);
+                      }
+                      else{
+                         flow=flow_list.get(i);
+                      }
+                      JSONObject f_json=flist.getJSONObject(i);
+                      flow.setState(f_json);
+                      flow.work();
                   }
-                  else{
-                     flow=flow_list.get(i);
-                  }
-                  JSONObject f_json=list.getJSONObject(i);
-                  flow.setState(f_json);
-                  flow.work();
+                  state_group      =true;
               }
-
-              state_group      =true;
 
               logger.trace("end run group id:"+getID()+" name:"+getName());
               
        }
        @Override
        public JSONObject setFlag(String flow_id, boolean is_flag) {
-              String _url_control=url_control+"?group="+getRID()+"&flow="+flow_id+"&state="+is_flag;
+              String _url_control=url_control+"?group="+getRID()+"&flow="+flow_id+"&state="+is_flag+"&_="+System.currentTimeMillis();
               state_group      =false;
 
               lHttpCLN cln=new lHttpCLN(_url_control);
@@ -144,7 +150,7 @@ public class fc_groupR  extends task implements fc_group{
        }
        @Override
        public JSONObject ClearQ(String flow_id,String mngr_id,String q_id){
-              String _url_control=url_control+"?group="+getRID()+"&mngr="+mngr_id+"&q="+q_id;
+              String _url_control=url_control+"?group="+getRID()+"&mngr="+mngr_id+"&q="+q_id+"&_="+System.currentTimeMillis();
               state_group      =false;
 
               lHttpCLN cln=new lHttpCLN(_url_control);
@@ -179,17 +185,17 @@ public class fc_groupR  extends task implements fc_group{
 
               JSONObject root=new JSONObject();
               JSONArray  list=new JSONArray();
-              root.put("type", "group");
-              root.put("id" , getID());
-              root.put("rid", getRID());
+              root.put("type" , "group");
+              root.put("id"   , getID());
+              root.put("rid"  , getRID());
               root.put("state", getStateGroup());
-              root.put("name", getName());
+              root.put("name" , getName());
+              root.put("size", flow_list.size());
               for(int i=0;i<flow_list.size();i++) {
                   fc_flow flow=flow_list.get(i);
                   list.put(i,flow.getStat());
               }
               root.put("list", list);
-              root.put("size", flow_list.size());
 
               logger.trace("fc_group getStat() id:"+id+" name:"+name+" size:"+flow_list.size());
               
@@ -202,20 +208,32 @@ public class fc_groupR  extends task implements fc_group{
               if(node_cfg==null)return;
               //
               if(node_cfg.getAttributes().getNamedItem("id")==null) {
-                 logger.error("The configuration group id:noname");
+                 logger.error("The configuration group(r) id:noname");
                  return;
               }
-              else  id=node_cfg.getAttributes().getNamedItem("id").getNodeValue();
+              else{
+                 id=node_cfg.getAttributes().getNamedItem("id").getNodeValue();
+                 logger.info("group(r) id:"+id);
+              }
               //
               if(node_cfg.getAttributes().getNamedItem("name")==null) {
-                 name="";
+                 name="NO NAME";
+                 logger.info("group(r) name:"+name);
               }
-              else name=node_cfg.getAttributes().getNamedItem("name").getNodeValue();
+              else{
+                 name=node_cfg.getAttributes().getNamedItem("name").getNodeValue();
+                 logger.info("group(r) name:"+name);
+              }
               //
               if(node_cfg.getAttributes().getNamedItem("remote_id")==null) {
-                 remote_id="";
+                 remote_id=id;
+                 logger.info("group(r) remote_id:"+remote_id);
               }
-              else remote_id=node_cfg.getAttributes().getNamedItem("remote_id").getNodeValue();
+              else{
+                   remote_id=node_cfg.getAttributes().getNamedItem("remote_id").getNodeValue();
+                   logger.info("group(r) remote_id:"+remote_id);
+              }
+
               //
               flow_list=new ArrayList<fc_flow>();
               logger.trace("The configuration node:"+node_cfg.getNodeName()+" id:"+id+" name:"+name);
@@ -224,11 +242,11 @@ public class fc_groupR  extends task implements fc_group{
               if(glist==null) return;
               for(int i=0;i<glist.getLength();i++){
                   Node n=glist.item(i);
-                  if("url_state" .equals(n.getNodeName())){url_state  =n.getTextContent(); logger.info("url_state:" +url_state  );}else
-                  if("url_contrl".equals(n.getNodeName())){url_control=n.getTextContent(); logger.info("url_contrl:"+url_control);}else
-                  if("url_user"  .equals(n.getNodeName())){userURL    =n.getTextContent(); logger.info("url_user:"  +userURL    );}else
-                  if("url_passwd".equals(n.getNodeName())){passwordURL=n.getTextContent(); logger.info("url_passwd:"+passwordURL);}
-                  if("remote_id" .equals(n.getNodeName())){remote_id=n.getTextContent();   logger.info("remote_id:"+remote_id);}
+                  if("url_state" .equalsIgnoreCase(n.getNodeName())){url_state  =n.getTextContent(); logger.info("group(r) url_state:" +url_state  );}else
+                  if("url_contrl".equalsIgnoreCase(n.getNodeName())){url_control=n.getTextContent(); logger.info("group(r) url_contrl:"+url_control);}else
+                  if("url_user"  .equalsIgnoreCase(n.getNodeName())){userURL    =n.getTextContent(); logger.info("group(r) url_user:"  +userURL    );}else
+                  if("url_passwd".equalsIgnoreCase(n.getNodeName())){passwordURL=n.getTextContent(); logger.info("group(r) url_passwd:"+passwordURL);}
+                  if("remote_id" .equalsIgnoreCase(n.getNodeName())){remote_id=n.getTextContent();   logger.info("group(r) remote_id:"+remote_id);}
               }
               
        }
