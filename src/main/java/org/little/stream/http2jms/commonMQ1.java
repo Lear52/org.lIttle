@@ -1,4 +1,4 @@
-package org.little.mq.http2mq;
+package org.little.stream.http2jms;
         
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;

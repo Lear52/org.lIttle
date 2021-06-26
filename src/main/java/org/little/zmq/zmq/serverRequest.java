@@ -16,52 +16,52 @@ public class serverRequest implements IAttachedRunnable {
         	String broker="tcp://localhost:5555";
         	String service="titanic.request";
         	boolean verbose=true;
-            serverAPI worker = new serverAPI(broker, service, verbose);
-            ZMsg reply = null;
+                serverAPI worker = new serverAPI(broker, service, verbose);
+                ZMsg reply = null;
 
-            while (true) {
-                //  Send reply if it's not null
-                //  And then get next request from broker
-                ZMsg request = worker.receive(reply);
-                if (request == null)
-                    break; //  Interrupted, exit
-
-                //  Ensure message directory exists
-                new File(server02.TITANIC_DIR).mkdirs();
-
-                //  Generate UUID and save message to disk
-                String uuid = server02.generateUUID();
-                String filename = server02.requestFilename(uuid);
-                DataOutputStream file = null;
-                try {
-                    file = new DataOutputStream(new FileOutputStream(filename));
-                    ZMsg.save(request, file);
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                finally {
+                while (true) {
+                    //  Send reply if it's not null
+                    //  And then get next request from broker
+                    ZMsg request = worker.receive(reply);
+                    if (request == null)
+                        break; //  Interrupted, exit
+            
+                    //  Ensure message directory exists
+                    new File(server02.TITANIC_DIR).mkdirs();
+            
+                    //  Generate UUID and save message to disk
+                    String uuid = server02.generateUUID();
+                    String filename = server02.requestFilename(uuid);
+                    DataOutputStream file = null;
                     try {
-                        if (file != null)
-                            file.close();
+                        file = new DataOutputStream(new FileOutputStream(filename));
+                        ZMsg.save(request, file);
                     }
                     catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    finally {
+                        try {
+                            if (file != null)
+                                file.close();
+                        }
+                        catch (IOException e) {
+                        }
+                    }
+                    request.destroy();
+            
+                    //  Send UUID through to message queue
+                    reply = new ZMsg();
+                    reply.add(uuid);
+                    reply.send(pipe);
+            
+                    //  Now send UUID back to client
+                    //  Done by the mdwrk_recv() at the top of the loop
+                    reply = new ZMsg();
+                    reply.add("200");
+                    reply.add(uuid);
                 }
-                request.destroy();
-
-                //  Send UUID through to message queue
-                reply = new ZMsg();
-                reply.add(uuid);
-                reply.send(pipe);
-
-                //  Now send UUID back to client
-                //  Done by the mdwrk_recv() at the top of the loop
-                reply = new ZMsg();
-                reply.add("200");
-                reply.add(uuid);
-            }
-            worker.destroy();
+                worker.destroy();
         }
 }
 

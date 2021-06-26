@@ -5,13 +5,13 @@
 
         <groupId>org.little</groupId>
         <artifactId>little</artifactId>
-        <version>20210524-SNAPSHOT</version>
+        <version>20210624-SNAPSHOT</version>
         <packaging>jar</packaging>
 
         <properties>
                 <maven.compiler.source>8</maven.compiler.source>
                 <maven.compiler.target>8</maven.compiler.target>
-                <netty.version>4.1.60.Final</netty.version>
+                <netty.version>4.1.65.Final</netty.version>
         </properties>
 
         <build>
@@ -149,17 +149,17 @@
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derby</artifactId>
-              <version>10.14.2.0</version>
+              <version>10.15.2.0</version>
            </dependency>
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derbyclient</artifactId>
-              <version>10.14.2.0</version>
+              <version>10.15.2.0</version>
            </dependency>
            <dependency>
               <groupId>org.apache.derby</groupId>
               <artifactId>derbynet</artifactId>
-              <version>10.14.2.0</version>
+              <version>10.15.2.0</version>
            </dependency>
           
            <!-- ibm mq -->

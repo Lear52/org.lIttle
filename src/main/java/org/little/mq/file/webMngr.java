@@ -1,4 +1,4 @@
-package org.little.mq.http2mq;
+package org.little.mq.file;
 
 import java.io.IOException;
 
@@ -9,7 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
+//import org.json.JSONArray;
+//import org.json.JSONObject;
 import org.little.util.Logger;
 import org.little.util.LoggerFactory;
 import org.little.util.Version;
@@ -19,8 +20,11 @@ import org.little.web.webRun;
  *  
  */
 public class webMngr extends webRun{
-	private static final long serialVersionUID = -8820420158454598488L;
-	private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+       private static final long serialVersionUID = -8820420158454598488L;
+       private static final Logger logger = LoggerFactory.getLogger(webMngr.class);
+
+       public webMngr(){
+       }
 
        @Override
        public void init() throws ServletException {
@@ -33,10 +37,6 @@ public class webMngr extends webRun{
               String _xpath=getParametr("config");
               xpath+=_xpath;
 
-                 if(commonMQ1.loadCFG(xpath)==false){
-                    logger.error("error read config file:"+xpath);
-                    return;
-                 }
                  logger.info("START LITTLE.SYSLOG config:"+xpath+" "+Version.getVer()+"("+Version.getDate()+")");
               //-------------------------------------------------------------------------------------------------------
               super.init();
@@ -48,18 +48,17 @@ public class webMngr extends webRun{
        public String getServletInfo() {
               return "syslog server";
        }
-       private void doGetList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-           logger.trace("begin doGetList");
 
-           JSONObject  root=new JSONObject();
-
-           response.setContentType("application/json");
-           response.setContentType("text/html; charset=UTF-8");
-           
-           root.write(response.getWriter());
-
-           logger.trace("end doGetList");
+       @Override
+       public void destroy() {
+              //if(server!=null){
+              //   server.stop();
+              //}
+              //server=null;
+              super.destroy();
+              logger.info("STOP LITTLE.SYSLOG "+Version.getVer()+"("+Version.getDate()+")");
        }
+
 
        @Override
        public void doRun(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -69,12 +68,8 @@ public class webMngr extends webRun{
 
               logger.trace("webMngr.doRun() path:"+path);
 
-              if(path.startsWith("/list")){
-                 doGetList(request,response);
-                 return;
-              }
   
-              if(page==null)page = commonMQ1.get().getDefPage();
+              //if(page==null)page = commonSyslog.get().getDefPage();
               logger.trace("webMngr.doRun() page:"+page);
               //-----------------------------------------------------------------------------------------
               if(page!=null)
